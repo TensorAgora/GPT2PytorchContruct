@@ -18,6 +18,7 @@ STEPS = [
     ("Inspect checkpoint", "tools.inspect_checkpoint", "83 tensors, tying, inferred architecture, tree"),
     ("Print model", "tools.print_model", "module tree, parameter counts, logical vs unique accounting"),
     ("Tensor inventory", "tools.tensor_inventory", "every parameter/buffer -> artifacts/tensor_inventory.{json,csv}"),
+    ("Tensor program", "tools.tensor_program", "every layer as tensor operations, verified vs PyTorch -> artifacts/tensor_program.*"),
     ("Fixed forward", "examples.forward_fixed", "deterministic eval forward, intermediate shapes, logits stats"),
     ("DataLoader forward", "examples.dataloader_forward", "Dataset -> DataLoader -> batch -> logits"),
     ("Inspect attention", "examples.inspect_attention", "Q/K/V, mask, probabilities, causality"),

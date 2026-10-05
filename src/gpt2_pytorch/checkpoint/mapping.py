@@ -54,3 +54,21 @@ def map_key(key: str) -> KeyMapping | None:
             action = "transpose" if conv1d and kind == "weight" else "load"
             return KeyMapping(action, f"transformer.blocks.{index}.{ours}.{kind}")
     return None
+
+
+def checkpoint_keys(num_layers: int) -> list[str]:
+    """Every key an HF GPT-2 checkpoint of this depth contains (lm_head.weight included)."""
+    keys = ["transformer.wte.weight", "transformer.wpe.weight", "transformer.ln_f.weight", "transformer.ln_f.bias", "lm_head.weight"]
+    for i in range(num_layers):
+        keys.append(f"transformer.h.{i}.attn.bias")
+        keys += [f"transformer.h.{i}.{module}.{kind}" for module in BLOCK_MODULES for kind in ("weight", "bias")]
+    return keys
+
+
+def checkpoint_key_for(target: str, num_layers: int) -> str | None:
+    """Inverse of map_key: the checkpoint key that fills model key `target` (None if no key does, e.g. a tied alias)."""
+    for key in checkpoint_keys(num_layers):
+        mapping = map_key(key)
+        if mapping is not None and mapping.action != "tie" and mapping.target == target:
+            return key
+    return None

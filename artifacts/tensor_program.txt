@@ -1,0 +1,770 @@
+000  Gather            X_0.token[B,T,D] = gather(E[V,D], ids[B,T])   (rows of V)
+                       [transformer.embeddings.token_embedding]
+001  Gather            X_0.position[T,D] = gather(Wp[P,D], pos[T])   (rows of P)
+                       [transformer.embeddings.position_embedding]
+002  Elementwise.add   X_0[B,T,D] = X_0.token[B,T,D] + X_0.position[T,D]
+                       [transformer.embeddings]
+003  Reduce.mean       N1_0.mean[B,T] = mean_D(X_0[B,T,D])
+                       [transformer.blocks.0.ln_1]
+004  Elementwise.sub   N1_0.centered[B,T,D] = X_0[B,T,D] - N1_0.mean[B,T]
+                       [transformer.blocks.0.ln_1]
+005  Elementwise.mul   N1_0.squared[B,T,D] = N1_0.centered[B,T,D] × N1_0.centered[B,T,D]
+                       [transformer.blocks.0.ln_1]
+006  Reduce.mean       N1_0.var[B,T] = mean_D(N1_0.squared[B,T,D])
+                       [transformer.blocks.0.ln_1]
+007  Elementwise.add   N1_0.var_eps[B,T] = N1_0.var[B,T] + c_eps
+                       [transformer.blocks.0.ln_1]
+008  Elementwise.rsqrt N1_0.rstd[B,T] = rsqrt(N1_0.var_eps[B,T])
+                       [transformer.blocks.0.ln_1]
+009  Elementwise.mul   N1_0.normalized[B,T,D] = N1_0.centered[B,T,D] × N1_0.rstd[B,T]
+                       [transformer.blocks.0.ln_1]
+010  Elementwise.mul   N1_0.scaled[B,T,D] = N1_0.normalized[B,T,D] × g1_0[D]
+                       [transformer.blocks.0.ln_1]
+011  Elementwise.add   N1_0[B,T,D] = N1_0.scaled[B,T,D] + b1_0[D]
+                       [transformer.blocks.0.ln_1]
+012  Contraction       Hq_0.mm[B,T,QKV] = N1_0[B,T,D] · W_qkv_0[D,QKV]   (Σ D)
+                       [transformer.blocks.0.attention.qkv_projection]
+013  Elementwise.add   Hq_0[B,T,QKV] = Hq_0.mm[B,T,QKV] + b_qkv_0[QKV]
+                       [transformer.blocks.0.attention.qkv_projection]
+014  Slice             Q_0.slice[B,T,Dc] = Hq_0[QKV 0:768]
+                       [transformer.blocks.0.attention]
+015  Reshape           Q_0.heads[B,T,H,Dh] = reshape(Q_0.slice[B,T,Dc])
+                       [transformer.blocks.0.attention]
+016  Permute           Q_0.perm[B,H,T,Dh] = permute(Q_0.heads[B,T,H,Dh])
+                       [transformer.blocks.0.attention]
+017  Rename            Q_0[B,H,q,Dh] = rename(Q_0.perm[B,H,T,Dh], T→q)
+                       [transformer.blocks.0.attention]
+018  Slice             K_0.slice[B,T,Dc] = Hq_0[QKV 768:1536]
+                       [transformer.blocks.0.attention]
+019  Reshape           K_0.heads[B,T,H,Dh] = reshape(K_0.slice[B,T,Dc])
+                       [transformer.blocks.0.attention]
+020  Permute           K_0.perm[B,H,T,Dh] = permute(K_0.heads[B,T,H,Dh])
+                       [transformer.blocks.0.attention]
+021  Rename            K_0[B,H,k,Dh] = rename(K_0.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.0.attention]
+022  Slice             V_0.slice[B,T,Dc] = Hq_0[QKV 1536:2304]
+                       [transformer.blocks.0.attention]
+023  Reshape           V_0.heads[B,T,H,Dh] = reshape(V_0.slice[B,T,Dc])
+                       [transformer.blocks.0.attention]
+024  Permute           V_0.perm[B,H,T,Dh] = permute(V_0.heads[B,T,H,Dh])
+                       [transformer.blocks.0.attention]
+025  Rename            V_0[B,H,k,Dh] = rename(V_0.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.0.attention]
+026  Contraction       S_0.qk[B,H,q,k] = Q_0[B,H,q,Dh] · K_0[B,H,k,Dh]   (Σ Dh)
+                       [transformer.blocks.0.attention]
+027  Elementwise.div   S_0[B,H,q,k] = S_0.qk[B,H,q,k] / c_sqrt_dh
+                       [transformer.blocks.0.attention]
+028  Elementwise.log   Mb_0.log[q,k] = log(Mb_0[q,k])
+                       [transformer.blocks.0.attention]
+029  Elementwise.add   S_0.masked[B,H,q,k] = S_0[B,H,q,k] + Mb_0.log[q,k]
+                       [transformer.blocks.0.attention]
+030  Reduce.max        A_0.max[B,H,q] = max_k(S_0.masked[B,H,q,k])
+                       [transformer.blocks.0.attention]
+031  Elementwise.sub   A_0.shifted[B,H,q,k] = S_0.masked[B,H,q,k] - A_0.max[B,H,q]
+                       [transformer.blocks.0.attention]
+032  Elementwise.exp   A_0.exp[B,H,q,k] = exp(A_0.shifted[B,H,q,k])
+                       [transformer.blocks.0.attention]
+033  Reduce.sum        A_0.sum[B,H,q] = sum_k(A_0.exp[B,H,q,k])
+                       [transformer.blocks.0.attention]
+034  Elementwise.div   A_0[B,H,q,k] = A_0.exp[B,H,q,k] / A_0.sum[B,H,q]
+                       [transformer.blocks.0.attention]
+035  Contraction       C_0[B,H,q,Dh] = A_0[B,H,q,k] · V_0[B,H,k,Dh]   (Σ k)
+                       [transformer.blocks.0.attention]
+036  Rename            C_0.rename[B,H,T,Dh] = rename(C_0[B,H,q,Dh], q→T)
+                       [transformer.blocks.0.attention]
+037  Permute           C_0.perm[B,T,H,Dh] = permute(C_0.rename[B,H,T,Dh])
+                       [transformer.blocks.0.attention]
+038  Reshape           C_0.merged[B,T,Dc] = reshape(C_0.perm[B,T,H,Dh])
+                       [transformer.blocks.0.attention]
+039  Contraction       O_0.mm[B,T,D] = C_0.merged[B,T,Dc] · W_o_0[Dc,D]   (Σ Dc)
+                       [transformer.blocks.0.attention.output_projection]
+040  Elementwise.add   O_0[B,T,D] = O_0.mm[B,T,D] + b_o_0[D]
+                       [transformer.blocks.0.attention.output_projection]
+041  Elementwise.add   Xm_0[B,T,D] = X_0[B,T,D] + O_0[B,T,D]
+                       [transformer.blocks.0]
+042  Reduce.mean       N2_0.mean[B,T] = mean_D(Xm_0[B,T,D])
+                       [transformer.blocks.0.ln_2]
+043  Elementwise.sub   N2_0.centered[B,T,D] = Xm_0[B,T,D] - N2_0.mean[B,T]
+                       [transformer.blocks.0.ln_2]
+044  Elementwise.mul   N2_0.squared[B,T,D] = N2_0.centered[B,T,D] × N2_0.centered[B,T,D]
+                       [transformer.blocks.0.ln_2]
+045  Reduce.mean       N2_0.var[B,T] = mean_D(N2_0.squared[B,T,D])
+                       [transformer.blocks.0.ln_2]
+046  Elementwise.add   N2_0.var_eps[B,T] = N2_0.var[B,T] + c_eps
+                       [transformer.blocks.0.ln_2]
+047  Elementwise.rsqrt N2_0.rstd[B,T] = rsqrt(N2_0.var_eps[B,T])
+                       [transformer.blocks.0.ln_2]
+048  Elementwise.mul   N2_0.normalized[B,T,D] = N2_0.centered[B,T,D] × N2_0.rstd[B,T]
+                       [transformer.blocks.0.ln_2]
+049  Elementwise.mul   N2_0.scaled[B,T,D] = N2_0.normalized[B,T,D] × g2_0[D]
+                       [transformer.blocks.0.ln_2]
+050  Elementwise.add   N2_0[B,T,D] = N2_0.scaled[B,T,D] + b2_0[D]
+                       [transformer.blocks.0.ln_2]
+051  Contraction       G_0.mm[B,T,F] = N2_0[B,T,D] · W_fc_0[D,F]   (Σ D)
+                       [transformer.blocks.0.mlp.fc]
+052  Elementwise.add   G_0[B,T,F] = G_0.mm[B,T,F] + b_fc_0[F]
+                       [transformer.blocks.0.mlp.fc]
+053  Elementwise.mul   Ga_0.squared[B,T,F] = G_0[B,T,F] × G_0[B,T,F]
+                       [transformer.blocks.0.mlp.activation]
+054  Elementwise.mul   Ga_0.cubic[B,T,F] = Ga_0.squared[B,T,F] × G_0[B,T,F]
+                       [transformer.blocks.0.mlp.activation]
+055  Elementwise.mul   Ga_0.cubic_a[B,T,F] = Ga_0.cubic[B,T,F] × c_gelu_a
+                       [transformer.blocks.0.mlp.activation]
+056  Elementwise.add   Ga_0.inner_sum[B,T,F] = G_0[B,T,F] + Ga_0.cubic_a[B,T,F]
+                       [transformer.blocks.0.mlp.activation]
+057  Elementwise.mul   Ga_0.inner[B,T,F] = Ga_0.inner_sum[B,T,F] × c_gelu_b
+                       [transformer.blocks.0.mlp.activation]
+058  Elementwise.tanh  Ga_0.tanh[B,T,F] = tanh(Ga_0.inner[B,T,F])
+                       [transformer.blocks.0.mlp.activation]
+059  Elementwise.add   Ga_0.one_plus[B,T,F] = Ga_0.tanh[B,T,F] + c_one
+                       [transformer.blocks.0.mlp.activation]
+060  Elementwise.mul   Ga_0.half_x[B,T,F] = G_0[B,T,F] × c_half
+                       [transformer.blocks.0.mlp.activation]
+061  Elementwise.mul   Ga_0[B,T,F] = Ga_0.half_x[B,T,F] × Ga_0.one_plus[B,T,F]
+                       [transformer.blocks.0.mlp.activation]
+062  Contraction       M_0.mm[B,T,D] = Ga_0[B,T,F] · W_pr_0[F,D]   (Σ F)
+                       [transformer.blocks.0.mlp.projection]
+063  Elementwise.add   M_0[B,T,D] = M_0.mm[B,T,D] + b_pr_0[D]
+                       [transformer.blocks.0.mlp.projection]
+064  Elementwise.add   X_1[B,T,D] = Xm_0[B,T,D] + M_0[B,T,D]
+                       [transformer.blocks.0]
+065  Reduce.mean       N1_1.mean[B,T] = mean_D(X_1[B,T,D])
+                       [transformer.blocks.1.ln_1]
+066  Elementwise.sub   N1_1.centered[B,T,D] = X_1[B,T,D] - N1_1.mean[B,T]
+                       [transformer.blocks.1.ln_1]
+067  Elementwise.mul   N1_1.squared[B,T,D] = N1_1.centered[B,T,D] × N1_1.centered[B,T,D]
+                       [transformer.blocks.1.ln_1]
+068  Reduce.mean       N1_1.var[B,T] = mean_D(N1_1.squared[B,T,D])
+                       [transformer.blocks.1.ln_1]
+069  Elementwise.add   N1_1.var_eps[B,T] = N1_1.var[B,T] + c_eps
+                       [transformer.blocks.1.ln_1]
+070  Elementwise.rsqrt N1_1.rstd[B,T] = rsqrt(N1_1.var_eps[B,T])
+                       [transformer.blocks.1.ln_1]
+071  Elementwise.mul   N1_1.normalized[B,T,D] = N1_1.centered[B,T,D] × N1_1.rstd[B,T]
+                       [transformer.blocks.1.ln_1]
+072  Elementwise.mul   N1_1.scaled[B,T,D] = N1_1.normalized[B,T,D] × g1_1[D]
+                       [transformer.blocks.1.ln_1]
+073  Elementwise.add   N1_1[B,T,D] = N1_1.scaled[B,T,D] + b1_1[D]
+                       [transformer.blocks.1.ln_1]
+074  Contraction       Hq_1.mm[B,T,QKV] = N1_1[B,T,D] · W_qkv_1[D,QKV]   (Σ D)
+                       [transformer.blocks.1.attention.qkv_projection]
+075  Elementwise.add   Hq_1[B,T,QKV] = Hq_1.mm[B,T,QKV] + b_qkv_1[QKV]
+                       [transformer.blocks.1.attention.qkv_projection]
+076  Slice             Q_1.slice[B,T,Dc] = Hq_1[QKV 0:768]
+                       [transformer.blocks.1.attention]
+077  Reshape           Q_1.heads[B,T,H,Dh] = reshape(Q_1.slice[B,T,Dc])
+                       [transformer.blocks.1.attention]
+078  Permute           Q_1.perm[B,H,T,Dh] = permute(Q_1.heads[B,T,H,Dh])
+                       [transformer.blocks.1.attention]
+079  Rename            Q_1[B,H,q,Dh] = rename(Q_1.perm[B,H,T,Dh], T→q)
+                       [transformer.blocks.1.attention]
+080  Slice             K_1.slice[B,T,Dc] = Hq_1[QKV 768:1536]
+                       [transformer.blocks.1.attention]
+081  Reshape           K_1.heads[B,T,H,Dh] = reshape(K_1.slice[B,T,Dc])
+                       [transformer.blocks.1.attention]
+082  Permute           K_1.perm[B,H,T,Dh] = permute(K_1.heads[B,T,H,Dh])
+                       [transformer.blocks.1.attention]
+083  Rename            K_1[B,H,k,Dh] = rename(K_1.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.1.attention]
+084  Slice             V_1.slice[B,T,Dc] = Hq_1[QKV 1536:2304]
+                       [transformer.blocks.1.attention]
+085  Reshape           V_1.heads[B,T,H,Dh] = reshape(V_1.slice[B,T,Dc])
+                       [transformer.blocks.1.attention]
+086  Permute           V_1.perm[B,H,T,Dh] = permute(V_1.heads[B,T,H,Dh])
+                       [transformer.blocks.1.attention]
+087  Rename            V_1[B,H,k,Dh] = rename(V_1.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.1.attention]
+088  Contraction       S_1.qk[B,H,q,k] = Q_1[B,H,q,Dh] · K_1[B,H,k,Dh]   (Σ Dh)
+                       [transformer.blocks.1.attention]
+089  Elementwise.div   S_1[B,H,q,k] = S_1.qk[B,H,q,k] / c_sqrt_dh
+                       [transformer.blocks.1.attention]
+090  Elementwise.log   Mb_1.log[q,k] = log(Mb_1[q,k])
+                       [transformer.blocks.1.attention]
+091  Elementwise.add   S_1.masked[B,H,q,k] = S_1[B,H,q,k] + Mb_1.log[q,k]
+                       [transformer.blocks.1.attention]
+092  Reduce.max        A_1.max[B,H,q] = max_k(S_1.masked[B,H,q,k])
+                       [transformer.blocks.1.attention]
+093  Elementwise.sub   A_1.shifted[B,H,q,k] = S_1.masked[B,H,q,k] - A_1.max[B,H,q]
+                       [transformer.blocks.1.attention]
+094  Elementwise.exp   A_1.exp[B,H,q,k] = exp(A_1.shifted[B,H,q,k])
+                       [transformer.blocks.1.attention]
+095  Reduce.sum        A_1.sum[B,H,q] = sum_k(A_1.exp[B,H,q,k])
+                       [transformer.blocks.1.attention]
+096  Elementwise.div   A_1[B,H,q,k] = A_1.exp[B,H,q,k] / A_1.sum[B,H,q]
+                       [transformer.blocks.1.attention]
+097  Contraction       C_1[B,H,q,Dh] = A_1[B,H,q,k] · V_1[B,H,k,Dh]   (Σ k)
+                       [transformer.blocks.1.attention]
+098  Rename            C_1.rename[B,H,T,Dh] = rename(C_1[B,H,q,Dh], q→T)
+                       [transformer.blocks.1.attention]
+099  Permute           C_1.perm[B,T,H,Dh] = permute(C_1.rename[B,H,T,Dh])
+                       [transformer.blocks.1.attention]
+100  Reshape           C_1.merged[B,T,Dc] = reshape(C_1.perm[B,T,H,Dh])
+                       [transformer.blocks.1.attention]
+101  Contraction       O_1.mm[B,T,D] = C_1.merged[B,T,Dc] · W_o_1[Dc,D]   (Σ Dc)
+                       [transformer.blocks.1.attention.output_projection]
+102  Elementwise.add   O_1[B,T,D] = O_1.mm[B,T,D] + b_o_1[D]
+                       [transformer.blocks.1.attention.output_projection]
+103  Elementwise.add   Xm_1[B,T,D] = X_1[B,T,D] + O_1[B,T,D]
+                       [transformer.blocks.1]
+104  Reduce.mean       N2_1.mean[B,T] = mean_D(Xm_1[B,T,D])
+                       [transformer.blocks.1.ln_2]
+105  Elementwise.sub   N2_1.centered[B,T,D] = Xm_1[B,T,D] - N2_1.mean[B,T]
+                       [transformer.blocks.1.ln_2]
+106  Elementwise.mul   N2_1.squared[B,T,D] = N2_1.centered[B,T,D] × N2_1.centered[B,T,D]
+                       [transformer.blocks.1.ln_2]
+107  Reduce.mean       N2_1.var[B,T] = mean_D(N2_1.squared[B,T,D])
+                       [transformer.blocks.1.ln_2]
+108  Elementwise.add   N2_1.var_eps[B,T] = N2_1.var[B,T] + c_eps
+                       [transformer.blocks.1.ln_2]
+109  Elementwise.rsqrt N2_1.rstd[B,T] = rsqrt(N2_1.var_eps[B,T])
+                       [transformer.blocks.1.ln_2]
+110  Elementwise.mul   N2_1.normalized[B,T,D] = N2_1.centered[B,T,D] × N2_1.rstd[B,T]
+                       [transformer.blocks.1.ln_2]
+111  Elementwise.mul   N2_1.scaled[B,T,D] = N2_1.normalized[B,T,D] × g2_1[D]
+                       [transformer.blocks.1.ln_2]
+112  Elementwise.add   N2_1[B,T,D] = N2_1.scaled[B,T,D] + b2_1[D]
+                       [transformer.blocks.1.ln_2]
+113  Contraction       G_1.mm[B,T,F] = N2_1[B,T,D] · W_fc_1[D,F]   (Σ D)
+                       [transformer.blocks.1.mlp.fc]
+114  Elementwise.add   G_1[B,T,F] = G_1.mm[B,T,F] + b_fc_1[F]
+                       [transformer.blocks.1.mlp.fc]
+115  Elementwise.mul   Ga_1.squared[B,T,F] = G_1[B,T,F] × G_1[B,T,F]
+                       [transformer.blocks.1.mlp.activation]
+116  Elementwise.mul   Ga_1.cubic[B,T,F] = Ga_1.squared[B,T,F] × G_1[B,T,F]
+                       [transformer.blocks.1.mlp.activation]
+117  Elementwise.mul   Ga_1.cubic_a[B,T,F] = Ga_1.cubic[B,T,F] × c_gelu_a
+                       [transformer.blocks.1.mlp.activation]
+118  Elementwise.add   Ga_1.inner_sum[B,T,F] = G_1[B,T,F] + Ga_1.cubic_a[B,T,F]
+                       [transformer.blocks.1.mlp.activation]
+119  Elementwise.mul   Ga_1.inner[B,T,F] = Ga_1.inner_sum[B,T,F] × c_gelu_b
+                       [transformer.blocks.1.mlp.activation]
+120  Elementwise.tanh  Ga_1.tanh[B,T,F] = tanh(Ga_1.inner[B,T,F])
+                       [transformer.blocks.1.mlp.activation]
+121  Elementwise.add   Ga_1.one_plus[B,T,F] = Ga_1.tanh[B,T,F] + c_one
+                       [transformer.blocks.1.mlp.activation]
+122  Elementwise.mul   Ga_1.half_x[B,T,F] = G_1[B,T,F] × c_half
+                       [transformer.blocks.1.mlp.activation]
+123  Elementwise.mul   Ga_1[B,T,F] = Ga_1.half_x[B,T,F] × Ga_1.one_plus[B,T,F]
+                       [transformer.blocks.1.mlp.activation]
+124  Contraction       M_1.mm[B,T,D] = Ga_1[B,T,F] · W_pr_1[F,D]   (Σ F)
+                       [transformer.blocks.1.mlp.projection]
+125  Elementwise.add   M_1[B,T,D] = M_1.mm[B,T,D] + b_pr_1[D]
+                       [transformer.blocks.1.mlp.projection]
+126  Elementwise.add   X_2[B,T,D] = Xm_1[B,T,D] + M_1[B,T,D]
+                       [transformer.blocks.1]
+127  Reduce.mean       N1_2.mean[B,T] = mean_D(X_2[B,T,D])
+                       [transformer.blocks.2.ln_1]
+128  Elementwise.sub   N1_2.centered[B,T,D] = X_2[B,T,D] - N1_2.mean[B,T]
+                       [transformer.blocks.2.ln_1]
+129  Elementwise.mul   N1_2.squared[B,T,D] = N1_2.centered[B,T,D] × N1_2.centered[B,T,D]
+                       [transformer.blocks.2.ln_1]
+130  Reduce.mean       N1_2.var[B,T] = mean_D(N1_2.squared[B,T,D])
+                       [transformer.blocks.2.ln_1]
+131  Elementwise.add   N1_2.var_eps[B,T] = N1_2.var[B,T] + c_eps
+                       [transformer.blocks.2.ln_1]
+132  Elementwise.rsqrt N1_2.rstd[B,T] = rsqrt(N1_2.var_eps[B,T])
+                       [transformer.blocks.2.ln_1]
+133  Elementwise.mul   N1_2.normalized[B,T,D] = N1_2.centered[B,T,D] × N1_2.rstd[B,T]
+                       [transformer.blocks.2.ln_1]
+134  Elementwise.mul   N1_2.scaled[B,T,D] = N1_2.normalized[B,T,D] × g1_2[D]
+                       [transformer.blocks.2.ln_1]
+135  Elementwise.add   N1_2[B,T,D] = N1_2.scaled[B,T,D] + b1_2[D]
+                       [transformer.blocks.2.ln_1]
+136  Contraction       Hq_2.mm[B,T,QKV] = N1_2[B,T,D] · W_qkv_2[D,QKV]   (Σ D)
+                       [transformer.blocks.2.attention.qkv_projection]
+137  Elementwise.add   Hq_2[B,T,QKV] = Hq_2.mm[B,T,QKV] + b_qkv_2[QKV]
+                       [transformer.blocks.2.attention.qkv_projection]
+138  Slice             Q_2.slice[B,T,Dc] = Hq_2[QKV 0:768]
+                       [transformer.blocks.2.attention]
+139  Reshape           Q_2.heads[B,T,H,Dh] = reshape(Q_2.slice[B,T,Dc])
+                       [transformer.blocks.2.attention]
+140  Permute           Q_2.perm[B,H,T,Dh] = permute(Q_2.heads[B,T,H,Dh])
+                       [transformer.blocks.2.attention]
+141  Rename            Q_2[B,H,q,Dh] = rename(Q_2.perm[B,H,T,Dh], T→q)
+                       [transformer.blocks.2.attention]
+142  Slice             K_2.slice[B,T,Dc] = Hq_2[QKV 768:1536]
+                       [transformer.blocks.2.attention]
+143  Reshape           K_2.heads[B,T,H,Dh] = reshape(K_2.slice[B,T,Dc])
+                       [transformer.blocks.2.attention]
+144  Permute           K_2.perm[B,H,T,Dh] = permute(K_2.heads[B,T,H,Dh])
+                       [transformer.blocks.2.attention]
+145  Rename            K_2[B,H,k,Dh] = rename(K_2.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.2.attention]
+146  Slice             V_2.slice[B,T,Dc] = Hq_2[QKV 1536:2304]
+                       [transformer.blocks.2.attention]
+147  Reshape           V_2.heads[B,T,H,Dh] = reshape(V_2.slice[B,T,Dc])
+                       [transformer.blocks.2.attention]
+148  Permute           V_2.perm[B,H,T,Dh] = permute(V_2.heads[B,T,H,Dh])
+                       [transformer.blocks.2.attention]
+149  Rename            V_2[B,H,k,Dh] = rename(V_2.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.2.attention]
+150  Contraction       S_2.qk[B,H,q,k] = Q_2[B,H,q,Dh] · K_2[B,H,k,Dh]   (Σ Dh)
+                       [transformer.blocks.2.attention]
+151  Elementwise.div   S_2[B,H,q,k] = S_2.qk[B,H,q,k] / c_sqrt_dh
+                       [transformer.blocks.2.attention]
+152  Elementwise.log   Mb_2.log[q,k] = log(Mb_2[q,k])
+                       [transformer.blocks.2.attention]
+153  Elementwise.add   S_2.masked[B,H,q,k] = S_2[B,H,q,k] + Mb_2.log[q,k]
+                       [transformer.blocks.2.attention]
+154  Reduce.max        A_2.max[B,H,q] = max_k(S_2.masked[B,H,q,k])
+                       [transformer.blocks.2.attention]
+155  Elementwise.sub   A_2.shifted[B,H,q,k] = S_2.masked[B,H,q,k] - A_2.max[B,H,q]
+                       [transformer.blocks.2.attention]
+156  Elementwise.exp   A_2.exp[B,H,q,k] = exp(A_2.shifted[B,H,q,k])
+                       [transformer.blocks.2.attention]
+157  Reduce.sum        A_2.sum[B,H,q] = sum_k(A_2.exp[B,H,q,k])
+                       [transformer.blocks.2.attention]
+158  Elementwise.div   A_2[B,H,q,k] = A_2.exp[B,H,q,k] / A_2.sum[B,H,q]
+                       [transformer.blocks.2.attention]
+159  Contraction       C_2[B,H,q,Dh] = A_2[B,H,q,k] · V_2[B,H,k,Dh]   (Σ k)
+                       [transformer.blocks.2.attention]
+160  Rename            C_2.rename[B,H,T,Dh] = rename(C_2[B,H,q,Dh], q→T)
+                       [transformer.blocks.2.attention]
+161  Permute           C_2.perm[B,T,H,Dh] = permute(C_2.rename[B,H,T,Dh])
+                       [transformer.blocks.2.attention]
+162  Reshape           C_2.merged[B,T,Dc] = reshape(C_2.perm[B,T,H,Dh])
+                       [transformer.blocks.2.attention]
+163  Contraction       O_2.mm[B,T,D] = C_2.merged[B,T,Dc] · W_o_2[Dc,D]   (Σ Dc)
+                       [transformer.blocks.2.attention.output_projection]
+164  Elementwise.add   O_2[B,T,D] = O_2.mm[B,T,D] + b_o_2[D]
+                       [transformer.blocks.2.attention.output_projection]
+165  Elementwise.add   Xm_2[B,T,D] = X_2[B,T,D] + O_2[B,T,D]
+                       [transformer.blocks.2]
+166  Reduce.mean       N2_2.mean[B,T] = mean_D(Xm_2[B,T,D])
+                       [transformer.blocks.2.ln_2]
+167  Elementwise.sub   N2_2.centered[B,T,D] = Xm_2[B,T,D] - N2_2.mean[B,T]
+                       [transformer.blocks.2.ln_2]
+168  Elementwise.mul   N2_2.squared[B,T,D] = N2_2.centered[B,T,D] × N2_2.centered[B,T,D]
+                       [transformer.blocks.2.ln_2]
+169  Reduce.mean       N2_2.var[B,T] = mean_D(N2_2.squared[B,T,D])
+                       [transformer.blocks.2.ln_2]
+170  Elementwise.add   N2_2.var_eps[B,T] = N2_2.var[B,T] + c_eps
+                       [transformer.blocks.2.ln_2]
+171  Elementwise.rsqrt N2_2.rstd[B,T] = rsqrt(N2_2.var_eps[B,T])
+                       [transformer.blocks.2.ln_2]
+172  Elementwise.mul   N2_2.normalized[B,T,D] = N2_2.centered[B,T,D] × N2_2.rstd[B,T]
+                       [transformer.blocks.2.ln_2]
+173  Elementwise.mul   N2_2.scaled[B,T,D] = N2_2.normalized[B,T,D] × g2_2[D]
+                       [transformer.blocks.2.ln_2]
+174  Elementwise.add   N2_2[B,T,D] = N2_2.scaled[B,T,D] + b2_2[D]
+                       [transformer.blocks.2.ln_2]
+175  Contraction       G_2.mm[B,T,F] = N2_2[B,T,D] · W_fc_2[D,F]   (Σ D)
+                       [transformer.blocks.2.mlp.fc]
+176  Elementwise.add   G_2[B,T,F] = G_2.mm[B,T,F] + b_fc_2[F]
+                       [transformer.blocks.2.mlp.fc]
+177  Elementwise.mul   Ga_2.squared[B,T,F] = G_2[B,T,F] × G_2[B,T,F]
+                       [transformer.blocks.2.mlp.activation]
+178  Elementwise.mul   Ga_2.cubic[B,T,F] = Ga_2.squared[B,T,F] × G_2[B,T,F]
+                       [transformer.blocks.2.mlp.activation]
+179  Elementwise.mul   Ga_2.cubic_a[B,T,F] = Ga_2.cubic[B,T,F] × c_gelu_a
+                       [transformer.blocks.2.mlp.activation]
+180  Elementwise.add   Ga_2.inner_sum[B,T,F] = G_2[B,T,F] + Ga_2.cubic_a[B,T,F]
+                       [transformer.blocks.2.mlp.activation]
+181  Elementwise.mul   Ga_2.inner[B,T,F] = Ga_2.inner_sum[B,T,F] × c_gelu_b
+                       [transformer.blocks.2.mlp.activation]
+182  Elementwise.tanh  Ga_2.tanh[B,T,F] = tanh(Ga_2.inner[B,T,F])
+                       [transformer.blocks.2.mlp.activation]
+183  Elementwise.add   Ga_2.one_plus[B,T,F] = Ga_2.tanh[B,T,F] + c_one
+                       [transformer.blocks.2.mlp.activation]
+184  Elementwise.mul   Ga_2.half_x[B,T,F] = G_2[B,T,F] × c_half
+                       [transformer.blocks.2.mlp.activation]
+185  Elementwise.mul   Ga_2[B,T,F] = Ga_2.half_x[B,T,F] × Ga_2.one_plus[B,T,F]
+                       [transformer.blocks.2.mlp.activation]
+186  Contraction       M_2.mm[B,T,D] = Ga_2[B,T,F] · W_pr_2[F,D]   (Σ F)
+                       [transformer.blocks.2.mlp.projection]
+187  Elementwise.add   M_2[B,T,D] = M_2.mm[B,T,D] + b_pr_2[D]
+                       [transformer.blocks.2.mlp.projection]
+188  Elementwise.add   X_3[B,T,D] = Xm_2[B,T,D] + M_2[B,T,D]
+                       [transformer.blocks.2]
+189  Reduce.mean       N1_3.mean[B,T] = mean_D(X_3[B,T,D])
+                       [transformer.blocks.3.ln_1]
+190  Elementwise.sub   N1_3.centered[B,T,D] = X_3[B,T,D] - N1_3.mean[B,T]
+                       [transformer.blocks.3.ln_1]
+191  Elementwise.mul   N1_3.squared[B,T,D] = N1_3.centered[B,T,D] × N1_3.centered[B,T,D]
+                       [transformer.blocks.3.ln_1]
+192  Reduce.mean       N1_3.var[B,T] = mean_D(N1_3.squared[B,T,D])
+                       [transformer.blocks.3.ln_1]
+193  Elementwise.add   N1_3.var_eps[B,T] = N1_3.var[B,T] + c_eps
+                       [transformer.blocks.3.ln_1]
+194  Elementwise.rsqrt N1_3.rstd[B,T] = rsqrt(N1_3.var_eps[B,T])
+                       [transformer.blocks.3.ln_1]
+195  Elementwise.mul   N1_3.normalized[B,T,D] = N1_3.centered[B,T,D] × N1_3.rstd[B,T]
+                       [transformer.blocks.3.ln_1]
+196  Elementwise.mul   N1_3.scaled[B,T,D] = N1_3.normalized[B,T,D] × g1_3[D]
+                       [transformer.blocks.3.ln_1]
+197  Elementwise.add   N1_3[B,T,D] = N1_3.scaled[B,T,D] + b1_3[D]
+                       [transformer.blocks.3.ln_1]
+198  Contraction       Hq_3.mm[B,T,QKV] = N1_3[B,T,D] · W_qkv_3[D,QKV]   (Σ D)
+                       [transformer.blocks.3.attention.qkv_projection]
+199  Elementwise.add   Hq_3[B,T,QKV] = Hq_3.mm[B,T,QKV] + b_qkv_3[QKV]
+                       [transformer.blocks.3.attention.qkv_projection]
+200  Slice             Q_3.slice[B,T,Dc] = Hq_3[QKV 0:768]
+                       [transformer.blocks.3.attention]
+201  Reshape           Q_3.heads[B,T,H,Dh] = reshape(Q_3.slice[B,T,Dc])
+                       [transformer.blocks.3.attention]
+202  Permute           Q_3.perm[B,H,T,Dh] = permute(Q_3.heads[B,T,H,Dh])
+                       [transformer.blocks.3.attention]
+203  Rename            Q_3[B,H,q,Dh] = rename(Q_3.perm[B,H,T,Dh], T→q)
+                       [transformer.blocks.3.attention]
+204  Slice             K_3.slice[B,T,Dc] = Hq_3[QKV 768:1536]
+                       [transformer.blocks.3.attention]
+205  Reshape           K_3.heads[B,T,H,Dh] = reshape(K_3.slice[B,T,Dc])
+                       [transformer.blocks.3.attention]
+206  Permute           K_3.perm[B,H,T,Dh] = permute(K_3.heads[B,T,H,Dh])
+                       [transformer.blocks.3.attention]
+207  Rename            K_3[B,H,k,Dh] = rename(K_3.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.3.attention]
+208  Slice             V_3.slice[B,T,Dc] = Hq_3[QKV 1536:2304]
+                       [transformer.blocks.3.attention]
+209  Reshape           V_3.heads[B,T,H,Dh] = reshape(V_3.slice[B,T,Dc])
+                       [transformer.blocks.3.attention]
+210  Permute           V_3.perm[B,H,T,Dh] = permute(V_3.heads[B,T,H,Dh])
+                       [transformer.blocks.3.attention]
+211  Rename            V_3[B,H,k,Dh] = rename(V_3.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.3.attention]
+212  Contraction       S_3.qk[B,H,q,k] = Q_3[B,H,q,Dh] · K_3[B,H,k,Dh]   (Σ Dh)
+                       [transformer.blocks.3.attention]
+213  Elementwise.div   S_3[B,H,q,k] = S_3.qk[B,H,q,k] / c_sqrt_dh
+                       [transformer.blocks.3.attention]
+214  Elementwise.log   Mb_3.log[q,k] = log(Mb_3[q,k])
+                       [transformer.blocks.3.attention]
+215  Elementwise.add   S_3.masked[B,H,q,k] = S_3[B,H,q,k] + Mb_3.log[q,k]
+                       [transformer.blocks.3.attention]
+216  Reduce.max        A_3.max[B,H,q] = max_k(S_3.masked[B,H,q,k])
+                       [transformer.blocks.3.attention]
+217  Elementwise.sub   A_3.shifted[B,H,q,k] = S_3.masked[B,H,q,k] - A_3.max[B,H,q]
+                       [transformer.blocks.3.attention]
+218  Elementwise.exp   A_3.exp[B,H,q,k] = exp(A_3.shifted[B,H,q,k])
+                       [transformer.blocks.3.attention]
+219  Reduce.sum        A_3.sum[B,H,q] = sum_k(A_3.exp[B,H,q,k])
+                       [transformer.blocks.3.attention]
+220  Elementwise.div   A_3[B,H,q,k] = A_3.exp[B,H,q,k] / A_3.sum[B,H,q]
+                       [transformer.blocks.3.attention]
+221  Contraction       C_3[B,H,q,Dh] = A_3[B,H,q,k] · V_3[B,H,k,Dh]   (Σ k)
+                       [transformer.blocks.3.attention]
+222  Rename            C_3.rename[B,H,T,Dh] = rename(C_3[B,H,q,Dh], q→T)
+                       [transformer.blocks.3.attention]
+223  Permute           C_3.perm[B,T,H,Dh] = permute(C_3.rename[B,H,T,Dh])
+                       [transformer.blocks.3.attention]
+224  Reshape           C_3.merged[B,T,Dc] = reshape(C_3.perm[B,T,H,Dh])
+                       [transformer.blocks.3.attention]
+225  Contraction       O_3.mm[B,T,D] = C_3.merged[B,T,Dc] · W_o_3[Dc,D]   (Σ Dc)
+                       [transformer.blocks.3.attention.output_projection]
+226  Elementwise.add   O_3[B,T,D] = O_3.mm[B,T,D] + b_o_3[D]
+                       [transformer.blocks.3.attention.output_projection]
+227  Elementwise.add   Xm_3[B,T,D] = X_3[B,T,D] + O_3[B,T,D]
+                       [transformer.blocks.3]
+228  Reduce.mean       N2_3.mean[B,T] = mean_D(Xm_3[B,T,D])
+                       [transformer.blocks.3.ln_2]
+229  Elementwise.sub   N2_3.centered[B,T,D] = Xm_3[B,T,D] - N2_3.mean[B,T]
+                       [transformer.blocks.3.ln_2]
+230  Elementwise.mul   N2_3.squared[B,T,D] = N2_3.centered[B,T,D] × N2_3.centered[B,T,D]
+                       [transformer.blocks.3.ln_2]
+231  Reduce.mean       N2_3.var[B,T] = mean_D(N2_3.squared[B,T,D])
+                       [transformer.blocks.3.ln_2]
+232  Elementwise.add   N2_3.var_eps[B,T] = N2_3.var[B,T] + c_eps
+                       [transformer.blocks.3.ln_2]
+233  Elementwise.rsqrt N2_3.rstd[B,T] = rsqrt(N2_3.var_eps[B,T])
+                       [transformer.blocks.3.ln_2]
+234  Elementwise.mul   N2_3.normalized[B,T,D] = N2_3.centered[B,T,D] × N2_3.rstd[B,T]
+                       [transformer.blocks.3.ln_2]
+235  Elementwise.mul   N2_3.scaled[B,T,D] = N2_3.normalized[B,T,D] × g2_3[D]
+                       [transformer.blocks.3.ln_2]
+236  Elementwise.add   N2_3[B,T,D] = N2_3.scaled[B,T,D] + b2_3[D]
+                       [transformer.blocks.3.ln_2]
+237  Contraction       G_3.mm[B,T,F] = N2_3[B,T,D] · W_fc_3[D,F]   (Σ D)
+                       [transformer.blocks.3.mlp.fc]
+238  Elementwise.add   G_3[B,T,F] = G_3.mm[B,T,F] + b_fc_3[F]
+                       [transformer.blocks.3.mlp.fc]
+239  Elementwise.mul   Ga_3.squared[B,T,F] = G_3[B,T,F] × G_3[B,T,F]
+                       [transformer.blocks.3.mlp.activation]
+240  Elementwise.mul   Ga_3.cubic[B,T,F] = Ga_3.squared[B,T,F] × G_3[B,T,F]
+                       [transformer.blocks.3.mlp.activation]
+241  Elementwise.mul   Ga_3.cubic_a[B,T,F] = Ga_3.cubic[B,T,F] × c_gelu_a
+                       [transformer.blocks.3.mlp.activation]
+242  Elementwise.add   Ga_3.inner_sum[B,T,F] = G_3[B,T,F] + Ga_3.cubic_a[B,T,F]
+                       [transformer.blocks.3.mlp.activation]
+243  Elementwise.mul   Ga_3.inner[B,T,F] = Ga_3.inner_sum[B,T,F] × c_gelu_b
+                       [transformer.blocks.3.mlp.activation]
+244  Elementwise.tanh  Ga_3.tanh[B,T,F] = tanh(Ga_3.inner[B,T,F])
+                       [transformer.blocks.3.mlp.activation]
+245  Elementwise.add   Ga_3.one_plus[B,T,F] = Ga_3.tanh[B,T,F] + c_one
+                       [transformer.blocks.3.mlp.activation]
+246  Elementwise.mul   Ga_3.half_x[B,T,F] = G_3[B,T,F] × c_half
+                       [transformer.blocks.3.mlp.activation]
+247  Elementwise.mul   Ga_3[B,T,F] = Ga_3.half_x[B,T,F] × Ga_3.one_plus[B,T,F]
+                       [transformer.blocks.3.mlp.activation]
+248  Contraction       M_3.mm[B,T,D] = Ga_3[B,T,F] · W_pr_3[F,D]   (Σ F)
+                       [transformer.blocks.3.mlp.projection]
+249  Elementwise.add   M_3[B,T,D] = M_3.mm[B,T,D] + b_pr_3[D]
+                       [transformer.blocks.3.mlp.projection]
+250  Elementwise.add   X_4[B,T,D] = Xm_3[B,T,D] + M_3[B,T,D]
+                       [transformer.blocks.3]
+251  Reduce.mean       N1_4.mean[B,T] = mean_D(X_4[B,T,D])
+                       [transformer.blocks.4.ln_1]
+252  Elementwise.sub   N1_4.centered[B,T,D] = X_4[B,T,D] - N1_4.mean[B,T]
+                       [transformer.blocks.4.ln_1]
+253  Elementwise.mul   N1_4.squared[B,T,D] = N1_4.centered[B,T,D] × N1_4.centered[B,T,D]
+                       [transformer.blocks.4.ln_1]
+254  Reduce.mean       N1_4.var[B,T] = mean_D(N1_4.squared[B,T,D])
+                       [transformer.blocks.4.ln_1]
+255  Elementwise.add   N1_4.var_eps[B,T] = N1_4.var[B,T] + c_eps
+                       [transformer.blocks.4.ln_1]
+256  Elementwise.rsqrt N1_4.rstd[B,T] = rsqrt(N1_4.var_eps[B,T])
+                       [transformer.blocks.4.ln_1]
+257  Elementwise.mul   N1_4.normalized[B,T,D] = N1_4.centered[B,T,D] × N1_4.rstd[B,T]
+                       [transformer.blocks.4.ln_1]
+258  Elementwise.mul   N1_4.scaled[B,T,D] = N1_4.normalized[B,T,D] × g1_4[D]
+                       [transformer.blocks.4.ln_1]
+259  Elementwise.add   N1_4[B,T,D] = N1_4.scaled[B,T,D] + b1_4[D]
+                       [transformer.blocks.4.ln_1]
+260  Contraction       Hq_4.mm[B,T,QKV] = N1_4[B,T,D] · W_qkv_4[D,QKV]   (Σ D)
+                       [transformer.blocks.4.attention.qkv_projection]
+261  Elementwise.add   Hq_4[B,T,QKV] = Hq_4.mm[B,T,QKV] + b_qkv_4[QKV]
+                       [transformer.blocks.4.attention.qkv_projection]
+262  Slice             Q_4.slice[B,T,Dc] = Hq_4[QKV 0:768]
+                       [transformer.blocks.4.attention]
+263  Reshape           Q_4.heads[B,T,H,Dh] = reshape(Q_4.slice[B,T,Dc])
+                       [transformer.blocks.4.attention]
+264  Permute           Q_4.perm[B,H,T,Dh] = permute(Q_4.heads[B,T,H,Dh])
+                       [transformer.blocks.4.attention]
+265  Rename            Q_4[B,H,q,Dh] = rename(Q_4.perm[B,H,T,Dh], T→q)
+                       [transformer.blocks.4.attention]
+266  Slice             K_4.slice[B,T,Dc] = Hq_4[QKV 768:1536]
+                       [transformer.blocks.4.attention]
+267  Reshape           K_4.heads[B,T,H,Dh] = reshape(K_4.slice[B,T,Dc])
+                       [transformer.blocks.4.attention]
+268  Permute           K_4.perm[B,H,T,Dh] = permute(K_4.heads[B,T,H,Dh])
+                       [transformer.blocks.4.attention]
+269  Rename            K_4[B,H,k,Dh] = rename(K_4.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.4.attention]
+270  Slice             V_4.slice[B,T,Dc] = Hq_4[QKV 1536:2304]
+                       [transformer.blocks.4.attention]
+271  Reshape           V_4.heads[B,T,H,Dh] = reshape(V_4.slice[B,T,Dc])
+                       [transformer.blocks.4.attention]
+272  Permute           V_4.perm[B,H,T,Dh] = permute(V_4.heads[B,T,H,Dh])
+                       [transformer.blocks.4.attention]
+273  Rename            V_4[B,H,k,Dh] = rename(V_4.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.4.attention]
+274  Contraction       S_4.qk[B,H,q,k] = Q_4[B,H,q,Dh] · K_4[B,H,k,Dh]   (Σ Dh)
+                       [transformer.blocks.4.attention]
+275  Elementwise.div   S_4[B,H,q,k] = S_4.qk[B,H,q,k] / c_sqrt_dh
+                       [transformer.blocks.4.attention]
+276  Elementwise.log   Mb_4.log[q,k] = log(Mb_4[q,k])
+                       [transformer.blocks.4.attention]
+277  Elementwise.add   S_4.masked[B,H,q,k] = S_4[B,H,q,k] + Mb_4.log[q,k]
+                       [transformer.blocks.4.attention]
+278  Reduce.max        A_4.max[B,H,q] = max_k(S_4.masked[B,H,q,k])
+                       [transformer.blocks.4.attention]
+279  Elementwise.sub   A_4.shifted[B,H,q,k] = S_4.masked[B,H,q,k] - A_4.max[B,H,q]
+                       [transformer.blocks.4.attention]
+280  Elementwise.exp   A_4.exp[B,H,q,k] = exp(A_4.shifted[B,H,q,k])
+                       [transformer.blocks.4.attention]
+281  Reduce.sum        A_4.sum[B,H,q] = sum_k(A_4.exp[B,H,q,k])
+                       [transformer.blocks.4.attention]
+282  Elementwise.div   A_4[B,H,q,k] = A_4.exp[B,H,q,k] / A_4.sum[B,H,q]
+                       [transformer.blocks.4.attention]
+283  Contraction       C_4[B,H,q,Dh] = A_4[B,H,q,k] · V_4[B,H,k,Dh]   (Σ k)
+                       [transformer.blocks.4.attention]
+284  Rename            C_4.rename[B,H,T,Dh] = rename(C_4[B,H,q,Dh], q→T)
+                       [transformer.blocks.4.attention]
+285  Permute           C_4.perm[B,T,H,Dh] = permute(C_4.rename[B,H,T,Dh])
+                       [transformer.blocks.4.attention]
+286  Reshape           C_4.merged[B,T,Dc] = reshape(C_4.perm[B,T,H,Dh])
+                       [transformer.blocks.4.attention]
+287  Contraction       O_4.mm[B,T,D] = C_4.merged[B,T,Dc] · W_o_4[Dc,D]   (Σ Dc)
+                       [transformer.blocks.4.attention.output_projection]
+288  Elementwise.add   O_4[B,T,D] = O_4.mm[B,T,D] + b_o_4[D]
+                       [transformer.blocks.4.attention.output_projection]
+289  Elementwise.add   Xm_4[B,T,D] = X_4[B,T,D] + O_4[B,T,D]
+                       [transformer.blocks.4]
+290  Reduce.mean       N2_4.mean[B,T] = mean_D(Xm_4[B,T,D])
+                       [transformer.blocks.4.ln_2]
+291  Elementwise.sub   N2_4.centered[B,T,D] = Xm_4[B,T,D] - N2_4.mean[B,T]
+                       [transformer.blocks.4.ln_2]
+292  Elementwise.mul   N2_4.squared[B,T,D] = N2_4.centered[B,T,D] × N2_4.centered[B,T,D]
+                       [transformer.blocks.4.ln_2]
+293  Reduce.mean       N2_4.var[B,T] = mean_D(N2_4.squared[B,T,D])
+                       [transformer.blocks.4.ln_2]
+294  Elementwise.add   N2_4.var_eps[B,T] = N2_4.var[B,T] + c_eps
+                       [transformer.blocks.4.ln_2]
+295  Elementwise.rsqrt N2_4.rstd[B,T] = rsqrt(N2_4.var_eps[B,T])
+                       [transformer.blocks.4.ln_2]
+296  Elementwise.mul   N2_4.normalized[B,T,D] = N2_4.centered[B,T,D] × N2_4.rstd[B,T]
+                       [transformer.blocks.4.ln_2]
+297  Elementwise.mul   N2_4.scaled[B,T,D] = N2_4.normalized[B,T,D] × g2_4[D]
+                       [transformer.blocks.4.ln_2]
+298  Elementwise.add   N2_4[B,T,D] = N2_4.scaled[B,T,D] + b2_4[D]
+                       [transformer.blocks.4.ln_2]
+299  Contraction       G_4.mm[B,T,F] = N2_4[B,T,D] · W_fc_4[D,F]   (Σ D)
+                       [transformer.blocks.4.mlp.fc]
+300  Elementwise.add   G_4[B,T,F] = G_4.mm[B,T,F] + b_fc_4[F]
+                       [transformer.blocks.4.mlp.fc]
+301  Elementwise.mul   Ga_4.squared[B,T,F] = G_4[B,T,F] × G_4[B,T,F]
+                       [transformer.blocks.4.mlp.activation]
+302  Elementwise.mul   Ga_4.cubic[B,T,F] = Ga_4.squared[B,T,F] × G_4[B,T,F]
+                       [transformer.blocks.4.mlp.activation]
+303  Elementwise.mul   Ga_4.cubic_a[B,T,F] = Ga_4.cubic[B,T,F] × c_gelu_a
+                       [transformer.blocks.4.mlp.activation]
+304  Elementwise.add   Ga_4.inner_sum[B,T,F] = G_4[B,T,F] + Ga_4.cubic_a[B,T,F]
+                       [transformer.blocks.4.mlp.activation]
+305  Elementwise.mul   Ga_4.inner[B,T,F] = Ga_4.inner_sum[B,T,F] × c_gelu_b
+                       [transformer.blocks.4.mlp.activation]
+306  Elementwise.tanh  Ga_4.tanh[B,T,F] = tanh(Ga_4.inner[B,T,F])
+                       [transformer.blocks.4.mlp.activation]
+307  Elementwise.add   Ga_4.one_plus[B,T,F] = Ga_4.tanh[B,T,F] + c_one
+                       [transformer.blocks.4.mlp.activation]
+308  Elementwise.mul   Ga_4.half_x[B,T,F] = G_4[B,T,F] × c_half
+                       [transformer.blocks.4.mlp.activation]
+309  Elementwise.mul   Ga_4[B,T,F] = Ga_4.half_x[B,T,F] × Ga_4.one_plus[B,T,F]
+                       [transformer.blocks.4.mlp.activation]
+310  Contraction       M_4.mm[B,T,D] = Ga_4[B,T,F] · W_pr_4[F,D]   (Σ F)
+                       [transformer.blocks.4.mlp.projection]
+311  Elementwise.add   M_4[B,T,D] = M_4.mm[B,T,D] + b_pr_4[D]
+                       [transformer.blocks.4.mlp.projection]
+312  Elementwise.add   X_5[B,T,D] = Xm_4[B,T,D] + M_4[B,T,D]
+                       [transformer.blocks.4]
+313  Reduce.mean       N1_5.mean[B,T] = mean_D(X_5[B,T,D])
+                       [transformer.blocks.5.ln_1]
+314  Elementwise.sub   N1_5.centered[B,T,D] = X_5[B,T,D] - N1_5.mean[B,T]
+                       [transformer.blocks.5.ln_1]
+315  Elementwise.mul   N1_5.squared[B,T,D] = N1_5.centered[B,T,D] × N1_5.centered[B,T,D]
+                       [transformer.blocks.5.ln_1]
+316  Reduce.mean       N1_5.var[B,T] = mean_D(N1_5.squared[B,T,D])
+                       [transformer.blocks.5.ln_1]
+317  Elementwise.add   N1_5.var_eps[B,T] = N1_5.var[B,T] + c_eps
+                       [transformer.blocks.5.ln_1]
+318  Elementwise.rsqrt N1_5.rstd[B,T] = rsqrt(N1_5.var_eps[B,T])
+                       [transformer.blocks.5.ln_1]
+319  Elementwise.mul   N1_5.normalized[B,T,D] = N1_5.centered[B,T,D] × N1_5.rstd[B,T]
+                       [transformer.blocks.5.ln_1]
+320  Elementwise.mul   N1_5.scaled[B,T,D] = N1_5.normalized[B,T,D] × g1_5[D]
+                       [transformer.blocks.5.ln_1]
+321  Elementwise.add   N1_5[B,T,D] = N1_5.scaled[B,T,D] + b1_5[D]
+                       [transformer.blocks.5.ln_1]
+322  Contraction       Hq_5.mm[B,T,QKV] = N1_5[B,T,D] · W_qkv_5[D,QKV]   (Σ D)
+                       [transformer.blocks.5.attention.qkv_projection]
+323  Elementwise.add   Hq_5[B,T,QKV] = Hq_5.mm[B,T,QKV] + b_qkv_5[QKV]
+                       [transformer.blocks.5.attention.qkv_projection]
+324  Slice             Q_5.slice[B,T,Dc] = Hq_5[QKV 0:768]
+                       [transformer.blocks.5.attention]
+325  Reshape           Q_5.heads[B,T,H,Dh] = reshape(Q_5.slice[B,T,Dc])
+                       [transformer.blocks.5.attention]
+326  Permute           Q_5.perm[B,H,T,Dh] = permute(Q_5.heads[B,T,H,Dh])
+                       [transformer.blocks.5.attention]
+327  Rename            Q_5[B,H,q,Dh] = rename(Q_5.perm[B,H,T,Dh], T→q)
+                       [transformer.blocks.5.attention]
+328  Slice             K_5.slice[B,T,Dc] = Hq_5[QKV 768:1536]
+                       [transformer.blocks.5.attention]
+329  Reshape           K_5.heads[B,T,H,Dh] = reshape(K_5.slice[B,T,Dc])
+                       [transformer.blocks.5.attention]
+330  Permute           K_5.perm[B,H,T,Dh] = permute(K_5.heads[B,T,H,Dh])
+                       [transformer.blocks.5.attention]
+331  Rename            K_5[B,H,k,Dh] = rename(K_5.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.5.attention]
+332  Slice             V_5.slice[B,T,Dc] = Hq_5[QKV 1536:2304]
+                       [transformer.blocks.5.attention]
+333  Reshape           V_5.heads[B,T,H,Dh] = reshape(V_5.slice[B,T,Dc])
+                       [transformer.blocks.5.attention]
+334  Permute           V_5.perm[B,H,T,Dh] = permute(V_5.heads[B,T,H,Dh])
+                       [transformer.blocks.5.attention]
+335  Rename            V_5[B,H,k,Dh] = rename(V_5.perm[B,H,T,Dh], T→k)
+                       [transformer.blocks.5.attention]
+336  Contraction       S_5.qk[B,H,q,k] = Q_5[B,H,q,Dh] · K_5[B,H,k,Dh]   (Σ Dh)
+                       [transformer.blocks.5.attention]
+337  Elementwise.div   S_5[B,H,q,k] = S_5.qk[B,H,q,k] / c_sqrt_dh
+                       [transformer.blocks.5.attention]
+338  Elementwise.log   Mb_5.log[q,k] = log(Mb_5[q,k])
+                       [transformer.blocks.5.attention]
+339  Elementwise.add   S_5.masked[B,H,q,k] = S_5[B,H,q,k] + Mb_5.log[q,k]
+                       [transformer.blocks.5.attention]
+340  Reduce.max        A_5.max[B,H,q] = max_k(S_5.masked[B,H,q,k])
+                       [transformer.blocks.5.attention]
+341  Elementwise.sub   A_5.shifted[B,H,q,k] = S_5.masked[B,H,q,k] - A_5.max[B,H,q]
+                       [transformer.blocks.5.attention]
+342  Elementwise.exp   A_5.exp[B,H,q,k] = exp(A_5.shifted[B,H,q,k])
+                       [transformer.blocks.5.attention]
+343  Reduce.sum        A_5.sum[B,H,q] = sum_k(A_5.exp[B,H,q,k])
+                       [transformer.blocks.5.attention]
+344  Elementwise.div   A_5[B,H,q,k] = A_5.exp[B,H,q,k] / A_5.sum[B,H,q]
+                       [transformer.blocks.5.attention]
+345  Contraction       C_5[B,H,q,Dh] = A_5[B,H,q,k] · V_5[B,H,k,Dh]   (Σ k)
+                       [transformer.blocks.5.attention]
+346  Rename            C_5.rename[B,H,T,Dh] = rename(C_5[B,H,q,Dh], q→T)
+                       [transformer.blocks.5.attention]
+347  Permute           C_5.perm[B,T,H,Dh] = permute(C_5.rename[B,H,T,Dh])
+                       [transformer.blocks.5.attention]
+348  Reshape           C_5.merged[B,T,Dc] = reshape(C_5.perm[B,T,H,Dh])
+                       [transformer.blocks.5.attention]
+349  Contraction       O_5.mm[B,T,D] = C_5.merged[B,T,Dc] · W_o_5[Dc,D]   (Σ Dc)
+                       [transformer.blocks.5.attention.output_projection]
+350  Elementwise.add   O_5[B,T,D] = O_5.mm[B,T,D] + b_o_5[D]
+                       [transformer.blocks.5.attention.output_projection]
+351  Elementwise.add   Xm_5[B,T,D] = X_5[B,T,D] + O_5[B,T,D]
+                       [transformer.blocks.5]
+352  Reduce.mean       N2_5.mean[B,T] = mean_D(Xm_5[B,T,D])
+                       [transformer.blocks.5.ln_2]
+353  Elementwise.sub   N2_5.centered[B,T,D] = Xm_5[B,T,D] - N2_5.mean[B,T]
+                       [transformer.blocks.5.ln_2]
+354  Elementwise.mul   N2_5.squared[B,T,D] = N2_5.centered[B,T,D] × N2_5.centered[B,T,D]
+                       [transformer.blocks.5.ln_2]
+355  Reduce.mean       N2_5.var[B,T] = mean_D(N2_5.squared[B,T,D])
+                       [transformer.blocks.5.ln_2]
+356  Elementwise.add   N2_5.var_eps[B,T] = N2_5.var[B,T] + c_eps
+                       [transformer.blocks.5.ln_2]
+357  Elementwise.rsqrt N2_5.rstd[B,T] = rsqrt(N2_5.var_eps[B,T])
+                       [transformer.blocks.5.ln_2]
+358  Elementwise.mul   N2_5.normalized[B,T,D] = N2_5.centered[B,T,D] × N2_5.rstd[B,T]
+                       [transformer.blocks.5.ln_2]
+359  Elementwise.mul   N2_5.scaled[B,T,D] = N2_5.normalized[B,T,D] × g2_5[D]
+                       [transformer.blocks.5.ln_2]
+360  Elementwise.add   N2_5[B,T,D] = N2_5.scaled[B,T,D] + b2_5[D]
+                       [transformer.blocks.5.ln_2]
+361  Contraction       G_5.mm[B,T,F] = N2_5[B,T,D] · W_fc_5[D,F]   (Σ D)
+                       [transformer.blocks.5.mlp.fc]
+362  Elementwise.add   G_5[B,T,F] = G_5.mm[B,T,F] + b_fc_5[F]
+                       [transformer.blocks.5.mlp.fc]
+363  Elementwise.mul   Ga_5.squared[B,T,F] = G_5[B,T,F] × G_5[B,T,F]
+                       [transformer.blocks.5.mlp.activation]
+364  Elementwise.mul   Ga_5.cubic[B,T,F] = Ga_5.squared[B,T,F] × G_5[B,T,F]
+                       [transformer.blocks.5.mlp.activation]
+365  Elementwise.mul   Ga_5.cubic_a[B,T,F] = Ga_5.cubic[B,T,F] × c_gelu_a
+                       [transformer.blocks.5.mlp.activation]
+366  Elementwise.add   Ga_5.inner_sum[B,T,F] = G_5[B,T,F] + Ga_5.cubic_a[B,T,F]
+                       [transformer.blocks.5.mlp.activation]
+367  Elementwise.mul   Ga_5.inner[B,T,F] = Ga_5.inner_sum[B,T,F] × c_gelu_b
+                       [transformer.blocks.5.mlp.activation]
+368  Elementwise.tanh  Ga_5.tanh[B,T,F] = tanh(Ga_5.inner[B,T,F])
+                       [transformer.blocks.5.mlp.activation]
+369  Elementwise.add   Ga_5.one_plus[B,T,F] = Ga_5.tanh[B,T,F] + c_one
+                       [transformer.blocks.5.mlp.activation]
+370  Elementwise.mul   Ga_5.half_x[B,T,F] = G_5[B,T,F] × c_half
+                       [transformer.blocks.5.mlp.activation]
+371  Elementwise.mul   Ga_5[B,T,F] = Ga_5.half_x[B,T,F] × Ga_5.one_plus[B,T,F]
+                       [transformer.blocks.5.mlp.activation]
+372  Contraction       M_5.mm[B,T,D] = Ga_5[B,T,F] · W_pr_5[F,D]   (Σ F)
+                       [transformer.blocks.5.mlp.projection]
+373  Elementwise.add   M_5[B,T,D] = M_5.mm[B,T,D] + b_pr_5[D]
+                       [transformer.blocks.5.mlp.projection]
+374  Elementwise.add   X_6[B,T,D] = Xm_5[B,T,D] + M_5[B,T,D]
+                       [transformer.blocks.5]
+375  Reduce.mean       Xf.mean[B,T] = mean_D(X_6[B,T,D])
+                       [transformer.final_layer_norm]
+376  Elementwise.sub   Xf.centered[B,T,D] = X_6[B,T,D] - Xf.mean[B,T]
+                       [transformer.final_layer_norm]
+377  Elementwise.mul   Xf.squared[B,T,D] = Xf.centered[B,T,D] × Xf.centered[B,T,D]
+                       [transformer.final_layer_norm]
+378  Reduce.mean       Xf.var[B,T] = mean_D(Xf.squared[B,T,D])
+                       [transformer.final_layer_norm]
+379  Elementwise.add   Xf.var_eps[B,T] = Xf.var[B,T] + c_eps
+                       [transformer.final_layer_norm]
+380  Elementwise.rsqrt Xf.rstd[B,T] = rsqrt(Xf.var_eps[B,T])
+                       [transformer.final_layer_norm]
+381  Elementwise.mul   Xf.normalized[B,T,D] = Xf.centered[B,T,D] × Xf.rstd[B,T]
+                       [transformer.final_layer_norm]
+382  Elementwise.mul   Xf.scaled[B,T,D] = Xf.normalized[B,T,D] × gf[D]
+                       [transformer.final_layer_norm]
+383  Elementwise.add   Xf[B,T,D] = Xf.scaled[B,T,D] + bf[D]
+                       [transformer.final_layer_norm]
+384  Contraction       L[B,T,V] = Xf[B,T,D] · E[V,D]   (Σ D)
+                       [lm_head]

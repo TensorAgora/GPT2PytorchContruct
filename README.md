@@ -23,6 +23,7 @@ source .venv/bin/activate                                      # the commands be
 python -m tools.inspect_checkpoint        # keys, shapes, tying, inferred architecture, tree  (--full: all blocks)
 python -m tools.print_model               # module tree + parameter counts + logical/unique accounting
 python -m tools.tensor_inventory          # every parameter/buffer -> artifacts/tensor_inventory.{json,csv}
+python -m tools.tensor_program            # every layer as tensor operations (all operands tensors) -> artifacts/tensor_program.{md,json,txt}, tensor_multiplications.csv
 python -m examples.forward_fixed          # one deterministic forward, all intermediate shapes + logits stats
 python -m examples.dataloader_forward     # Dataset -> DataLoader -> batch -> model -> logits
 python -m examples.inspect_attention      # Q/K/V, scores, mask, probabilities of one block
@@ -37,7 +38,10 @@ python -m tools.convert_to_safetensors    # weights/pytorch_model.bin -> artifac
 python -m tools.inspect_safetensors       # header-only inspection (names, shapes, dtypes, offsets)
 python -m reference.compare_huggingface --check-gelu-variants   # optional parity vs transformers
 pytest
+python -m tools.run_pipeline         # everything above, in order -> artifacts/pipeline_report.md (logs in artifacts/logs/)
 ```
+
+Next steps with TEL (Tensor Expression Language): [`docs/TEL_NEXT_STEPS.md`](docs/TEL_NEXT_STEPS.md).
 
 Every example/tool takes `--checkpoint` (`.bin` or `.safetensors`) and, where a model is loaded, `--device cpu|cuda|mps`. CPU is the default and what the tests use; the model-loading examples and tools were also run once on Apple `mps` (logits agree with CPU to ~3e-5). `cuda` is untested.
 
@@ -133,6 +137,12 @@ loaded 76 (of which transposed 24), tied 1, ignored 6, missing 0, unexpected 0
 
 Any unmapped checkpoint key, missing model key, wrong shape, an `attn.bias` that is not the causal mask, or an `lm_head` that differs from `wte` raises `CheckpointError` before anything is copied.
 
+## Everything as tensor operations
+
+`python -m tools.tensor_program` lowers every `nn.Module` into a flat list of tensor operations where **every operand is a tensor**: `y = x·W + b` is the tensors `x`, `W`, `b` and the operations `x·W`, `+ b`; LayerNorm, softmax and GELU are spelled out the same way, constants such as `eps` and `0.044715` are rank-0 tensors, and axes are named (`B,T,D,H,Dh,...`) so no transposes are needed. For DistilGPT2: 475 tensors, 385 operations, **112 multiplications** (37 contractions + 75 elementwise products); the 37 contractions equal what TEL's importer emits for the same checkpoint.
+
+The program is executed straight from the checkpoint's original Hugging Face tensors (Conv1D `[in,out]`, no transposition) and 93 intermediates are compared with the pure model's `return_debug` tensors on all five samples (worst error 4.7e-6 of each tensor's max magnitude). Output: `artifacts/tensor_program.md` (report with the full multiplication list), `.json` (machine-readable), `.txt` (all 385 operations), `tensor_multiplications.csv`. Implementation: `src/gpt2_pytorch/tensorprog/` (one lowering rule per module type; an unknown module type raises).
+
 ## Parameter accounting
 
 | Category | Logical references | Unique parameters |
@@ -202,7 +212,7 @@ Three levels:
 
 ## Tests
 
-`pytest` (98 tests, ~8 s, offline) covers: checkpoint inspection and config inference, the key mapping (every category, transposition, and each failure mode), embeddings, attention (shapes, QKV order, SDPA cross-check *in tests only*, causality incl. "changing future tokens cannot change past logits"), MLP/GELU variant, residual structure, tied weights and gradients, the fixed DataLoader, golden logits, `.bin` ↔ Safetensors equality, the recorder, the trace format, and FX/export on a tiny seeded model. Tests that need the real weights skip if `weights/pytorch_model.bin` is absent; the Hugging Face parity test skips without `transformers`; one test asserts nothing under `src/` imports `transformers`.
+`pytest` (108 tests, ~10 s, offline) covers: checkpoint inspection and config inference, the key mapping (every category, transposition, and each failure mode), embeddings, attention (shapes, QKV order, SDPA cross-check *in tests only*, causality incl. "changing future tokens cannot change past logits"), MLP/GELU variant, residual structure, tied weights and gradients, the fixed DataLoader, golden logits, `.bin` ↔ Safetensors equality, the recorder, the trace format, and FX/export on a tiny seeded model. Tests that need the real weights skip if `weights/pytorch_model.bin` is absent; the Hugging Face parity test skips without `transformers`; one test asserts nothing under `src/` imports `transformers`.
 
 ## Hugging Face parity
 
