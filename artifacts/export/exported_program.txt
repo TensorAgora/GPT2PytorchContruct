@@ -1,0 +1,668 @@
+ExportedProgram:
+    class GraphModule(torch.nn.Module):
+        def forward(self, p_transformer_embeddings_token_embedding_weight: "f32[50257, 768]", p_transformer_embeddings_position_embedding_weight: "f32[1024, 768]", p_transformer_blocks_0_ln_1_weight: "f32[768]", p_transformer_blocks_0_ln_1_bias: "f32[768]", p_transformer_blocks_0_attention_qkv_projection_weight: "f32[2304, 768]", p_transformer_blocks_0_attention_qkv_projection_bias: "f32[2304]", p_transformer_blocks_0_attention_output_projection_weight: "f32[768, 768]", p_transformer_blocks_0_attention_output_projection_bias: "f32[768]", p_transformer_blocks_0_ln_2_weight: "f32[768]", p_transformer_blocks_0_ln_2_bias: "f32[768]", p_transformer_blocks_0_mlp_fc_weight: "f32[3072, 768]", p_transformer_blocks_0_mlp_fc_bias: "f32[3072]", p_transformer_blocks_0_mlp_projection_weight: "f32[768, 3072]", p_transformer_blocks_0_mlp_projection_bias: "f32[768]", p_transformer_blocks_1_ln_1_weight: "f32[768]", p_transformer_blocks_1_ln_1_bias: "f32[768]", p_transformer_blocks_1_attention_qkv_projection_weight: "f32[2304, 768]", p_transformer_blocks_1_attention_qkv_projection_bias: "f32[2304]", p_transformer_blocks_1_attention_output_projection_weight: "f32[768, 768]", p_transformer_blocks_1_attention_output_projection_bias: "f32[768]", p_transformer_blocks_1_ln_2_weight: "f32[768]", p_transformer_blocks_1_ln_2_bias: "f32[768]", p_transformer_blocks_1_mlp_fc_weight: "f32[3072, 768]", p_transformer_blocks_1_mlp_fc_bias: "f32[3072]", p_transformer_blocks_1_mlp_projection_weight: "f32[768, 3072]", p_transformer_blocks_1_mlp_projection_bias: "f32[768]", p_transformer_blocks_2_ln_1_weight: "f32[768]", p_transformer_blocks_2_ln_1_bias: "f32[768]", p_transformer_blocks_2_attention_qkv_projection_weight: "f32[2304, 768]", p_transformer_blocks_2_attention_qkv_projection_bias: "f32[2304]", p_transformer_blocks_2_attention_output_projection_weight: "f32[768, 768]", p_transformer_blocks_2_attention_output_projection_bias: "f32[768]", p_transformer_blocks_2_ln_2_weight: "f32[768]", p_transformer_blocks_2_ln_2_bias: "f32[768]", p_transformer_blocks_2_mlp_fc_weight: "f32[3072, 768]", p_transformer_blocks_2_mlp_fc_bias: "f32[3072]", p_transformer_blocks_2_mlp_projection_weight: "f32[768, 3072]", p_transformer_blocks_2_mlp_projection_bias: "f32[768]", p_transformer_blocks_3_ln_1_weight: "f32[768]", p_transformer_blocks_3_ln_1_bias: "f32[768]", p_transformer_blocks_3_attention_qkv_projection_weight: "f32[2304, 768]", p_transformer_blocks_3_attention_qkv_projection_bias: "f32[2304]", p_transformer_blocks_3_attention_output_projection_weight: "f32[768, 768]", p_transformer_blocks_3_attention_output_projection_bias: "f32[768]", p_transformer_blocks_3_ln_2_weight: "f32[768]", p_transformer_blocks_3_ln_2_bias: "f32[768]", p_transformer_blocks_3_mlp_fc_weight: "f32[3072, 768]", p_transformer_blocks_3_mlp_fc_bias: "f32[3072]", p_transformer_blocks_3_mlp_projection_weight: "f32[768, 3072]", p_transformer_blocks_3_mlp_projection_bias: "f32[768]", p_transformer_blocks_4_ln_1_weight: "f32[768]", p_transformer_blocks_4_ln_1_bias: "f32[768]", p_transformer_blocks_4_attention_qkv_projection_weight: "f32[2304, 768]", p_transformer_blocks_4_attention_qkv_projection_bias: "f32[2304]", p_transformer_blocks_4_attention_output_projection_weight: "f32[768, 768]", p_transformer_blocks_4_attention_output_projection_bias: "f32[768]", p_transformer_blocks_4_ln_2_weight: "f32[768]", p_transformer_blocks_4_ln_2_bias: "f32[768]", p_transformer_blocks_4_mlp_fc_weight: "f32[3072, 768]", p_transformer_blocks_4_mlp_fc_bias: "f32[3072]", p_transformer_blocks_4_mlp_projection_weight: "f32[768, 3072]", p_transformer_blocks_4_mlp_projection_bias: "f32[768]", p_transformer_blocks_5_ln_1_weight: "f32[768]", p_transformer_blocks_5_ln_1_bias: "f32[768]", p_transformer_blocks_5_attention_qkv_projection_weight: "f32[2304, 768]", p_transformer_blocks_5_attention_qkv_projection_bias: "f32[2304]", p_transformer_blocks_5_attention_output_projection_weight: "f32[768, 768]", p_transformer_blocks_5_attention_output_projection_bias: "f32[768]", p_transformer_blocks_5_ln_2_weight: "f32[768]", p_transformer_blocks_5_ln_2_bias: "f32[768]", p_transformer_blocks_5_mlp_fc_weight: "f32[3072, 768]", p_transformer_blocks_5_mlp_fc_bias: "f32[3072]", p_transformer_blocks_5_mlp_projection_weight: "f32[768, 3072]", p_transformer_blocks_5_mlp_projection_bias: "f32[768]", p_transformer_final_layer_norm_weight: "f32[768]", p_transformer_final_layer_norm_bias: "f32[768]", p_lm_head_weight: "f32[50257, 768]", b_transformer_embeddings_position_ids: "i64[1024]", b_transformer_blocks_0_attention_causal_mask: "b8[1024, 1024]", b_transformer_blocks_1_attention_causal_mask: "b8[1024, 1024]", b_transformer_blocks_2_attention_causal_mask: "b8[1024, 1024]", b_transformer_blocks_3_attention_causal_mask: "b8[1024, 1024]", b_transformer_blocks_4_attention_causal_mask: "b8[1024, 1024]", b_transformer_blocks_5_attention_causal_mask: "b8[1024, 1024]", input_ids: "i64[2, 8]"):
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/embeddings.py:31 in forward, code: position_ids = torch.narrow(self.position_ids, 0, 0, seq_len).unsqueeze(0)
+            narrow: "i64[8]" = torch.ops.aten.narrow.default(b_transformer_embeddings_position_ids, 0, 0, 8);  b_transformer_embeddings_position_ids = None
+            unsqueeze: "i64[1, 8]" = torch.ops.aten.unsqueeze.default(narrow, 0);  narrow = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/sparse.py:189 in forward, code: return F.embedding(
+            embedding: "f32[2, 8, 768]" = torch.ops.aten.embedding.default(p_lm_head_weight, input_ids);  input_ids = None
+            embedding_1: "f32[1, 8, 768]" = torch.ops.aten.embedding.default(p_transformer_embeddings_position_embedding_weight, unsqueeze);  p_transformer_embeddings_position_embedding_weight = unsqueeze = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/embeddings.py:39 in forward, code: hidden_states = token_embeddings + position_embeddings
+            add: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(embedding, embedding_1);  embedding = embedding_1 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(add, 0.1, False);  add = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(dropout, [768], p_transformer_blocks_0_ln_1_weight, p_transformer_blocks_0_ln_1_bias, 1e-05, False);  p_transformer_blocks_0_ln_1_weight = p_transformer_blocks_0_ln_1_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear: "f32[2, 8, 2304]" = torch.ops.aten.linear.default(layer_norm, p_transformer_blocks_0_attention_qkv_projection_weight, p_transformer_blocks_0_attention_qkv_projection_bias);  layer_norm = p_transformer_blocks_0_attention_qkv_projection_weight = p_transformer_blocks_0_attention_qkv_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:65 in forward, code: query, key, value = qkv.chunk(3, dim=-1)
+            chunk = torch.ops.aten.chunk.default(linear, 3, -1);  linear = None
+            getitem: "f32[2, 8, 768]" = chunk[0]
+            getitem_1: "f32[2, 8, 768]" = chunk[1]
+            getitem_2: "f32[2, 8, 768]" = chunk[2];  chunk = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:68 in forward, code: query = self._split_heads(query)
+            view: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem, [2, 8, 12, 64]);  getitem = None
+            permute: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view, [0, 2, 1, 3]);  view = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:69 in forward, code: key = self._split_heads(key)
+            view_1: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_1, [2, 8, 12, 64]);  getitem_1 = None
+            permute_1: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_1, [0, 2, 1, 3]);  view_1 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:70 in forward, code: value = self._split_heads(value)
+            view_2: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_2, [2, 8, 12, 64]);  getitem_2 = None
+            permute_2: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_2, [0, 2, 1, 3]);  view_2 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:73 in forward, code: query_key_scores = torch.matmul(query, key.transpose(-2, -1))
+            transpose: "f32[2, 12, 64, 8]" = torch.ops.aten.transpose.int(permute_1, -2, -1);  permute_1 = None
+            matmul: "f32[2, 12, 8, 8]" = torch.ops.aten.matmul.default(permute, transpose);  permute = transpose = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:74 in forward, code: attention_scores = query_key_scores / math.sqrt(self.head_dim)
+            div: "f32[2, 12, 8, 8]" = torch.ops.aten.div.Tensor(matmul, 8.0);  matmul = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:78 in forward, code: causal_mask = torch.narrow(torch.narrow(self.causal_mask, 0, 0, seq_len), 1, 0, seq_len)  # == mask[:T, :T]
+            narrow_1: "b8[8, 1024]" = torch.ops.aten.narrow.default(b_transformer_blocks_0_attention_causal_mask, 0, 0, 8);  b_transformer_blocks_0_attention_causal_mask = None
+            narrow_2: "b8[8, 8]" = torch.ops.aten.narrow.default(narrow_1, 1, 0, 8);  narrow_1 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:81 in forward, code: masked_scores = attention_scores.masked_fill(~causal_mask, float("-inf"))
+            bitwise_not: "b8[8, 8]" = torch.ops.aten.bitwise_not.default(narrow_2);  narrow_2 = None
+            masked_fill: "f32[2, 12, 8, 8]" = torch.ops.aten.masked_fill.Scalar(div, bitwise_not, -inf);  div = bitwise_not = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:84 in forward, code: attention_probs = torch.softmax(masked_scores, dim=-1)
+            softmax: "f32[2, 12, 8, 8]" = torch.ops.aten.softmax.int(masked_fill, -1);  masked_fill = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_1: "f32[2, 12, 8, 8]" = torch.ops.aten.dropout.default(softmax, 0.1, False);  softmax = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:88 in forward, code: context = torch.matmul(attention_probs_dropped, value)
+            matmul_1: "f32[2, 12, 8, 64]" = torch.ops.aten.matmul.default(dropout_1, permute_2);  dropout_1 = permute_2 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:91 in forward, code: merged_context = self._merge_heads(context)
+            permute_3: "f32[2, 8, 12, 64]" = torch.ops.aten.permute.default(matmul_1, [0, 2, 1, 3]);  matmul_1 = None
+            contiguous: "f32[2, 8, 12, 64]" = torch.ops.aten.contiguous.default(permute_3);  permute_3 = None
+            view_3: "f32[2, 8, 768]" = torch.ops.aten.view.default(contiguous, [2, 8, 768]);  contiguous = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_1: "f32[2, 8, 768]" = torch.ops.aten.linear.default(view_3, p_transformer_blocks_0_attention_output_projection_weight, p_transformer_blocks_0_attention_output_projection_bias);  view_3 = p_transformer_blocks_0_attention_output_projection_weight = p_transformer_blocks_0_attention_output_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_2: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_1, 0.1, False);  linear_1 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:29 in forward, code: hidden_states = residual + attention_output
+            add_1: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(dropout, dropout_2);  dropout = dropout_2 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_1: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_1, [768], p_transformer_blocks_0_ln_2_weight, p_transformer_blocks_0_ln_2_bias, 1e-05, False);  p_transformer_blocks_0_ln_2_weight = p_transformer_blocks_0_ln_2_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_2: "f32[2, 8, 3072]" = torch.ops.aten.linear.default(layer_norm_1, p_transformer_blocks_0_mlp_fc_weight, p_transformer_blocks_0_mlp_fc_bias);  layer_norm_1 = p_transformer_blocks_0_mlp_fc_weight = p_transformer_blocks_0_mlp_fc_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:13 in forward, code: cubic = x * x * x
+            mul: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_2, linear_2)
+            mul_1: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul, linear_2);  mul = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:14 in forward, code: inner = math.sqrt(2.0 / math.pi) * (x + 0.044715 * cubic)
+            mul_2: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_1, 0.044715);  mul_1 = None
+            add_2: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(linear_2, mul_2);  mul_2 = None
+            mul_3: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(add_2, 0.7978845608028654);  add_2 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:15 in forward, code: return 0.5 * x * (1.0 + torch.tanh(inner))
+            mul_4: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_2, 0.5);  linear_2 = None
+            tanh: "f32[2, 8, 3072]" = torch.ops.aten.tanh.default(mul_3);  mul_3 = None
+            add_3: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(tanh, 1.0);  tanh = None
+            mul_5: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_4, add_3);  mul_4 = add_3 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_3: "f32[2, 8, 768]" = torch.ops.aten.linear.default(mul_5, p_transformer_blocks_0_mlp_projection_weight, p_transformer_blocks_0_mlp_projection_bias);  mul_5 = p_transformer_blocks_0_mlp_projection_weight = p_transformer_blocks_0_mlp_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_3: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_3, 0.1, False);  linear_3 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:39 in forward, code: hidden_states = residual + mlp_output
+            add_4: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(add_1, dropout_3);  add_1 = dropout_3 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_2: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_4, [768], p_transformer_blocks_1_ln_1_weight, p_transformer_blocks_1_ln_1_bias, 1e-05, False);  p_transformer_blocks_1_ln_1_weight = p_transformer_blocks_1_ln_1_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_4: "f32[2, 8, 2304]" = torch.ops.aten.linear.default(layer_norm_2, p_transformer_blocks_1_attention_qkv_projection_weight, p_transformer_blocks_1_attention_qkv_projection_bias);  layer_norm_2 = p_transformer_blocks_1_attention_qkv_projection_weight = p_transformer_blocks_1_attention_qkv_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:65 in forward, code: query, key, value = qkv.chunk(3, dim=-1)
+            chunk_1 = torch.ops.aten.chunk.default(linear_4, 3, -1);  linear_4 = None
+            getitem_3: "f32[2, 8, 768]" = chunk_1[0]
+            getitem_4: "f32[2, 8, 768]" = chunk_1[1]
+            getitem_5: "f32[2, 8, 768]" = chunk_1[2];  chunk_1 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:68 in forward, code: query = self._split_heads(query)
+            view_4: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_3, [2, 8, 12, 64]);  getitem_3 = None
+            permute_4: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_4, [0, 2, 1, 3]);  view_4 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:69 in forward, code: key = self._split_heads(key)
+            view_5: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_4, [2, 8, 12, 64]);  getitem_4 = None
+            permute_5: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_5, [0, 2, 1, 3]);  view_5 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:70 in forward, code: value = self._split_heads(value)
+            view_6: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_5, [2, 8, 12, 64]);  getitem_5 = None
+            permute_6: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_6, [0, 2, 1, 3]);  view_6 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:73 in forward, code: query_key_scores = torch.matmul(query, key.transpose(-2, -1))
+            transpose_1: "f32[2, 12, 64, 8]" = torch.ops.aten.transpose.int(permute_5, -2, -1);  permute_5 = None
+            matmul_2: "f32[2, 12, 8, 8]" = torch.ops.aten.matmul.default(permute_4, transpose_1);  permute_4 = transpose_1 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:74 in forward, code: attention_scores = query_key_scores / math.sqrt(self.head_dim)
+            div_1: "f32[2, 12, 8, 8]" = torch.ops.aten.div.Tensor(matmul_2, 8.0);  matmul_2 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:78 in forward, code: causal_mask = torch.narrow(torch.narrow(self.causal_mask, 0, 0, seq_len), 1, 0, seq_len)  # == mask[:T, :T]
+            narrow_3: "b8[8, 1024]" = torch.ops.aten.narrow.default(b_transformer_blocks_1_attention_causal_mask, 0, 0, 8);  b_transformer_blocks_1_attention_causal_mask = None
+            narrow_4: "b8[8, 8]" = torch.ops.aten.narrow.default(narrow_3, 1, 0, 8);  narrow_3 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:81 in forward, code: masked_scores = attention_scores.masked_fill(~causal_mask, float("-inf"))
+            bitwise_not_1: "b8[8, 8]" = torch.ops.aten.bitwise_not.default(narrow_4);  narrow_4 = None
+            masked_fill_1: "f32[2, 12, 8, 8]" = torch.ops.aten.masked_fill.Scalar(div_1, bitwise_not_1, -inf);  div_1 = bitwise_not_1 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:84 in forward, code: attention_probs = torch.softmax(masked_scores, dim=-1)
+            softmax_1: "f32[2, 12, 8, 8]" = torch.ops.aten.softmax.int(masked_fill_1, -1);  masked_fill_1 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_4: "f32[2, 12, 8, 8]" = torch.ops.aten.dropout.default(softmax_1, 0.1, False);  softmax_1 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:88 in forward, code: context = torch.matmul(attention_probs_dropped, value)
+            matmul_3: "f32[2, 12, 8, 64]" = torch.ops.aten.matmul.default(dropout_4, permute_6);  dropout_4 = permute_6 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:91 in forward, code: merged_context = self._merge_heads(context)
+            permute_7: "f32[2, 8, 12, 64]" = torch.ops.aten.permute.default(matmul_3, [0, 2, 1, 3]);  matmul_3 = None
+            contiguous_1: "f32[2, 8, 12, 64]" = torch.ops.aten.contiguous.default(permute_7);  permute_7 = None
+            view_7: "f32[2, 8, 768]" = torch.ops.aten.view.default(contiguous_1, [2, 8, 768]);  contiguous_1 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_5: "f32[2, 8, 768]" = torch.ops.aten.linear.default(view_7, p_transformer_blocks_1_attention_output_projection_weight, p_transformer_blocks_1_attention_output_projection_bias);  view_7 = p_transformer_blocks_1_attention_output_projection_weight = p_transformer_blocks_1_attention_output_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_5: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_5, 0.1, False);  linear_5 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:29 in forward, code: hidden_states = residual + attention_output
+            add_5: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(add_4, dropout_5);  add_4 = dropout_5 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_3: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_5, [768], p_transformer_blocks_1_ln_2_weight, p_transformer_blocks_1_ln_2_bias, 1e-05, False);  p_transformer_blocks_1_ln_2_weight = p_transformer_blocks_1_ln_2_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_6: "f32[2, 8, 3072]" = torch.ops.aten.linear.default(layer_norm_3, p_transformer_blocks_1_mlp_fc_weight, p_transformer_blocks_1_mlp_fc_bias);  layer_norm_3 = p_transformer_blocks_1_mlp_fc_weight = p_transformer_blocks_1_mlp_fc_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:13 in forward, code: cubic = x * x * x
+            mul_6: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_6, linear_6)
+            mul_7: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_6, linear_6);  mul_6 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:14 in forward, code: inner = math.sqrt(2.0 / math.pi) * (x + 0.044715 * cubic)
+            mul_8: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_7, 0.044715);  mul_7 = None
+            add_6: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(linear_6, mul_8);  mul_8 = None
+            mul_9: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(add_6, 0.7978845608028654);  add_6 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:15 in forward, code: return 0.5 * x * (1.0 + torch.tanh(inner))
+            mul_10: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_6, 0.5);  linear_6 = None
+            tanh_1: "f32[2, 8, 3072]" = torch.ops.aten.tanh.default(mul_9);  mul_9 = None
+            add_7: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(tanh_1, 1.0);  tanh_1 = None
+            mul_11: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_10, add_7);  mul_10 = add_7 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_7: "f32[2, 8, 768]" = torch.ops.aten.linear.default(mul_11, p_transformer_blocks_1_mlp_projection_weight, p_transformer_blocks_1_mlp_projection_bias);  mul_11 = p_transformer_blocks_1_mlp_projection_weight = p_transformer_blocks_1_mlp_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_6: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_7, 0.1, False);  linear_7 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:39 in forward, code: hidden_states = residual + mlp_output
+            add_8: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(add_5, dropout_6);  add_5 = dropout_6 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_4: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_8, [768], p_transformer_blocks_2_ln_1_weight, p_transformer_blocks_2_ln_1_bias, 1e-05, False);  p_transformer_blocks_2_ln_1_weight = p_transformer_blocks_2_ln_1_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_8: "f32[2, 8, 2304]" = torch.ops.aten.linear.default(layer_norm_4, p_transformer_blocks_2_attention_qkv_projection_weight, p_transformer_blocks_2_attention_qkv_projection_bias);  layer_norm_4 = p_transformer_blocks_2_attention_qkv_projection_weight = p_transformer_blocks_2_attention_qkv_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:65 in forward, code: query, key, value = qkv.chunk(3, dim=-1)
+            chunk_2 = torch.ops.aten.chunk.default(linear_8, 3, -1);  linear_8 = None
+            getitem_6: "f32[2, 8, 768]" = chunk_2[0]
+            getitem_7: "f32[2, 8, 768]" = chunk_2[1]
+            getitem_8: "f32[2, 8, 768]" = chunk_2[2];  chunk_2 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:68 in forward, code: query = self._split_heads(query)
+            view_8: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_6, [2, 8, 12, 64]);  getitem_6 = None
+            permute_8: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_8, [0, 2, 1, 3]);  view_8 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:69 in forward, code: key = self._split_heads(key)
+            view_9: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_7, [2, 8, 12, 64]);  getitem_7 = None
+            permute_9: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_9, [0, 2, 1, 3]);  view_9 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:70 in forward, code: value = self._split_heads(value)
+            view_10: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_8, [2, 8, 12, 64]);  getitem_8 = None
+            permute_10: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_10, [0, 2, 1, 3]);  view_10 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:73 in forward, code: query_key_scores = torch.matmul(query, key.transpose(-2, -1))
+            transpose_2: "f32[2, 12, 64, 8]" = torch.ops.aten.transpose.int(permute_9, -2, -1);  permute_9 = None
+            matmul_4: "f32[2, 12, 8, 8]" = torch.ops.aten.matmul.default(permute_8, transpose_2);  permute_8 = transpose_2 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:74 in forward, code: attention_scores = query_key_scores / math.sqrt(self.head_dim)
+            div_2: "f32[2, 12, 8, 8]" = torch.ops.aten.div.Tensor(matmul_4, 8.0);  matmul_4 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:78 in forward, code: causal_mask = torch.narrow(torch.narrow(self.causal_mask, 0, 0, seq_len), 1, 0, seq_len)  # == mask[:T, :T]
+            narrow_5: "b8[8, 1024]" = torch.ops.aten.narrow.default(b_transformer_blocks_2_attention_causal_mask, 0, 0, 8);  b_transformer_blocks_2_attention_causal_mask = None
+            narrow_6: "b8[8, 8]" = torch.ops.aten.narrow.default(narrow_5, 1, 0, 8);  narrow_5 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:81 in forward, code: masked_scores = attention_scores.masked_fill(~causal_mask, float("-inf"))
+            bitwise_not_2: "b8[8, 8]" = torch.ops.aten.bitwise_not.default(narrow_6);  narrow_6 = None
+            masked_fill_2: "f32[2, 12, 8, 8]" = torch.ops.aten.masked_fill.Scalar(div_2, bitwise_not_2, -inf);  div_2 = bitwise_not_2 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:84 in forward, code: attention_probs = torch.softmax(masked_scores, dim=-1)
+            softmax_2: "f32[2, 12, 8, 8]" = torch.ops.aten.softmax.int(masked_fill_2, -1);  masked_fill_2 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_7: "f32[2, 12, 8, 8]" = torch.ops.aten.dropout.default(softmax_2, 0.1, False);  softmax_2 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:88 in forward, code: context = torch.matmul(attention_probs_dropped, value)
+            matmul_5: "f32[2, 12, 8, 64]" = torch.ops.aten.matmul.default(dropout_7, permute_10);  dropout_7 = permute_10 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:91 in forward, code: merged_context = self._merge_heads(context)
+            permute_11: "f32[2, 8, 12, 64]" = torch.ops.aten.permute.default(matmul_5, [0, 2, 1, 3]);  matmul_5 = None
+            contiguous_2: "f32[2, 8, 12, 64]" = torch.ops.aten.contiguous.default(permute_11);  permute_11 = None
+            view_11: "f32[2, 8, 768]" = torch.ops.aten.view.default(contiguous_2, [2, 8, 768]);  contiguous_2 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_9: "f32[2, 8, 768]" = torch.ops.aten.linear.default(view_11, p_transformer_blocks_2_attention_output_projection_weight, p_transformer_blocks_2_attention_output_projection_bias);  view_11 = p_transformer_blocks_2_attention_output_projection_weight = p_transformer_blocks_2_attention_output_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_8: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_9, 0.1, False);  linear_9 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:29 in forward, code: hidden_states = residual + attention_output
+            add_9: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(add_8, dropout_8);  add_8 = dropout_8 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_5: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_9, [768], p_transformer_blocks_2_ln_2_weight, p_transformer_blocks_2_ln_2_bias, 1e-05, False);  p_transformer_blocks_2_ln_2_weight = p_transformer_blocks_2_ln_2_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_10: "f32[2, 8, 3072]" = torch.ops.aten.linear.default(layer_norm_5, p_transformer_blocks_2_mlp_fc_weight, p_transformer_blocks_2_mlp_fc_bias);  layer_norm_5 = p_transformer_blocks_2_mlp_fc_weight = p_transformer_blocks_2_mlp_fc_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:13 in forward, code: cubic = x * x * x
+            mul_12: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_10, linear_10)
+            mul_13: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_12, linear_10);  mul_12 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:14 in forward, code: inner = math.sqrt(2.0 / math.pi) * (x + 0.044715 * cubic)
+            mul_14: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_13, 0.044715);  mul_13 = None
+            add_10: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(linear_10, mul_14);  mul_14 = None
+            mul_15: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(add_10, 0.7978845608028654);  add_10 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:15 in forward, code: return 0.5 * x * (1.0 + torch.tanh(inner))
+            mul_16: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_10, 0.5);  linear_10 = None
+            tanh_2: "f32[2, 8, 3072]" = torch.ops.aten.tanh.default(mul_15);  mul_15 = None
+            add_11: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(tanh_2, 1.0);  tanh_2 = None
+            mul_17: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_16, add_11);  mul_16 = add_11 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_11: "f32[2, 8, 768]" = torch.ops.aten.linear.default(mul_17, p_transformer_blocks_2_mlp_projection_weight, p_transformer_blocks_2_mlp_projection_bias);  mul_17 = p_transformer_blocks_2_mlp_projection_weight = p_transformer_blocks_2_mlp_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_9: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_11, 0.1, False);  linear_11 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:39 in forward, code: hidden_states = residual + mlp_output
+            add_12: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(add_9, dropout_9);  add_9 = dropout_9 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_6: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_12, [768], p_transformer_blocks_3_ln_1_weight, p_transformer_blocks_3_ln_1_bias, 1e-05, False);  p_transformer_blocks_3_ln_1_weight = p_transformer_blocks_3_ln_1_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_12: "f32[2, 8, 2304]" = torch.ops.aten.linear.default(layer_norm_6, p_transformer_blocks_3_attention_qkv_projection_weight, p_transformer_blocks_3_attention_qkv_projection_bias);  layer_norm_6 = p_transformer_blocks_3_attention_qkv_projection_weight = p_transformer_blocks_3_attention_qkv_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:65 in forward, code: query, key, value = qkv.chunk(3, dim=-1)
+            chunk_3 = torch.ops.aten.chunk.default(linear_12, 3, -1);  linear_12 = None
+            getitem_9: "f32[2, 8, 768]" = chunk_3[0]
+            getitem_10: "f32[2, 8, 768]" = chunk_3[1]
+            getitem_11: "f32[2, 8, 768]" = chunk_3[2];  chunk_3 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:68 in forward, code: query = self._split_heads(query)
+            view_12: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_9, [2, 8, 12, 64]);  getitem_9 = None
+            permute_12: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_12, [0, 2, 1, 3]);  view_12 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:69 in forward, code: key = self._split_heads(key)
+            view_13: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_10, [2, 8, 12, 64]);  getitem_10 = None
+            permute_13: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_13, [0, 2, 1, 3]);  view_13 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:70 in forward, code: value = self._split_heads(value)
+            view_14: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_11, [2, 8, 12, 64]);  getitem_11 = None
+            permute_14: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_14, [0, 2, 1, 3]);  view_14 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:73 in forward, code: query_key_scores = torch.matmul(query, key.transpose(-2, -1))
+            transpose_3: "f32[2, 12, 64, 8]" = torch.ops.aten.transpose.int(permute_13, -2, -1);  permute_13 = None
+            matmul_6: "f32[2, 12, 8, 8]" = torch.ops.aten.matmul.default(permute_12, transpose_3);  permute_12 = transpose_3 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:74 in forward, code: attention_scores = query_key_scores / math.sqrt(self.head_dim)
+            div_3: "f32[2, 12, 8, 8]" = torch.ops.aten.div.Tensor(matmul_6, 8.0);  matmul_6 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:78 in forward, code: causal_mask = torch.narrow(torch.narrow(self.causal_mask, 0, 0, seq_len), 1, 0, seq_len)  # == mask[:T, :T]
+            narrow_7: "b8[8, 1024]" = torch.ops.aten.narrow.default(b_transformer_blocks_3_attention_causal_mask, 0, 0, 8);  b_transformer_blocks_3_attention_causal_mask = None
+            narrow_8: "b8[8, 8]" = torch.ops.aten.narrow.default(narrow_7, 1, 0, 8);  narrow_7 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:81 in forward, code: masked_scores = attention_scores.masked_fill(~causal_mask, float("-inf"))
+            bitwise_not_3: "b8[8, 8]" = torch.ops.aten.bitwise_not.default(narrow_8);  narrow_8 = None
+            masked_fill_3: "f32[2, 12, 8, 8]" = torch.ops.aten.masked_fill.Scalar(div_3, bitwise_not_3, -inf);  div_3 = bitwise_not_3 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:84 in forward, code: attention_probs = torch.softmax(masked_scores, dim=-1)
+            softmax_3: "f32[2, 12, 8, 8]" = torch.ops.aten.softmax.int(masked_fill_3, -1);  masked_fill_3 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_10: "f32[2, 12, 8, 8]" = torch.ops.aten.dropout.default(softmax_3, 0.1, False);  softmax_3 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:88 in forward, code: context = torch.matmul(attention_probs_dropped, value)
+            matmul_7: "f32[2, 12, 8, 64]" = torch.ops.aten.matmul.default(dropout_10, permute_14);  dropout_10 = permute_14 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:91 in forward, code: merged_context = self._merge_heads(context)
+            permute_15: "f32[2, 8, 12, 64]" = torch.ops.aten.permute.default(matmul_7, [0, 2, 1, 3]);  matmul_7 = None
+            contiguous_3: "f32[2, 8, 12, 64]" = torch.ops.aten.contiguous.default(permute_15);  permute_15 = None
+            view_15: "f32[2, 8, 768]" = torch.ops.aten.view.default(contiguous_3, [2, 8, 768]);  contiguous_3 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_13: "f32[2, 8, 768]" = torch.ops.aten.linear.default(view_15, p_transformer_blocks_3_attention_output_projection_weight, p_transformer_blocks_3_attention_output_projection_bias);  view_15 = p_transformer_blocks_3_attention_output_projection_weight = p_transformer_blocks_3_attention_output_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_11: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_13, 0.1, False);  linear_13 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:29 in forward, code: hidden_states = residual + attention_output
+            add_13: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(add_12, dropout_11);  add_12 = dropout_11 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_7: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_13, [768], p_transformer_blocks_3_ln_2_weight, p_transformer_blocks_3_ln_2_bias, 1e-05, False);  p_transformer_blocks_3_ln_2_weight = p_transformer_blocks_3_ln_2_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_14: "f32[2, 8, 3072]" = torch.ops.aten.linear.default(layer_norm_7, p_transformer_blocks_3_mlp_fc_weight, p_transformer_blocks_3_mlp_fc_bias);  layer_norm_7 = p_transformer_blocks_3_mlp_fc_weight = p_transformer_blocks_3_mlp_fc_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:13 in forward, code: cubic = x * x * x
+            mul_18: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_14, linear_14)
+            mul_19: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_18, linear_14);  mul_18 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:14 in forward, code: inner = math.sqrt(2.0 / math.pi) * (x + 0.044715 * cubic)
+            mul_20: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_19, 0.044715);  mul_19 = None
+            add_14: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(linear_14, mul_20);  mul_20 = None
+            mul_21: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(add_14, 0.7978845608028654);  add_14 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:15 in forward, code: return 0.5 * x * (1.0 + torch.tanh(inner))
+            mul_22: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_14, 0.5);  linear_14 = None
+            tanh_3: "f32[2, 8, 3072]" = torch.ops.aten.tanh.default(mul_21);  mul_21 = None
+            add_15: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(tanh_3, 1.0);  tanh_3 = None
+            mul_23: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_22, add_15);  mul_22 = add_15 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_15: "f32[2, 8, 768]" = torch.ops.aten.linear.default(mul_23, p_transformer_blocks_3_mlp_projection_weight, p_transformer_blocks_3_mlp_projection_bias);  mul_23 = p_transformer_blocks_3_mlp_projection_weight = p_transformer_blocks_3_mlp_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_12: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_15, 0.1, False);  linear_15 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:39 in forward, code: hidden_states = residual + mlp_output
+            add_16: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(add_13, dropout_12);  add_13 = dropout_12 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_8: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_16, [768], p_transformer_blocks_4_ln_1_weight, p_transformer_blocks_4_ln_1_bias, 1e-05, False);  p_transformer_blocks_4_ln_1_weight = p_transformer_blocks_4_ln_1_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_16: "f32[2, 8, 2304]" = torch.ops.aten.linear.default(layer_norm_8, p_transformer_blocks_4_attention_qkv_projection_weight, p_transformer_blocks_4_attention_qkv_projection_bias);  layer_norm_8 = p_transformer_blocks_4_attention_qkv_projection_weight = p_transformer_blocks_4_attention_qkv_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:65 in forward, code: query, key, value = qkv.chunk(3, dim=-1)
+            chunk_4 = torch.ops.aten.chunk.default(linear_16, 3, -1);  linear_16 = None
+            getitem_12: "f32[2, 8, 768]" = chunk_4[0]
+            getitem_13: "f32[2, 8, 768]" = chunk_4[1]
+            getitem_14: "f32[2, 8, 768]" = chunk_4[2];  chunk_4 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:68 in forward, code: query = self._split_heads(query)
+            view_16: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_12, [2, 8, 12, 64]);  getitem_12 = None
+            permute_16: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_16, [0, 2, 1, 3]);  view_16 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:69 in forward, code: key = self._split_heads(key)
+            view_17: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_13, [2, 8, 12, 64]);  getitem_13 = None
+            permute_17: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_17, [0, 2, 1, 3]);  view_17 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:70 in forward, code: value = self._split_heads(value)
+            view_18: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_14, [2, 8, 12, 64]);  getitem_14 = None
+            permute_18: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_18, [0, 2, 1, 3]);  view_18 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:73 in forward, code: query_key_scores = torch.matmul(query, key.transpose(-2, -1))
+            transpose_4: "f32[2, 12, 64, 8]" = torch.ops.aten.transpose.int(permute_17, -2, -1);  permute_17 = None
+            matmul_8: "f32[2, 12, 8, 8]" = torch.ops.aten.matmul.default(permute_16, transpose_4);  permute_16 = transpose_4 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:74 in forward, code: attention_scores = query_key_scores / math.sqrt(self.head_dim)
+            div_4: "f32[2, 12, 8, 8]" = torch.ops.aten.div.Tensor(matmul_8, 8.0);  matmul_8 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:78 in forward, code: causal_mask = torch.narrow(torch.narrow(self.causal_mask, 0, 0, seq_len), 1, 0, seq_len)  # == mask[:T, :T]
+            narrow_9: "b8[8, 1024]" = torch.ops.aten.narrow.default(b_transformer_blocks_4_attention_causal_mask, 0, 0, 8);  b_transformer_blocks_4_attention_causal_mask = None
+            narrow_10: "b8[8, 8]" = torch.ops.aten.narrow.default(narrow_9, 1, 0, 8);  narrow_9 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:81 in forward, code: masked_scores = attention_scores.masked_fill(~causal_mask, float("-inf"))
+            bitwise_not_4: "b8[8, 8]" = torch.ops.aten.bitwise_not.default(narrow_10);  narrow_10 = None
+            masked_fill_4: "f32[2, 12, 8, 8]" = torch.ops.aten.masked_fill.Scalar(div_4, bitwise_not_4, -inf);  div_4 = bitwise_not_4 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:84 in forward, code: attention_probs = torch.softmax(masked_scores, dim=-1)
+            softmax_4: "f32[2, 12, 8, 8]" = torch.ops.aten.softmax.int(masked_fill_4, -1);  masked_fill_4 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_13: "f32[2, 12, 8, 8]" = torch.ops.aten.dropout.default(softmax_4, 0.1, False);  softmax_4 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:88 in forward, code: context = torch.matmul(attention_probs_dropped, value)
+            matmul_9: "f32[2, 12, 8, 64]" = torch.ops.aten.matmul.default(dropout_13, permute_18);  dropout_13 = permute_18 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:91 in forward, code: merged_context = self._merge_heads(context)
+            permute_19: "f32[2, 8, 12, 64]" = torch.ops.aten.permute.default(matmul_9, [0, 2, 1, 3]);  matmul_9 = None
+            contiguous_4: "f32[2, 8, 12, 64]" = torch.ops.aten.contiguous.default(permute_19);  permute_19 = None
+            view_19: "f32[2, 8, 768]" = torch.ops.aten.view.default(contiguous_4, [2, 8, 768]);  contiguous_4 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_17: "f32[2, 8, 768]" = torch.ops.aten.linear.default(view_19, p_transformer_blocks_4_attention_output_projection_weight, p_transformer_blocks_4_attention_output_projection_bias);  view_19 = p_transformer_blocks_4_attention_output_projection_weight = p_transformer_blocks_4_attention_output_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_14: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_17, 0.1, False);  linear_17 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:29 in forward, code: hidden_states = residual + attention_output
+            add_17: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(add_16, dropout_14);  add_16 = dropout_14 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_9: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_17, [768], p_transformer_blocks_4_ln_2_weight, p_transformer_blocks_4_ln_2_bias, 1e-05, False);  p_transformer_blocks_4_ln_2_weight = p_transformer_blocks_4_ln_2_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_18: "f32[2, 8, 3072]" = torch.ops.aten.linear.default(layer_norm_9, p_transformer_blocks_4_mlp_fc_weight, p_transformer_blocks_4_mlp_fc_bias);  layer_norm_9 = p_transformer_blocks_4_mlp_fc_weight = p_transformer_blocks_4_mlp_fc_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:13 in forward, code: cubic = x * x * x
+            mul_24: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_18, linear_18)
+            mul_25: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_24, linear_18);  mul_24 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:14 in forward, code: inner = math.sqrt(2.0 / math.pi) * (x + 0.044715 * cubic)
+            mul_26: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_25, 0.044715);  mul_25 = None
+            add_18: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(linear_18, mul_26);  mul_26 = None
+            mul_27: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(add_18, 0.7978845608028654);  add_18 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:15 in forward, code: return 0.5 * x * (1.0 + torch.tanh(inner))
+            mul_28: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_18, 0.5);  linear_18 = None
+            tanh_4: "f32[2, 8, 3072]" = torch.ops.aten.tanh.default(mul_27);  mul_27 = None
+            add_19: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(tanh_4, 1.0);  tanh_4 = None
+            mul_29: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_28, add_19);  mul_28 = add_19 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_19: "f32[2, 8, 768]" = torch.ops.aten.linear.default(mul_29, p_transformer_blocks_4_mlp_projection_weight, p_transformer_blocks_4_mlp_projection_bias);  mul_29 = p_transformer_blocks_4_mlp_projection_weight = p_transformer_blocks_4_mlp_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_15: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_19, 0.1, False);  linear_19 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:39 in forward, code: hidden_states = residual + mlp_output
+            add_20: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(add_17, dropout_15);  add_17 = dropout_15 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_10: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_20, [768], p_transformer_blocks_5_ln_1_weight, p_transformer_blocks_5_ln_1_bias, 1e-05, False);  p_transformer_blocks_5_ln_1_weight = p_transformer_blocks_5_ln_1_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_20: "f32[2, 8, 2304]" = torch.ops.aten.linear.default(layer_norm_10, p_transformer_blocks_5_attention_qkv_projection_weight, p_transformer_blocks_5_attention_qkv_projection_bias);  layer_norm_10 = p_transformer_blocks_5_attention_qkv_projection_weight = p_transformer_blocks_5_attention_qkv_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:65 in forward, code: query, key, value = qkv.chunk(3, dim=-1)
+            chunk_5 = torch.ops.aten.chunk.default(linear_20, 3, -1);  linear_20 = None
+            getitem_15: "f32[2, 8, 768]" = chunk_5[0]
+            getitem_16: "f32[2, 8, 768]" = chunk_5[1]
+            getitem_17: "f32[2, 8, 768]" = chunk_5[2];  chunk_5 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:68 in forward, code: query = self._split_heads(query)
+            view_20: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_15, [2, 8, 12, 64]);  getitem_15 = None
+            permute_20: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_20, [0, 2, 1, 3]);  view_20 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:69 in forward, code: key = self._split_heads(key)
+            view_21: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_16, [2, 8, 12, 64]);  getitem_16 = None
+            permute_21: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_21, [0, 2, 1, 3]);  view_21 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:70 in forward, code: value = self._split_heads(value)
+            view_22: "f32[2, 8, 12, 64]" = torch.ops.aten.view.default(getitem_17, [2, 8, 12, 64]);  getitem_17 = None
+            permute_22: "f32[2, 12, 8, 64]" = torch.ops.aten.permute.default(view_22, [0, 2, 1, 3]);  view_22 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:73 in forward, code: query_key_scores = torch.matmul(query, key.transpose(-2, -1))
+            transpose_5: "f32[2, 12, 64, 8]" = torch.ops.aten.transpose.int(permute_21, -2, -1);  permute_21 = None
+            matmul_10: "f32[2, 12, 8, 8]" = torch.ops.aten.matmul.default(permute_20, transpose_5);  permute_20 = transpose_5 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:74 in forward, code: attention_scores = query_key_scores / math.sqrt(self.head_dim)
+            div_5: "f32[2, 12, 8, 8]" = torch.ops.aten.div.Tensor(matmul_10, 8.0);  matmul_10 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:78 in forward, code: causal_mask = torch.narrow(torch.narrow(self.causal_mask, 0, 0, seq_len), 1, 0, seq_len)  # == mask[:T, :T]
+            narrow_11: "b8[8, 1024]" = torch.ops.aten.narrow.default(b_transformer_blocks_5_attention_causal_mask, 0, 0, 8);  b_transformer_blocks_5_attention_causal_mask = None
+            narrow_12: "b8[8, 8]" = torch.ops.aten.narrow.default(narrow_11, 1, 0, 8);  narrow_11 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:81 in forward, code: masked_scores = attention_scores.masked_fill(~causal_mask, float("-inf"))
+            bitwise_not_5: "b8[8, 8]" = torch.ops.aten.bitwise_not.default(narrow_12);  narrow_12 = None
+            masked_fill_5: "f32[2, 12, 8, 8]" = torch.ops.aten.masked_fill.Scalar(div_5, bitwise_not_5, -inf);  div_5 = bitwise_not_5 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:84 in forward, code: attention_probs = torch.softmax(masked_scores, dim=-1)
+            softmax_5: "f32[2, 12, 8, 8]" = torch.ops.aten.softmax.int(masked_fill_5, -1);  masked_fill_5 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_16: "f32[2, 12, 8, 8]" = torch.ops.aten.dropout.default(softmax_5, 0.1, False);  softmax_5 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:88 in forward, code: context = torch.matmul(attention_probs_dropped, value)
+            matmul_11: "f32[2, 12, 8, 64]" = torch.ops.aten.matmul.default(dropout_16, permute_22);  dropout_16 = permute_22 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/attention.py:91 in forward, code: merged_context = self._merge_heads(context)
+            permute_23: "f32[2, 8, 12, 64]" = torch.ops.aten.permute.default(matmul_11, [0, 2, 1, 3]);  matmul_11 = None
+            contiguous_5: "f32[2, 8, 12, 64]" = torch.ops.aten.contiguous.default(permute_23);  permute_23 = None
+            view_23: "f32[2, 8, 768]" = torch.ops.aten.view.default(contiguous_5, [2, 8, 768]);  contiguous_5 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_21: "f32[2, 8, 768]" = torch.ops.aten.linear.default(view_23, p_transformer_blocks_5_attention_output_projection_weight, p_transformer_blocks_5_attention_output_projection_bias);  view_23 = p_transformer_blocks_5_attention_output_projection_weight = p_transformer_blocks_5_attention_output_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_17: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_21, 0.1, False);  linear_21 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:29 in forward, code: hidden_states = residual + attention_output
+            add_21: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(add_20, dropout_17);  add_20 = dropout_17 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_11: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_21, [768], p_transformer_blocks_5_ln_2_weight, p_transformer_blocks_5_ln_2_bias, 1e-05, False);  p_transformer_blocks_5_ln_2_weight = p_transformer_blocks_5_ln_2_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_22: "f32[2, 8, 3072]" = torch.ops.aten.linear.default(layer_norm_11, p_transformer_blocks_5_mlp_fc_weight, p_transformer_blocks_5_mlp_fc_bias);  layer_norm_11 = p_transformer_blocks_5_mlp_fc_weight = p_transformer_blocks_5_mlp_fc_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:13 in forward, code: cubic = x * x * x
+            mul_30: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_22, linear_22)
+            mul_31: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_30, linear_22);  mul_30 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:14 in forward, code: inner = math.sqrt(2.0 / math.pi) * (x + 0.044715 * cubic)
+            mul_32: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_31, 0.044715);  mul_31 = None
+            add_22: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(linear_22, mul_32);  mul_32 = None
+            mul_33: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(add_22, 0.7978845608028654);  add_22 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/mlp.py:15 in forward, code: return 0.5 * x * (1.0 + torch.tanh(inner))
+            mul_34: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(linear_22, 0.5);  linear_22 = None
+            tanh_5: "f32[2, 8, 3072]" = torch.ops.aten.tanh.default(mul_33);  mul_33 = None
+            add_23: "f32[2, 8, 3072]" = torch.ops.aten.add.Tensor(tanh_5, 1.0);  tanh_5 = None
+            mul_35: "f32[2, 8, 3072]" = torch.ops.aten.mul.Tensor(mul_34, add_23);  mul_34 = add_23 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_23: "f32[2, 8, 768]" = torch.ops.aten.linear.default(mul_35, p_transformer_blocks_5_mlp_projection_weight, p_transformer_blocks_5_mlp_projection_bias);  mul_35 = p_transformer_blocks_5_mlp_projection_weight = p_transformer_blocks_5_mlp_projection_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/dropout.py:73 in forward, code: return F.dropout(input, self.p, self.training, self.inplace)
+            dropout_18: "f32[2, 8, 768]" = torch.ops.aten.dropout.default(linear_23, 0.1, False);  linear_23 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/src/gpt2_pytorch/model/block.py:39 in forward, code: hidden_states = residual + mlp_output
+            add_24: "f32[2, 8, 768]" = torch.ops.aten.add.Tensor(add_21, dropout_18);  add_21 = dropout_18 = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/normalization.py:228 in forward, code: return F.layer_norm(
+            layer_norm_12: "f32[2, 8, 768]" = torch.ops.aten.layer_norm.default(add_24, [768], p_transformer_final_layer_norm_weight, p_transformer_final_layer_norm_bias, 1e-05, False);  add_24 = p_transformer_final_layer_norm_weight = p_transformer_final_layer_norm_bias = None
+    
+            # File: /Users/thanh/Tensormorph/GPT2PytorchContruct/.venv/lib/python3.13/site-packages/torch/nn/modules/linear.py:134 in forward, code: return F.linear(input, self.weight, self.bias)
+            linear_24: "f32[2, 8, 50257]" = torch.ops.aten.linear.default(layer_norm_12, p_lm_head_weight);  layer_norm_12 = p_lm_head_weight = None
+            return (linear_24,)
+    
+Graph signature:
+    # inputs
+    p_transformer_embeddings_token_embedding_weight: PARAMETER target='transformer.embeddings.token_embedding.weight'
+    p_transformer_embeddings_position_embedding_weight: PARAMETER target='transformer.embeddings.position_embedding.weight'
+    p_transformer_blocks_0_ln_1_weight: PARAMETER target='transformer.blocks.0.ln_1.weight'
+    p_transformer_blocks_0_ln_1_bias: PARAMETER target='transformer.blocks.0.ln_1.bias'
+    p_transformer_blocks_0_attention_qkv_projection_weight: PARAMETER target='transformer.blocks.0.attention.qkv_projection.weight'
+    p_transformer_blocks_0_attention_qkv_projection_bias: PARAMETER target='transformer.blocks.0.attention.qkv_projection.bias'
+    p_transformer_blocks_0_attention_output_projection_weight: PARAMETER target='transformer.blocks.0.attention.output_projection.weight'
+    p_transformer_blocks_0_attention_output_projection_bias: PARAMETER target='transformer.blocks.0.attention.output_projection.bias'
+    p_transformer_blocks_0_ln_2_weight: PARAMETER target='transformer.blocks.0.ln_2.weight'
+    p_transformer_blocks_0_ln_2_bias: PARAMETER target='transformer.blocks.0.ln_2.bias'
+    p_transformer_blocks_0_mlp_fc_weight: PARAMETER target='transformer.blocks.0.mlp.fc.weight'
+    p_transformer_blocks_0_mlp_fc_bias: PARAMETER target='transformer.blocks.0.mlp.fc.bias'
+    p_transformer_blocks_0_mlp_projection_weight: PARAMETER target='transformer.blocks.0.mlp.projection.weight'
+    p_transformer_blocks_0_mlp_projection_bias: PARAMETER target='transformer.blocks.0.mlp.projection.bias'
+    p_transformer_blocks_1_ln_1_weight: PARAMETER target='transformer.blocks.1.ln_1.weight'
+    p_transformer_blocks_1_ln_1_bias: PARAMETER target='transformer.blocks.1.ln_1.bias'
+    p_transformer_blocks_1_attention_qkv_projection_weight: PARAMETER target='transformer.blocks.1.attention.qkv_projection.weight'
+    p_transformer_blocks_1_attention_qkv_projection_bias: PARAMETER target='transformer.blocks.1.attention.qkv_projection.bias'
+    p_transformer_blocks_1_attention_output_projection_weight: PARAMETER target='transformer.blocks.1.attention.output_projection.weight'
+    p_transformer_blocks_1_attention_output_projection_bias: PARAMETER target='transformer.blocks.1.attention.output_projection.bias'
+    p_transformer_blocks_1_ln_2_weight: PARAMETER target='transformer.blocks.1.ln_2.weight'
+    p_transformer_blocks_1_ln_2_bias: PARAMETER target='transformer.blocks.1.ln_2.bias'
+    p_transformer_blocks_1_mlp_fc_weight: PARAMETER target='transformer.blocks.1.mlp.fc.weight'
+    p_transformer_blocks_1_mlp_fc_bias: PARAMETER target='transformer.blocks.1.mlp.fc.bias'
+    p_transformer_blocks_1_mlp_projection_weight: PARAMETER target='transformer.blocks.1.mlp.projection.weight'
+    p_transformer_blocks_1_mlp_projection_bias: PARAMETER target='transformer.blocks.1.mlp.projection.bias'
+    p_transformer_blocks_2_ln_1_weight: PARAMETER target='transformer.blocks.2.ln_1.weight'
+    p_transformer_blocks_2_ln_1_bias: PARAMETER target='transformer.blocks.2.ln_1.bias'
+    p_transformer_blocks_2_attention_qkv_projection_weight: PARAMETER target='transformer.blocks.2.attention.qkv_projection.weight'
+    p_transformer_blocks_2_attention_qkv_projection_bias: PARAMETER target='transformer.blocks.2.attention.qkv_projection.bias'
+    p_transformer_blocks_2_attention_output_projection_weight: PARAMETER target='transformer.blocks.2.attention.output_projection.weight'
+    p_transformer_blocks_2_attention_output_projection_bias: PARAMETER target='transformer.blocks.2.attention.output_projection.bias'
+    p_transformer_blocks_2_ln_2_weight: PARAMETER target='transformer.blocks.2.ln_2.weight'
+    p_transformer_blocks_2_ln_2_bias: PARAMETER target='transformer.blocks.2.ln_2.bias'
+    p_transformer_blocks_2_mlp_fc_weight: PARAMETER target='transformer.blocks.2.mlp.fc.weight'
+    p_transformer_blocks_2_mlp_fc_bias: PARAMETER target='transformer.blocks.2.mlp.fc.bias'
+    p_transformer_blocks_2_mlp_projection_weight: PARAMETER target='transformer.blocks.2.mlp.projection.weight'
+    p_transformer_blocks_2_mlp_projection_bias: PARAMETER target='transformer.blocks.2.mlp.projection.bias'
+    p_transformer_blocks_3_ln_1_weight: PARAMETER target='transformer.blocks.3.ln_1.weight'
+    p_transformer_blocks_3_ln_1_bias: PARAMETER target='transformer.blocks.3.ln_1.bias'
+    p_transformer_blocks_3_attention_qkv_projection_weight: PARAMETER target='transformer.blocks.3.attention.qkv_projection.weight'
+    p_transformer_blocks_3_attention_qkv_projection_bias: PARAMETER target='transformer.blocks.3.attention.qkv_projection.bias'
+    p_transformer_blocks_3_attention_output_projection_weight: PARAMETER target='transformer.blocks.3.attention.output_projection.weight'
+    p_transformer_blocks_3_attention_output_projection_bias: PARAMETER target='transformer.blocks.3.attention.output_projection.bias'
+    p_transformer_blocks_3_ln_2_weight: PARAMETER target='transformer.blocks.3.ln_2.weight'
+    p_transformer_blocks_3_ln_2_bias: PARAMETER target='transformer.blocks.3.ln_2.bias'
+    p_transformer_blocks_3_mlp_fc_weight: PARAMETER target='transformer.blocks.3.mlp.fc.weight'
+    p_transformer_blocks_3_mlp_fc_bias: PARAMETER target='transformer.blocks.3.mlp.fc.bias'
+    p_transformer_blocks_3_mlp_projection_weight: PARAMETER target='transformer.blocks.3.mlp.projection.weight'
+    p_transformer_blocks_3_mlp_projection_bias: PARAMETER target='transformer.blocks.3.mlp.projection.bias'
+    p_transformer_blocks_4_ln_1_weight: PARAMETER target='transformer.blocks.4.ln_1.weight'
+    p_transformer_blocks_4_ln_1_bias: PARAMETER target='transformer.blocks.4.ln_1.bias'
+    p_transformer_blocks_4_attention_qkv_projection_weight: PARAMETER target='transformer.blocks.4.attention.qkv_projection.weight'
+    p_transformer_blocks_4_attention_qkv_projection_bias: PARAMETER target='transformer.blocks.4.attention.qkv_projection.bias'
+    p_transformer_blocks_4_attention_output_projection_weight: PARAMETER target='transformer.blocks.4.attention.output_projection.weight'
+    p_transformer_blocks_4_attention_output_projection_bias: PARAMETER target='transformer.blocks.4.attention.output_projection.bias'
+    p_transformer_blocks_4_ln_2_weight: PARAMETER target='transformer.blocks.4.ln_2.weight'
+    p_transformer_blocks_4_ln_2_bias: PARAMETER target='transformer.blocks.4.ln_2.bias'
+    p_transformer_blocks_4_mlp_fc_weight: PARAMETER target='transformer.blocks.4.mlp.fc.weight'
+    p_transformer_blocks_4_mlp_fc_bias: PARAMETER target='transformer.blocks.4.mlp.fc.bias'
+    p_transformer_blocks_4_mlp_projection_weight: PARAMETER target='transformer.blocks.4.mlp.projection.weight'
+    p_transformer_blocks_4_mlp_projection_bias: PARAMETER target='transformer.blocks.4.mlp.projection.bias'
+    p_transformer_blocks_5_ln_1_weight: PARAMETER target='transformer.blocks.5.ln_1.weight'
+    p_transformer_blocks_5_ln_1_bias: PARAMETER target='transformer.blocks.5.ln_1.bias'
+    p_transformer_blocks_5_attention_qkv_projection_weight: PARAMETER target='transformer.blocks.5.attention.qkv_projection.weight'
+    p_transformer_blocks_5_attention_qkv_projection_bias: PARAMETER target='transformer.blocks.5.attention.qkv_projection.bias'
+    p_transformer_blocks_5_attention_output_projection_weight: PARAMETER target='transformer.blocks.5.attention.output_projection.weight'
+    p_transformer_blocks_5_attention_output_projection_bias: PARAMETER target='transformer.blocks.5.attention.output_projection.bias'
+    p_transformer_blocks_5_ln_2_weight: PARAMETER target='transformer.blocks.5.ln_2.weight'
+    p_transformer_blocks_5_ln_2_bias: PARAMETER target='transformer.blocks.5.ln_2.bias'
+    p_transformer_blocks_5_mlp_fc_weight: PARAMETER target='transformer.blocks.5.mlp.fc.weight'
+    p_transformer_blocks_5_mlp_fc_bias: PARAMETER target='transformer.blocks.5.mlp.fc.bias'
+    p_transformer_blocks_5_mlp_projection_weight: PARAMETER target='transformer.blocks.5.mlp.projection.weight'
+    p_transformer_blocks_5_mlp_projection_bias: PARAMETER target='transformer.blocks.5.mlp.projection.bias'
+    p_transformer_final_layer_norm_weight: PARAMETER target='transformer.final_layer_norm.weight'
+    p_transformer_final_layer_norm_bias: PARAMETER target='transformer.final_layer_norm.bias'
+    p_lm_head_weight: PARAMETER target='lm_head.weight'
+    b_transformer_embeddings_position_ids: BUFFER target='transformer.embeddings.position_ids' persistent=False
+    b_transformer_blocks_0_attention_causal_mask: BUFFER target='transformer.blocks.0.attention.causal_mask' persistent=False
+    b_transformer_blocks_1_attention_causal_mask: BUFFER target='transformer.blocks.1.attention.causal_mask' persistent=False
+    b_transformer_blocks_2_attention_causal_mask: BUFFER target='transformer.blocks.2.attention.causal_mask' persistent=False
+    b_transformer_blocks_3_attention_causal_mask: BUFFER target='transformer.blocks.3.attention.causal_mask' persistent=False
+    b_transformer_blocks_4_attention_causal_mask: BUFFER target='transformer.blocks.4.attention.causal_mask' persistent=False
+    b_transformer_blocks_5_attention_causal_mask: BUFFER target='transformer.blocks.5.attention.causal_mask' persistent=False
+    input_ids: USER_INPUT
+    
+    # outputs
+    linear_24: USER_OUTPUT
+    
+Range constraints: {}

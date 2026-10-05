@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gpt2-pytorch-construct"
+version = "0.1.0"
+description = "Inspectable pure-PyTorch DistilGPT2 reference implementation for Tensormorph"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["torch", "safetensors"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+reference = ["transformers"]  # only reference/compare_huggingface.py uses it
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gpt2_pytorch"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]

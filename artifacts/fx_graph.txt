@@ -1,0 +1,336 @@
+opcode          name                                              target                                            shape               args
+placeholder     input_ids                                         input_ids                                         [2,8]               
+placeholder     labels_1                                          labels_1                                          None                None
+call_function   _assert_is_none                                   _assert_is_none                                   None                labels_1, 'labels has been specialized to have value None but got another value'
+placeholder     position_ids_1                                    position_ids_1                                    None                None
+call_function   _assert_is_none_1                                 _assert_is_none                                   None                position_ids_1, 'position_ids has been specialized to have value None but got another value'
+placeholder     return_debug_1                                    return_debug_1                                    None                False
+call_function   eq                                                eq                                                None                return_debug_1, False
+call_function   _assert                                           _assert                                           None                eq, 'return_debug has been specialized to have value False but got another value'
+call_method     size                                              size                                              None                input_ids, 1
+call_function   le                                                le                                                None                size, 1024
+call_function   _assert_1                                         _assert                                           None                le, 'sequence longer than max_position_embeddings'
+get_attr        transformer_embeddings_position_ids               transformer.embeddings.position_ids               [1024]              
+call_function   narrow                                            narrow                                            [8]                 transformer_embeddings_position_ids, 0, 0, size
+call_method     unsqueeze                                         unsqueeze                                         [1,8]               narrow, 0
+get_attr        transformer_embeddings_token_embedding_weight     transformer.embeddings.token_embedding.weight     [50257,768]         
+call_function   embedding                                         embedding                                         [2,8,768]           input_ids, transformer_embeddings_token_embedding_weight
+get_attr        transformer_embeddings_position_embedding_weight  transformer.embeddings.position_embedding.weight  [1024,768]          
+call_function   embedding_1                                       embedding                                         [1,8,768]           unsqueeze, transformer_embeddings_position_embedding_weight
+call_function   add                                               add                                               [2,8,768]           embedding, embedding_1
+call_module     transformer_embeddings_dropout                    transformer.embeddings.dropout                    [2,8,768]           add
+call_module     transformer_blocks_0_ln_1                         transformer.blocks.0.ln_1                         [2,8,768]           transformer_embeddings_dropout
+call_module     transformer_blocks_0_attention_qkv_projection     transformer.blocks.0.attention.qkv_projection     [2,8,2304]          transformer_blocks_0_ln_1
+call_method     chunk                                             chunk                                             None                transformer_blocks_0_attention_qkv_projection, 3
+call_function   getitem                                           getitem                                           [2,8,768]           chunk, 0
+call_function   getitem_1                                         getitem                                           [2,8,768]           chunk, 1
+call_function   getitem_2                                         getitem                                           [2,8,768]           chunk, 2
+call_method     size_1                                            size                                              None                getitem, 0
+call_method     size_2                                            size                                              None                getitem, 1
+call_method     view                                              view                                              [2,8,12,64]         getitem, size_1, size_2, 12, 64
+call_method     permute                                           permute                                           [2,12,8,64]         view, 0, 2, 1, 3
+call_method     size_3                                            size                                              None                getitem_1, 0
+call_method     size_4                                            size                                              None                getitem_1, 1
+call_method     view_1                                            view                                              [2,8,12,64]         getitem_1, size_3, size_4, 12, 64
+call_method     permute_1                                         permute                                           [2,12,8,64]         view_1, 0, 2, 1, 3
+call_method     size_5                                            size                                              None                getitem_2, 0
+call_method     size_6                                            size                                              None                getitem_2, 1
+call_method     view_2                                            view                                              [2,8,12,64]         getitem_2, size_5, size_6, 12, 64
+call_method     permute_2                                         permute                                           [2,12,8,64]         view_2, 0, 2, 1, 3
+call_method     transpose                                         transpose                                         [2,12,64,8]         permute_1, -2, -1
+call_function   matmul                                            matmul                                            [2,12,8,8]          permute, transpose
+call_function   truediv                                           truediv                                           [2,12,8,8]          matmul, 8.0
+call_method     size_7                                            size                                              None                truediv, -1
+get_attr        transformer_blocks_0_attention_causal_mask        transformer.blocks.0.attention.causal_mask        [1024,1024]         
+call_function   narrow_1                                          narrow                                            [8,1024]            transformer_blocks_0_attention_causal_mask, 0, 0, size_7
+call_function   narrow_2                                          narrow                                            [8,8]               narrow_1, 1, 0, size_7
+call_function   invert                                            invert                                            [8,8]               narrow_2
+call_method     masked_fill                                       masked_fill                                       [2,12,8,8]          truediv, invert, -inf
+call_function   softmax                                           softmax                                           [2,12,8,8]          masked_fill
+call_module     transformer_blocks_0_attention_attention_dropout  transformer.blocks.0.attention.attention_dropout  [2,12,8,8]          softmax
+call_function   matmul_1                                          matmul                                            [2,12,8,64]         transformer_blocks_0_attention_attention_dropout, permute_2
+call_method     permute_3                                         permute                                           [2,8,12,64]         matmul_1, 0, 2, 1, 3
+call_method     contiguous                                        contiguous                                        [2,8,12,64]         permute_3
+call_method     size_8                                            size                                              None                contiguous, 0
+call_method     size_9                                            size                                              None                contiguous, 1
+call_method     view_3                                            view                                              [2,8,768]           contiguous, size_8, size_9, 768
+call_module     transformer_blocks_0_attention_output_projection  transformer.blocks.0.attention.output_projection  [2,8,768]           view_3
+call_module     transformer_blocks_0_attention_residual_dropout   transformer.blocks.0.attention.residual_dropout   [2,8,768]           transformer_blocks_0_attention_output_projection
+call_function   add_1                                             add                                               [2,8,768]           transformer_embeddings_dropout, transformer_blocks_0_attention_residual_dropout
+call_module     transformer_blocks_0_ln_2                         transformer.blocks.0.ln_2                         [2,8,768]           add_1
+call_module     transformer_blocks_0_mlp_fc                       transformer.blocks.0.mlp.fc                       [2,8,3072]          transformer_blocks_0_ln_2
+call_function   mul                                               mul                                               [2,8,3072]          transformer_blocks_0_mlp_fc, transformer_blocks_0_mlp_fc
+call_function   mul_1                                             mul                                               [2,8,3072]          mul, transformer_blocks_0_mlp_fc
+call_function   mul_2                                             mul                                               [2,8,3072]          0.044715, mul_1
+call_function   add_2                                             add                                               [2,8,3072]          transformer_blocks_0_mlp_fc, mul_2
+call_function   mul_3                                             mul                                               [2,8,3072]          0.7978845608028654, add_2
+call_function   mul_4                                             mul                                               [2,8,3072]          0.5, transformer_blocks_0_mlp_fc
+call_function   tanh                                              tanh                                              [2,8,3072]          mul_3
+call_function   add_3                                             add                                               [2,8,3072]          1.0, tanh
+call_function   mul_5                                             mul                                               [2,8,3072]          mul_4, add_3
+call_module     transformer_blocks_0_mlp_projection               transformer.blocks.0.mlp.projection               [2,8,768]           mul_5
+call_module     transformer_blocks_0_mlp_dropout                  transformer.blocks.0.mlp.dropout                  [2,8,768]           transformer_blocks_0_mlp_projection
+call_function   add_4                                             add                                               [2,8,768]           add_1, transformer_blocks_0_mlp_dropout
+call_module     transformer_blocks_1_ln_1                         transformer.blocks.1.ln_1                         [2,8,768]           add_4
+call_module     transformer_blocks_1_attention_qkv_projection     transformer.blocks.1.attention.qkv_projection     [2,8,2304]          transformer_blocks_1_ln_1
+call_method     chunk_1                                           chunk                                             None                transformer_blocks_1_attention_qkv_projection, 3
+call_function   getitem_3                                         getitem                                           [2,8,768]           chunk_1, 0
+call_function   getitem_4                                         getitem                                           [2,8,768]           chunk_1, 1
+call_function   getitem_5                                         getitem                                           [2,8,768]           chunk_1, 2
+call_method     size_10                                           size                                              None                getitem_3, 0
+call_method     size_11                                           size                                              None                getitem_3, 1
+call_method     view_4                                            view                                              [2,8,12,64]         getitem_3, size_10, size_11, 12, 64
+call_method     permute_4                                         permute                                           [2,12,8,64]         view_4, 0, 2, 1, 3
+call_method     size_12                                           size                                              None                getitem_4, 0
+call_method     size_13                                           size                                              None                getitem_4, 1
+call_method     view_5                                            view                                              [2,8,12,64]         getitem_4, size_12, size_13, 12, 64
+call_method     permute_5                                         permute                                           [2,12,8,64]         view_5, 0, 2, 1, 3
+call_method     size_14                                           size                                              None                getitem_5, 0
+call_method     size_15                                           size                                              None                getitem_5, 1
+call_method     view_6                                            view                                              [2,8,12,64]         getitem_5, size_14, size_15, 12, 64
+call_method     permute_6                                         permute                                           [2,12,8,64]         view_6, 0, 2, 1, 3
+call_method     transpose_1                                       transpose                                         [2,12,64,8]         permute_5, -2, -1
+call_function   matmul_2                                          matmul                                            [2,12,8,8]          permute_4, transpose_1
+call_function   truediv_1                                         truediv                                           [2,12,8,8]          matmul_2, 8.0
+call_method     size_16                                           size                                              None                truediv_1, -1
+get_attr        transformer_blocks_1_attention_causal_mask        transformer.blocks.1.attention.causal_mask        [1024,1024]         
+call_function   narrow_3                                          narrow                                            [8,1024]            transformer_blocks_1_attention_causal_mask, 0, 0, size_16
+call_function   narrow_4                                          narrow                                            [8,8]               narrow_3, 1, 0, size_16
+call_function   invert_1                                          invert                                            [8,8]               narrow_4
+call_method     masked_fill_1                                     masked_fill                                       [2,12,8,8]          truediv_1, invert_1, -inf
+call_function   softmax_1                                         softmax                                           [2,12,8,8]          masked_fill_1
+call_module     transformer_blocks_1_attention_attention_dropout  transformer.blocks.1.attention.attention_dropout  [2,12,8,8]          softmax_1
+call_function   matmul_3                                          matmul                                            [2,12,8,64]         transformer_blocks_1_attention_attention_dropout, permute_6
+call_method     permute_7                                         permute                                           [2,8,12,64]         matmul_3, 0, 2, 1, 3
+call_method     contiguous_1                                      contiguous                                        [2,8,12,64]         permute_7
+call_method     size_17                                           size                                              None                contiguous_1, 0
+call_method     size_18                                           size                                              None                contiguous_1, 1
+call_method     view_7                                            view                                              [2,8,768]           contiguous_1, size_17, size_18, 768
+call_module     transformer_blocks_1_attention_output_projection  transformer.blocks.1.attention.output_projection  [2,8,768]           view_7
+call_module     transformer_blocks_1_attention_residual_dropout   transformer.blocks.1.attention.residual_dropout   [2,8,768]           transformer_blocks_1_attention_output_projection
+call_function   add_5                                             add                                               [2,8,768]           add_4, transformer_blocks_1_attention_residual_dropout
+call_module     transformer_blocks_1_ln_2                         transformer.blocks.1.ln_2                         [2,8,768]           add_5
+call_module     transformer_blocks_1_mlp_fc                       transformer.blocks.1.mlp.fc                       [2,8,3072]          transformer_blocks_1_ln_2
+call_function   mul_6                                             mul                                               [2,8,3072]          transformer_blocks_1_mlp_fc, transformer_blocks_1_mlp_fc
+call_function   mul_7                                             mul                                               [2,8,3072]          mul_6, transformer_blocks_1_mlp_fc
+call_function   mul_8                                             mul                                               [2,8,3072]          0.044715, mul_7
+call_function   add_6                                             add                                               [2,8,3072]          transformer_blocks_1_mlp_fc, mul_8
+call_function   mul_9                                             mul                                               [2,8,3072]          0.7978845608028654, add_6
+call_function   mul_10                                            mul                                               [2,8,3072]          0.5, transformer_blocks_1_mlp_fc
+call_function   tanh_1                                            tanh                                              [2,8,3072]          mul_9
+call_function   add_7                                             add                                               [2,8,3072]          1.0, tanh_1
+call_function   mul_11                                            mul                                               [2,8,3072]          mul_10, add_7
+call_module     transformer_blocks_1_mlp_projection               transformer.blocks.1.mlp.projection               [2,8,768]           mul_11
+call_module     transformer_blocks_1_mlp_dropout                  transformer.blocks.1.mlp.dropout                  [2,8,768]           transformer_blocks_1_mlp_projection
+call_function   add_8                                             add                                               [2,8,768]           add_5, transformer_blocks_1_mlp_dropout
+call_module     transformer_blocks_2_ln_1                         transformer.blocks.2.ln_1                         [2,8,768]           add_8
+call_module     transformer_blocks_2_attention_qkv_projection     transformer.blocks.2.attention.qkv_projection     [2,8,2304]          transformer_blocks_2_ln_1
+call_method     chunk_2                                           chunk                                             None                transformer_blocks_2_attention_qkv_projection, 3
+call_function   getitem_6                                         getitem                                           [2,8,768]           chunk_2, 0
+call_function   getitem_7                                         getitem                                           [2,8,768]           chunk_2, 1
+call_function   getitem_8                                         getitem                                           [2,8,768]           chunk_2, 2
+call_method     size_19                                           size                                              None                getitem_6, 0
+call_method     size_20                                           size                                              None                getitem_6, 1
+call_method     view_8                                            view                                              [2,8,12,64]         getitem_6, size_19, size_20, 12, 64
+call_method     permute_8                                         permute                                           [2,12,8,64]         view_8, 0, 2, 1, 3
+call_method     size_21                                           size                                              None                getitem_7, 0
+call_method     size_22                                           size                                              None                getitem_7, 1
+call_method     view_9                                            view                                              [2,8,12,64]         getitem_7, size_21, size_22, 12, 64
+call_method     permute_9                                         permute                                           [2,12,8,64]         view_9, 0, 2, 1, 3
+call_method     size_23                                           size                                              None                getitem_8, 0
+call_method     size_24                                           size                                              None                getitem_8, 1
+call_method     view_10                                           view                                              [2,8,12,64]         getitem_8, size_23, size_24, 12, 64
+call_method     permute_10                                        permute                                           [2,12,8,64]         view_10, 0, 2, 1, 3
+call_method     transpose_2                                       transpose                                         [2,12,64,8]         permute_9, -2, -1
+call_function   matmul_4                                          matmul                                            [2,12,8,8]          permute_8, transpose_2
+call_function   truediv_2                                         truediv                                           [2,12,8,8]          matmul_4, 8.0
+call_method     size_25                                           size                                              None                truediv_2, -1
+get_attr        transformer_blocks_2_attention_causal_mask        transformer.blocks.2.attention.causal_mask        [1024,1024]         
+call_function   narrow_5                                          narrow                                            [8,1024]            transformer_blocks_2_attention_causal_mask, 0, 0, size_25
+call_function   narrow_6                                          narrow                                            [8,8]               narrow_5, 1, 0, size_25
+call_function   invert_2                                          invert                                            [8,8]               narrow_6
+call_method     masked_fill_2                                     masked_fill                                       [2,12,8,8]          truediv_2, invert_2, -inf
+call_function   softmax_2                                         softmax                                           [2,12,8,8]          masked_fill_2
+call_module     transformer_blocks_2_attention_attention_dropout  transformer.blocks.2.attention.attention_dropout  [2,12,8,8]          softmax_2
+call_function   matmul_5                                          matmul                                            [2,12,8,64]         transformer_blocks_2_attention_attention_dropout, permute_10
+call_method     permute_11                                        permute                                           [2,8,12,64]         matmul_5, 0, 2, 1, 3
+call_method     contiguous_2                                      contiguous                                        [2,8,12,64]         permute_11
+call_method     size_26                                           size                                              None                contiguous_2, 0
+call_method     size_27                                           size                                              None                contiguous_2, 1
+call_method     view_11                                           view                                              [2,8,768]           contiguous_2, size_26, size_27, 768
+call_module     transformer_blocks_2_attention_output_projection  transformer.blocks.2.attention.output_projection  [2,8,768]           view_11
+call_module     transformer_blocks_2_attention_residual_dropout   transformer.blocks.2.attention.residual_dropout   [2,8,768]           transformer_blocks_2_attention_output_projection
+call_function   add_9                                             add                                               [2,8,768]           add_8, transformer_blocks_2_attention_residual_dropout
+call_module     transformer_blocks_2_ln_2                         transformer.blocks.2.ln_2                         [2,8,768]           add_9
+call_module     transformer_blocks_2_mlp_fc                       transformer.blocks.2.mlp.fc                       [2,8,3072]          transformer_blocks_2_ln_2
+call_function   mul_12                                            mul                                               [2,8,3072]          transformer_blocks_2_mlp_fc, transformer_blocks_2_mlp_fc
+call_function   mul_13                                            mul                                               [2,8,3072]          mul_12, transformer_blocks_2_mlp_fc
+call_function   mul_14                                            mul                                               [2,8,3072]          0.044715, mul_13
+call_function   add_10                                            add                                               [2,8,3072]          transformer_blocks_2_mlp_fc, mul_14
+call_function   mul_15                                            mul                                               [2,8,3072]          0.7978845608028654, add_10
+call_function   mul_16                                            mul                                               [2,8,3072]          0.5, transformer_blocks_2_mlp_fc
+call_function   tanh_2                                            tanh                                              [2,8,3072]          mul_15
+call_function   add_11                                            add                                               [2,8,3072]          1.0, tanh_2
+call_function   mul_17                                            mul                                               [2,8,3072]          mul_16, add_11
+call_module     transformer_blocks_2_mlp_projection               transformer.blocks.2.mlp.projection               [2,8,768]           mul_17
+call_module     transformer_blocks_2_mlp_dropout                  transformer.blocks.2.mlp.dropout                  [2,8,768]           transformer_blocks_2_mlp_projection
+call_function   add_12                                            add                                               [2,8,768]           add_9, transformer_blocks_2_mlp_dropout
+call_module     transformer_blocks_3_ln_1                         transformer.blocks.3.ln_1                         [2,8,768]           add_12
+call_module     transformer_blocks_3_attention_qkv_projection     transformer.blocks.3.attention.qkv_projection     [2,8,2304]          transformer_blocks_3_ln_1
+call_method     chunk_3                                           chunk                                             None                transformer_blocks_3_attention_qkv_projection, 3
+call_function   getitem_9                                         getitem                                           [2,8,768]           chunk_3, 0
+call_function   getitem_10                                        getitem                                           [2,8,768]           chunk_3, 1
+call_function   getitem_11                                        getitem                                           [2,8,768]           chunk_3, 2
+call_method     size_28                                           size                                              None                getitem_9, 0
+call_method     size_29                                           size                                              None                getitem_9, 1
+call_method     view_12                                           view                                              [2,8,12,64]         getitem_9, size_28, size_29, 12, 64
+call_method     permute_12                                        permute                                           [2,12,8,64]         view_12, 0, 2, 1, 3
+call_method     size_30                                           size                                              None                getitem_10, 0
+call_method     size_31                                           size                                              None                getitem_10, 1
+call_method     view_13                                           view                                              [2,8,12,64]         getitem_10, size_30, size_31, 12, 64
+call_method     permute_13                                        permute                                           [2,12,8,64]         view_13, 0, 2, 1, 3
+call_method     size_32                                           size                                              None                getitem_11, 0
+call_method     size_33                                           size                                              None                getitem_11, 1
+call_method     view_14                                           view                                              [2,8,12,64]         getitem_11, size_32, size_33, 12, 64
+call_method     permute_14                                        permute                                           [2,12,8,64]         view_14, 0, 2, 1, 3
+call_method     transpose_3                                       transpose                                         [2,12,64,8]         permute_13, -2, -1
+call_function   matmul_6                                          matmul                                            [2,12,8,8]          permute_12, transpose_3
+call_function   truediv_3                                         truediv                                           [2,12,8,8]          matmul_6, 8.0
+call_method     size_34                                           size                                              None                truediv_3, -1
+get_attr        transformer_blocks_3_attention_causal_mask        transformer.blocks.3.attention.causal_mask        [1024,1024]         
+call_function   narrow_7                                          narrow                                            [8,1024]            transformer_blocks_3_attention_causal_mask, 0, 0, size_34
+call_function   narrow_8                                          narrow                                            [8,8]               narrow_7, 1, 0, size_34
+call_function   invert_3                                          invert                                            [8,8]               narrow_8
+call_method     masked_fill_3                                     masked_fill                                       [2,12,8,8]          truediv_3, invert_3, -inf
+call_function   softmax_3                                         softmax                                           [2,12,8,8]          masked_fill_3
+call_module     transformer_blocks_3_attention_attention_dropout  transformer.blocks.3.attention.attention_dropout  [2,12,8,8]          softmax_3
+call_function   matmul_7                                          matmul                                            [2,12,8,64]         transformer_blocks_3_attention_attention_dropout, permute_14
+call_method     permute_15                                        permute                                           [2,8,12,64]         matmul_7, 0, 2, 1, 3
+call_method     contiguous_3                                      contiguous                                        [2,8,12,64]         permute_15
+call_method     size_35                                           size                                              None                contiguous_3, 0
+call_method     size_36                                           size                                              None                contiguous_3, 1
+call_method     view_15                                           view                                              [2,8,768]           contiguous_3, size_35, size_36, 768
+call_module     transformer_blocks_3_attention_output_projection  transformer.blocks.3.attention.output_projection  [2,8,768]           view_15
+call_module     transformer_blocks_3_attention_residual_dropout   transformer.blocks.3.attention.residual_dropout   [2,8,768]           transformer_blocks_3_attention_output_projection
+call_function   add_13                                            add                                               [2,8,768]           add_12, transformer_blocks_3_attention_residual_dropout
+call_module     transformer_blocks_3_ln_2                         transformer.blocks.3.ln_2                         [2,8,768]           add_13
+call_module     transformer_blocks_3_mlp_fc                       transformer.blocks.3.mlp.fc                       [2,8,3072]          transformer_blocks_3_ln_2
+call_function   mul_18                                            mul                                               [2,8,3072]          transformer_blocks_3_mlp_fc, transformer_blocks_3_mlp_fc
+call_function   mul_19                                            mul                                               [2,8,3072]          mul_18, transformer_blocks_3_mlp_fc
+call_function   mul_20                                            mul                                               [2,8,3072]          0.044715, mul_19
+call_function   add_14                                            add                                               [2,8,3072]          transformer_blocks_3_mlp_fc, mul_20
+call_function   mul_21                                            mul                                               [2,8,3072]          0.7978845608028654, add_14
+call_function   mul_22                                            mul                                               [2,8,3072]          0.5, transformer_blocks_3_mlp_fc
+call_function   tanh_3                                            tanh                                              [2,8,3072]          mul_21
+call_function   add_15                                            add                                               [2,8,3072]          1.0, tanh_3
+call_function   mul_23                                            mul                                               [2,8,3072]          mul_22, add_15
+call_module     transformer_blocks_3_mlp_projection               transformer.blocks.3.mlp.projection               [2,8,768]           mul_23
+call_module     transformer_blocks_3_mlp_dropout                  transformer.blocks.3.mlp.dropout                  [2,8,768]           transformer_blocks_3_mlp_projection
+call_function   add_16                                            add                                               [2,8,768]           add_13, transformer_blocks_3_mlp_dropout
+call_module     transformer_blocks_4_ln_1                         transformer.blocks.4.ln_1                         [2,8,768]           add_16
+call_module     transformer_blocks_4_attention_qkv_projection     transformer.blocks.4.attention.qkv_projection     [2,8,2304]          transformer_blocks_4_ln_1
+call_method     chunk_4                                           chunk                                             None                transformer_blocks_4_attention_qkv_projection, 3
+call_function   getitem_12                                        getitem                                           [2,8,768]           chunk_4, 0
+call_function   getitem_13                                        getitem                                           [2,8,768]           chunk_4, 1
+call_function   getitem_14                                        getitem                                           [2,8,768]           chunk_4, 2
+call_method     size_37                                           size                                              None                getitem_12, 0
+call_method     size_38                                           size                                              None                getitem_12, 1
+call_method     view_16                                           view                                              [2,8,12,64]         getitem_12, size_37, size_38, 12, 64
+call_method     permute_16                                        permute                                           [2,12,8,64]         view_16, 0, 2, 1, 3
+call_method     size_39                                           size                                              None                getitem_13, 0
+call_method     size_40                                           size                                              None                getitem_13, 1
+call_method     view_17                                           view                                              [2,8,12,64]         getitem_13, size_39, size_40, 12, 64
+call_method     permute_17                                        permute                                           [2,12,8,64]         view_17, 0, 2, 1, 3
+call_method     size_41                                           size                                              None                getitem_14, 0
+call_method     size_42                                           size                                              None                getitem_14, 1
+call_method     view_18                                           view                                              [2,8,12,64]         getitem_14, size_41, size_42, 12, 64
+call_method     permute_18                                        permute                                           [2,12,8,64]         view_18, 0, 2, 1, 3
+call_method     transpose_4                                       transpose                                         [2,12,64,8]         permute_17, -2, -1
+call_function   matmul_8                                          matmul                                            [2,12,8,8]          permute_16, transpose_4
+call_function   truediv_4                                         truediv                                           [2,12,8,8]          matmul_8, 8.0
+call_method     size_43                                           size                                              None                truediv_4, -1
+get_attr        transformer_blocks_4_attention_causal_mask        transformer.blocks.4.attention.causal_mask        [1024,1024]         
+call_function   narrow_9                                          narrow                                            [8,1024]            transformer_blocks_4_attention_causal_mask, 0, 0, size_43
+call_function   narrow_10                                         narrow                                            [8,8]               narrow_9, 1, 0, size_43
+call_function   invert_4                                          invert                                            [8,8]               narrow_10
+call_method     masked_fill_4                                     masked_fill                                       [2,12,8,8]          truediv_4, invert_4, -inf
+call_function   softmax_4                                         softmax                                           [2,12,8,8]          masked_fill_4
+call_module     transformer_blocks_4_attention_attention_dropout  transformer.blocks.4.attention.attention_dropout  [2,12,8,8]          softmax_4
+call_function   matmul_9                                          matmul                                            [2,12,8,64]         transformer_blocks_4_attention_attention_dropout, permute_18
+call_method     permute_19                                        permute                                           [2,8,12,64]         matmul_9, 0, 2, 1, 3
+call_method     contiguous_4                                      contiguous                                        [2,8,12,64]         permute_19
+call_method     size_44                                           size                                              None                contiguous_4, 0
+call_method     size_45                                           size                                              None                contiguous_4, 1
+call_method     view_19                                           view                                              [2,8,768]           contiguous_4, size_44, size_45, 768
+call_module     transformer_blocks_4_attention_output_projection  transformer.blocks.4.attention.output_projection  [2,8,768]           view_19
+call_module     transformer_blocks_4_attention_residual_dropout   transformer.blocks.4.attention.residual_dropout   [2,8,768]           transformer_blocks_4_attention_output_projection
+call_function   add_17                                            add                                               [2,8,768]           add_16, transformer_blocks_4_attention_residual_dropout
+call_module     transformer_blocks_4_ln_2                         transformer.blocks.4.ln_2                         [2,8,768]           add_17
+call_module     transformer_blocks_4_mlp_fc                       transformer.blocks.4.mlp.fc                       [2,8,3072]          transformer_blocks_4_ln_2
+call_function   mul_24                                            mul                                               [2,8,3072]          transformer_blocks_4_mlp_fc, transformer_blocks_4_mlp_fc
+call_function   mul_25                                            mul                                               [2,8,3072]          mul_24, transformer_blocks_4_mlp_fc
+call_function   mul_26                                            mul                                               [2,8,3072]          0.044715, mul_25
+call_function   add_18                                            add                                               [2,8,3072]          transformer_blocks_4_mlp_fc, mul_26
+call_function   mul_27                                            mul                                               [2,8,3072]          0.7978845608028654, add_18
+call_function   mul_28                                            mul                                               [2,8,3072]          0.5, transformer_blocks_4_mlp_fc
+call_function   tanh_4                                            tanh                                              [2,8,3072]          mul_27
+call_function   add_19                                            add                                               [2,8,3072]          1.0, tanh_4
+call_function   mul_29                                            mul                                               [2,8,3072]          mul_28, add_19
+call_module     transformer_blocks_4_mlp_projection               transformer.blocks.4.mlp.projection               [2,8,768]           mul_29
+call_module     transformer_blocks_4_mlp_dropout                  transformer.blocks.4.mlp.dropout                  [2,8,768]           transformer_blocks_4_mlp_projection
+call_function   add_20                                            add                                               [2,8,768]           add_17, transformer_blocks_4_mlp_dropout
+call_module     transformer_blocks_5_ln_1                         transformer.blocks.5.ln_1                         [2,8,768]           add_20
+call_module     transformer_blocks_5_attention_qkv_projection     transformer.blocks.5.attention.qkv_projection     [2,8,2304]          transformer_blocks_5_ln_1
+call_method     chunk_5                                           chunk                                             None                transformer_blocks_5_attention_qkv_projection, 3
+call_function   getitem_15                                        getitem                                           [2,8,768]           chunk_5, 0
+call_function   getitem_16                                        getitem                                           [2,8,768]           chunk_5, 1
+call_function   getitem_17                                        getitem                                           [2,8,768]           chunk_5, 2
+call_method     size_46                                           size                                              None                getitem_15, 0
+call_method     size_47                                           size                                              None                getitem_15, 1
+call_method     view_20                                           view                                              [2,8,12,64]         getitem_15, size_46, size_47, 12, 64
+call_method     permute_20                                        permute                                           [2,12,8,64]         view_20, 0, 2, 1, 3
+call_method     size_48                                           size                                              None                getitem_16, 0
+call_method     size_49                                           size                                              None                getitem_16, 1
+call_method     view_21                                           view                                              [2,8,12,64]         getitem_16, size_48, size_49, 12, 64
+call_method     permute_21                                        permute                                           [2,12,8,64]         view_21, 0, 2, 1, 3
+call_method     size_50                                           size                                              None                getitem_17, 0
+call_method     size_51                                           size                                              None                getitem_17, 1
+call_method     view_22                                           view                                              [2,8,12,64]         getitem_17, size_50, size_51, 12, 64
+call_method     permute_22                                        permute                                           [2,12,8,64]         view_22, 0, 2, 1, 3
+call_method     transpose_5                                       transpose                                         [2,12,64,8]         permute_21, -2, -1
+call_function   matmul_10                                         matmul                                            [2,12,8,8]          permute_20, transpose_5
+call_function   truediv_5                                         truediv                                           [2,12,8,8]          matmul_10, 8.0
+call_method     size_52                                           size                                              None                truediv_5, -1
+get_attr        transformer_blocks_5_attention_causal_mask        transformer.blocks.5.attention.causal_mask        [1024,1024]         
+call_function   narrow_11                                         narrow                                            [8,1024]            transformer_blocks_5_attention_causal_mask, 0, 0, size_52
+call_function   narrow_12                                         narrow                                            [8,8]               narrow_11, 1, 0, size_52
+call_function   invert_5                                          invert                                            [8,8]               narrow_12
+call_method     masked_fill_5                                     masked_fill                                       [2,12,8,8]          truediv_5, invert_5, -inf
+call_function   softmax_5                                         softmax                                           [2,12,8,8]          masked_fill_5
+call_module     transformer_blocks_5_attention_attention_dropout  transformer.blocks.5.attention.attention_dropout  [2,12,8,8]          softmax_5
+call_function   matmul_11                                         matmul                                            [2,12,8,64]         transformer_blocks_5_attention_attention_dropout, permute_22
+call_method     permute_23                                        permute                                           [2,8,12,64]         matmul_11, 0, 2, 1, 3
+call_method     contiguous_5                                      contiguous                                        [2,8,12,64]         permute_23
+call_method     size_53                                           size                                              None                contiguous_5, 0
+call_method     size_54                                           size                                              None                contiguous_5, 1
+call_method     view_23                                           view                                              [2,8,768]           contiguous_5, size_53, size_54, 768
+call_module     transformer_blocks_5_attention_output_projection  transformer.blocks.5.attention.output_projection  [2,8,768]           view_23
+call_module     transformer_blocks_5_attention_residual_dropout   transformer.blocks.5.attention.residual_dropout   [2,8,768]           transformer_blocks_5_attention_output_projection
+call_function   add_21                                            add                                               [2,8,768]           add_20, transformer_blocks_5_attention_residual_dropout
+call_module     transformer_blocks_5_ln_2                         transformer.blocks.5.ln_2                         [2,8,768]           add_21
+call_module     transformer_blocks_5_mlp_fc                       transformer.blocks.5.mlp.fc                       [2,8,3072]          transformer_blocks_5_ln_2
+call_function   mul_30                                            mul                                               [2,8,3072]          transformer_blocks_5_mlp_fc, transformer_blocks_5_mlp_fc
+call_function   mul_31                                            mul                                               [2,8,3072]          mul_30, transformer_blocks_5_mlp_fc
+call_function   mul_32                                            mul                                               [2,8,3072]          0.044715, mul_31
+call_function   add_22                                            add                                               [2,8,3072]          transformer_blocks_5_mlp_fc, mul_32
+call_function   mul_33                                            mul                                               [2,8,3072]          0.7978845608028654, add_22
+call_function   mul_34                                            mul                                               [2,8,3072]          0.5, transformer_blocks_5_mlp_fc
+call_function   tanh_5                                            tanh                                              [2,8,3072]          mul_33
+call_function   add_23                                            add                                               [2,8,3072]          1.0, tanh_5
+call_function   mul_35                                            mul                                               [2,8,3072]          mul_34, add_23
+call_module     transformer_blocks_5_mlp_projection               transformer.blocks.5.mlp.projection               [2,8,768]           mul_35
+call_module     transformer_blocks_5_mlp_dropout                  transformer.blocks.5.mlp.dropout                  [2,8,768]           transformer_blocks_5_mlp_projection
+call_function   add_24                                            add                                               [2,8,768]           add_21, transformer_blocks_5_mlp_dropout
+call_module     transformer_final_layer_norm                      transformer.final_layer_norm                      [2,8,768]           add_24
+call_module     lm_head                                           lm_head                                           [2,8,50257]         transformer_final_layer_norm
+output          output                                            output                                            [2,8,50257]         lm_head

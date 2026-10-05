@@ -1,0 +1,1832 @@
+[
+ {
+  "name": "transformer.embeddings.token_embedding.weight",
+  "module": "TokenEmbedding",
+  "role": "parameter",
+  "shape": [
+   50257,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 38597376,
+  "bytes": 154389504,
+  "requires_grad": true,
+  "shared": "shared-with-lm_head.weight",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:0"
+ },
+ {
+  "name": "transformer.embeddings.position_embedding.weight",
+  "module": "PositionEmbedding",
+  "role": "parameter",
+  "shape": [
+   1024,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 786432,
+  "bytes": 3145728,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:1"
+ },
+ {
+  "name": "transformer.blocks.0.ln_1.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:2"
+ },
+ {
+  "name": "transformer.blocks.0.ln_1.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:3"
+ },
+ {
+  "name": "transformer.blocks.0.attention.qkv_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 1769472,
+  "bytes": 7077888,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:4"
+ },
+ {
+  "name": "transformer.blocks.0.attention.qkv_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 2304,
+  "bytes": 9216,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:5"
+ },
+ {
+  "name": "transformer.blocks.0.attention.output_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 589824,
+  "bytes": 2359296,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:6"
+ },
+ {
+  "name": "transformer.blocks.0.attention.output_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:7"
+ },
+ {
+  "name": "transformer.blocks.0.ln_2.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:8"
+ },
+ {
+  "name": "transformer.blocks.0.ln_2.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:9"
+ },
+ {
+  "name": "transformer.blocks.0.mlp.fc.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:10"
+ },
+ {
+  "name": "transformer.blocks.0.mlp.fc.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 3072,
+  "bytes": 12288,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:11"
+ },
+ {
+  "name": "transformer.blocks.0.mlp.projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   3072
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   3072,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:12"
+ },
+ {
+  "name": "transformer.blocks.0.mlp.projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:13"
+ },
+ {
+  "name": "transformer.blocks.1.ln_1.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:14"
+ },
+ {
+  "name": "transformer.blocks.1.ln_1.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:15"
+ },
+ {
+  "name": "transformer.blocks.1.attention.qkv_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 1769472,
+  "bytes": 7077888,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:16"
+ },
+ {
+  "name": "transformer.blocks.1.attention.qkv_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 2304,
+  "bytes": 9216,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:17"
+ },
+ {
+  "name": "transformer.blocks.1.attention.output_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 589824,
+  "bytes": 2359296,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:18"
+ },
+ {
+  "name": "transformer.blocks.1.attention.output_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:19"
+ },
+ {
+  "name": "transformer.blocks.1.ln_2.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:20"
+ },
+ {
+  "name": "transformer.blocks.1.ln_2.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:21"
+ },
+ {
+  "name": "transformer.blocks.1.mlp.fc.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:22"
+ },
+ {
+  "name": "transformer.blocks.1.mlp.fc.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 3072,
+  "bytes": 12288,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:23"
+ },
+ {
+  "name": "transformer.blocks.1.mlp.projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   3072
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   3072,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:24"
+ },
+ {
+  "name": "transformer.blocks.1.mlp.projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:25"
+ },
+ {
+  "name": "transformer.blocks.2.ln_1.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:26"
+ },
+ {
+  "name": "transformer.blocks.2.ln_1.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:27"
+ },
+ {
+  "name": "transformer.blocks.2.attention.qkv_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 1769472,
+  "bytes": 7077888,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:28"
+ },
+ {
+  "name": "transformer.blocks.2.attention.qkv_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 2304,
+  "bytes": 9216,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:29"
+ },
+ {
+  "name": "transformer.blocks.2.attention.output_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 589824,
+  "bytes": 2359296,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:30"
+ },
+ {
+  "name": "transformer.blocks.2.attention.output_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:31"
+ },
+ {
+  "name": "transformer.blocks.2.ln_2.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:32"
+ },
+ {
+  "name": "transformer.blocks.2.ln_2.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:33"
+ },
+ {
+  "name": "transformer.blocks.2.mlp.fc.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:34"
+ },
+ {
+  "name": "transformer.blocks.2.mlp.fc.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 3072,
+  "bytes": 12288,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:35"
+ },
+ {
+  "name": "transformer.blocks.2.mlp.projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   3072
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   3072,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:36"
+ },
+ {
+  "name": "transformer.blocks.2.mlp.projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:37"
+ },
+ {
+  "name": "transformer.blocks.3.ln_1.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:38"
+ },
+ {
+  "name": "transformer.blocks.3.ln_1.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:39"
+ },
+ {
+  "name": "transformer.blocks.3.attention.qkv_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 1769472,
+  "bytes": 7077888,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:40"
+ },
+ {
+  "name": "transformer.blocks.3.attention.qkv_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 2304,
+  "bytes": 9216,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:41"
+ },
+ {
+  "name": "transformer.blocks.3.attention.output_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 589824,
+  "bytes": 2359296,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:42"
+ },
+ {
+  "name": "transformer.blocks.3.attention.output_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:43"
+ },
+ {
+  "name": "transformer.blocks.3.ln_2.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:44"
+ },
+ {
+  "name": "transformer.blocks.3.ln_2.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:45"
+ },
+ {
+  "name": "transformer.blocks.3.mlp.fc.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:46"
+ },
+ {
+  "name": "transformer.blocks.3.mlp.fc.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 3072,
+  "bytes": 12288,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:47"
+ },
+ {
+  "name": "transformer.blocks.3.mlp.projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   3072
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   3072,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:48"
+ },
+ {
+  "name": "transformer.blocks.3.mlp.projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:49"
+ },
+ {
+  "name": "transformer.blocks.4.ln_1.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:50"
+ },
+ {
+  "name": "transformer.blocks.4.ln_1.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:51"
+ },
+ {
+  "name": "transformer.blocks.4.attention.qkv_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 1769472,
+  "bytes": 7077888,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:52"
+ },
+ {
+  "name": "transformer.blocks.4.attention.qkv_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 2304,
+  "bytes": 9216,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:53"
+ },
+ {
+  "name": "transformer.blocks.4.attention.output_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 589824,
+  "bytes": 2359296,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:54"
+ },
+ {
+  "name": "transformer.blocks.4.attention.output_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:55"
+ },
+ {
+  "name": "transformer.blocks.4.ln_2.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:56"
+ },
+ {
+  "name": "transformer.blocks.4.ln_2.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:57"
+ },
+ {
+  "name": "transformer.blocks.4.mlp.fc.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:58"
+ },
+ {
+  "name": "transformer.blocks.4.mlp.fc.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 3072,
+  "bytes": 12288,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:59"
+ },
+ {
+  "name": "transformer.blocks.4.mlp.projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   3072
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   3072,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:60"
+ },
+ {
+  "name": "transformer.blocks.4.mlp.projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:61"
+ },
+ {
+  "name": "transformer.blocks.5.ln_1.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:62"
+ },
+ {
+  "name": "transformer.blocks.5.ln_1.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:63"
+ },
+ {
+  "name": "transformer.blocks.5.attention.qkv_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 1769472,
+  "bytes": 7077888,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:64"
+ },
+ {
+  "name": "transformer.blocks.5.attention.qkv_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   2304
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 2304,
+  "bytes": 9216,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:65"
+ },
+ {
+  "name": "transformer.blocks.5.attention.output_projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 589824,
+  "bytes": 2359296,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:66"
+ },
+ {
+  "name": "transformer.blocks.5.attention.output_projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:67"
+ },
+ {
+  "name": "transformer.blocks.5.ln_2.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:68"
+ },
+ {
+  "name": "transformer.blocks.5.ln_2.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:69"
+ },
+ {
+  "name": "transformer.blocks.5.mlp.fc.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:70"
+ },
+ {
+  "name": "transformer.blocks.5.mlp.fc.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   3072
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 3072,
+  "bytes": 12288,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:71"
+ },
+ {
+  "name": "transformer.blocks.5.mlp.projection.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768,
+   3072
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 2359296,
+  "bytes": 9437184,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   3072,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:72"
+ },
+ {
+  "name": "transformer.blocks.5.mlp.projection.bias",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:73"
+ },
+ {
+  "name": "transformer.final_layer_norm.weight",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:74"
+ },
+ {
+  "name": "transformer.final_layer_norm.bias",
+  "module": "LayerNorm",
+  "role": "parameter",
+  "shape": [
+   768
+  ],
+  "rank": 1,
+  "dtype": "float32",
+  "numel": 768,
+  "bytes": 3072,
+  "requires_grad": true,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:75"
+ },
+ {
+  "name": "lm_head.weight",
+  "module": "Linear",
+  "role": "parameter",
+  "shape": [
+   50257,
+   768
+  ],
+  "rank": 2,
+  "dtype": "float32",
+  "numel": 38597376,
+  "bytes": 154389504,
+  "requires_grad": true,
+  "shared": "shared-with-transformer.embeddings.token_embedding.weight",
+  "stride": [
+   768,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:0"
+ },
+ {
+  "name": "transformer.embeddings.position_ids",
+  "module": "GPT2Embeddings",
+  "role": "buffer",
+  "shape": [
+   1024
+  ],
+  "rank": 1,
+  "dtype": "int64",
+  "numel": 1024,
+  "bytes": 8192,
+  "requires_grad": false,
+  "shared": "no",
+  "stride": [
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:76"
+ },
+ {
+  "name": "transformer.blocks.0.attention.causal_mask",
+  "module": "CausalSelfAttention",
+  "role": "buffer",
+  "shape": [
+   1024,
+   1024
+  ],
+  "rank": 2,
+  "dtype": "bool",
+  "numel": 1048576,
+  "bytes": 1048576,
+  "requires_grad": false,
+  "shared": "no",
+  "stride": [
+   1024,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:77"
+ },
+ {
+  "name": "transformer.blocks.1.attention.causal_mask",
+  "module": "CausalSelfAttention",
+  "role": "buffer",
+  "shape": [
+   1024,
+   1024
+  ],
+  "rank": 2,
+  "dtype": "bool",
+  "numel": 1048576,
+  "bytes": 1048576,
+  "requires_grad": false,
+  "shared": "no",
+  "stride": [
+   1024,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:78"
+ },
+ {
+  "name": "transformer.blocks.2.attention.causal_mask",
+  "module": "CausalSelfAttention",
+  "role": "buffer",
+  "shape": [
+   1024,
+   1024
+  ],
+  "rank": 2,
+  "dtype": "bool",
+  "numel": 1048576,
+  "bytes": 1048576,
+  "requires_grad": false,
+  "shared": "no",
+  "stride": [
+   1024,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:79"
+ },
+ {
+  "name": "transformer.blocks.3.attention.causal_mask",
+  "module": "CausalSelfAttention",
+  "role": "buffer",
+  "shape": [
+   1024,
+   1024
+  ],
+  "rank": 2,
+  "dtype": "bool",
+  "numel": 1048576,
+  "bytes": 1048576,
+  "requires_grad": false,
+  "shared": "no",
+  "stride": [
+   1024,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:80"
+ },
+ {
+  "name": "transformer.blocks.4.attention.causal_mask",
+  "module": "CausalSelfAttention",
+  "role": "buffer",
+  "shape": [
+   1024,
+   1024
+  ],
+  "rank": 2,
+  "dtype": "bool",
+  "numel": 1048576,
+  "bytes": 1048576,
+  "requires_grad": false,
+  "shared": "no",
+  "stride": [
+   1024,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:81"
+ },
+ {
+  "name": "transformer.blocks.5.attention.causal_mask",
+  "module": "CausalSelfAttention",
+  "role": "buffer",
+  "shape": [
+   1024,
+   1024
+  ],
+  "rank": 2,
+  "dtype": "bool",
+  "numel": 1048576,
+  "bytes": 1048576,
+  "requires_grad": false,
+  "shared": "no",
+  "stride": [
+   1024,
+   1
+  ],
+  "storage_offset": 0,
+  "is_contiguous": true,
+  "is_view": false,
+  "storage_id": "storage:82"
+ }
+]

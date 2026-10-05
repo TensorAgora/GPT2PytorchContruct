@@ -1,0 +1,7131 @@
+{
+ "format": "tensormorph-pytorch-trace",
+ "version": 1,
+ "model": {
+  "name": "distilgpt2",
+  "class": "DistilGPT2LMHeadModel",
+  "config": {
+   "vocab_size": 50257,
+   "max_position_embeddings": 1024,
+   "hidden_size": 768,
+   "num_layers": 6,
+   "num_heads": 12,
+   "intermediate_size": 3072,
+   "layer_norm_epsilon": 1e-05,
+   "embedding_dropout": 0.1,
+   "attention_dropout": 0.1,
+   "residual_dropout": 0.1
+  }
+ },
+ "inputs": [
+  {
+   "name": "input.input_ids",
+   "shape": [
+    2,
+    8
+   ],
+   "dtype": "int64",
+   "device": "cpu",
+   "numel": 16
+  }
+ ],
+ "parameters": [
+  {
+   "name": "transformer.embeddings.token_embedding.weight",
+   "kind": "parameter",
+   "shape": [
+    50257,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 38597376,
+   "element_size": 4,
+   "bytes": 154389504,
+   "storage_ptr": null,
+   "storage_bytes": 154389504,
+   "storage_id": "storage:0",
+   "tied_with": [
+    "lm_head.weight"
+   ]
+  },
+  {
+   "name": "transformer.embeddings.position_embedding.weight",
+   "kind": "parameter",
+   "shape": [
+    1024,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 786432,
+   "element_size": 4,
+   "bytes": 3145728,
+   "storage_ptr": null,
+   "storage_bytes": 3145728,
+   "storage_id": "storage:1",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.ln_1.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:2",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.ln_1.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:3",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.attention.qkv_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    2304,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 1769472,
+   "element_size": 4,
+   "bytes": 7077888,
+   "storage_ptr": null,
+   "storage_bytes": 7077888,
+   "storage_id": "storage:4",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.attention.qkv_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    2304
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2304,
+   "element_size": 4,
+   "bytes": 9216,
+   "storage_ptr": null,
+   "storage_bytes": 9216,
+   "storage_id": "storage:5",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.attention.output_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 589824,
+   "element_size": 4,
+   "bytes": 2359296,
+   "storage_ptr": null,
+   "storage_bytes": 2359296,
+   "storage_id": "storage:6",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.attention.output_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:7",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.ln_2.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:8",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.ln_2.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:9",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.mlp.fc.weight",
+   "kind": "parameter",
+   "shape": [
+    3072,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:10",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.mlp.fc.bias",
+   "kind": "parameter",
+   "shape": [
+    3072
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 3072,
+   "element_size": 4,
+   "bytes": 12288,
+   "storage_ptr": null,
+   "storage_bytes": 12288,
+   "storage_id": "storage:11",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.mlp.projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    3072
+   ],
+   "stride": [
+    3072,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:12",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.0.mlp.projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:13",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.ln_1.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:14",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.ln_1.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:15",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.attention.qkv_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    2304,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 1769472,
+   "element_size": 4,
+   "bytes": 7077888,
+   "storage_ptr": null,
+   "storage_bytes": 7077888,
+   "storage_id": "storage:16",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.attention.qkv_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    2304
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2304,
+   "element_size": 4,
+   "bytes": 9216,
+   "storage_ptr": null,
+   "storage_bytes": 9216,
+   "storage_id": "storage:17",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.attention.output_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 589824,
+   "element_size": 4,
+   "bytes": 2359296,
+   "storage_ptr": null,
+   "storage_bytes": 2359296,
+   "storage_id": "storage:18",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.attention.output_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:19",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.ln_2.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:20",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.ln_2.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:21",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.mlp.fc.weight",
+   "kind": "parameter",
+   "shape": [
+    3072,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:22",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.mlp.fc.bias",
+   "kind": "parameter",
+   "shape": [
+    3072
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 3072,
+   "element_size": 4,
+   "bytes": 12288,
+   "storage_ptr": null,
+   "storage_bytes": 12288,
+   "storage_id": "storage:23",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.mlp.projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    3072
+   ],
+   "stride": [
+    3072,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:24",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.1.mlp.projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:25",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.ln_1.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:26",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.ln_1.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:27",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.attention.qkv_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    2304,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 1769472,
+   "element_size": 4,
+   "bytes": 7077888,
+   "storage_ptr": null,
+   "storage_bytes": 7077888,
+   "storage_id": "storage:28",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.attention.qkv_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    2304
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2304,
+   "element_size": 4,
+   "bytes": 9216,
+   "storage_ptr": null,
+   "storage_bytes": 9216,
+   "storage_id": "storage:29",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.attention.output_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 589824,
+   "element_size": 4,
+   "bytes": 2359296,
+   "storage_ptr": null,
+   "storage_bytes": 2359296,
+   "storage_id": "storage:30",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.attention.output_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:31",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.ln_2.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:32",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.ln_2.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:33",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.mlp.fc.weight",
+   "kind": "parameter",
+   "shape": [
+    3072,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:34",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.mlp.fc.bias",
+   "kind": "parameter",
+   "shape": [
+    3072
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 3072,
+   "element_size": 4,
+   "bytes": 12288,
+   "storage_ptr": null,
+   "storage_bytes": 12288,
+   "storage_id": "storage:35",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.mlp.projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    3072
+   ],
+   "stride": [
+    3072,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:36",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.2.mlp.projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:37",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.ln_1.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:38",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.ln_1.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:39",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.attention.qkv_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    2304,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 1769472,
+   "element_size": 4,
+   "bytes": 7077888,
+   "storage_ptr": null,
+   "storage_bytes": 7077888,
+   "storage_id": "storage:40",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.attention.qkv_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    2304
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2304,
+   "element_size": 4,
+   "bytes": 9216,
+   "storage_ptr": null,
+   "storage_bytes": 9216,
+   "storage_id": "storage:41",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.attention.output_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 589824,
+   "element_size": 4,
+   "bytes": 2359296,
+   "storage_ptr": null,
+   "storage_bytes": 2359296,
+   "storage_id": "storage:42",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.attention.output_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:43",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.ln_2.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:44",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.ln_2.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:45",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.mlp.fc.weight",
+   "kind": "parameter",
+   "shape": [
+    3072,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:46",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.mlp.fc.bias",
+   "kind": "parameter",
+   "shape": [
+    3072
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 3072,
+   "element_size": 4,
+   "bytes": 12288,
+   "storage_ptr": null,
+   "storage_bytes": 12288,
+   "storage_id": "storage:47",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.mlp.projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    3072
+   ],
+   "stride": [
+    3072,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:48",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.3.mlp.projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:49",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.ln_1.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:50",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.ln_1.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:51",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.attention.qkv_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    2304,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 1769472,
+   "element_size": 4,
+   "bytes": 7077888,
+   "storage_ptr": null,
+   "storage_bytes": 7077888,
+   "storage_id": "storage:52",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.attention.qkv_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    2304
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2304,
+   "element_size": 4,
+   "bytes": 9216,
+   "storage_ptr": null,
+   "storage_bytes": 9216,
+   "storage_id": "storage:53",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.attention.output_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 589824,
+   "element_size": 4,
+   "bytes": 2359296,
+   "storage_ptr": null,
+   "storage_bytes": 2359296,
+   "storage_id": "storage:54",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.attention.output_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:55",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.ln_2.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:56",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.ln_2.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:57",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.mlp.fc.weight",
+   "kind": "parameter",
+   "shape": [
+    3072,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:58",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.mlp.fc.bias",
+   "kind": "parameter",
+   "shape": [
+    3072
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 3072,
+   "element_size": 4,
+   "bytes": 12288,
+   "storage_ptr": null,
+   "storage_bytes": 12288,
+   "storage_id": "storage:59",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.mlp.projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    3072
+   ],
+   "stride": [
+    3072,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:60",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.4.mlp.projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:61",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.ln_1.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:62",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.ln_1.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:63",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.attention.qkv_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    2304,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 1769472,
+   "element_size": 4,
+   "bytes": 7077888,
+   "storage_ptr": null,
+   "storage_bytes": 7077888,
+   "storage_id": "storage:64",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.attention.qkv_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    2304
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2304,
+   "element_size": 4,
+   "bytes": 9216,
+   "storage_ptr": null,
+   "storage_bytes": 9216,
+   "storage_id": "storage:65",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.attention.output_projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 589824,
+   "element_size": 4,
+   "bytes": 2359296,
+   "storage_ptr": null,
+   "storage_bytes": 2359296,
+   "storage_id": "storage:66",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.attention.output_projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:67",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.ln_2.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:68",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.ln_2.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:69",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.mlp.fc.weight",
+   "kind": "parameter",
+   "shape": [
+    3072,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:70",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.mlp.fc.bias",
+   "kind": "parameter",
+   "shape": [
+    3072
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 3072,
+   "element_size": 4,
+   "bytes": 12288,
+   "storage_ptr": null,
+   "storage_bytes": 12288,
+   "storage_id": "storage:71",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.mlp.projection.weight",
+   "kind": "parameter",
+   "shape": [
+    768,
+    3072
+   ],
+   "stride": [
+    3072,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 2359296,
+   "element_size": 4,
+   "bytes": 9437184,
+   "storage_ptr": null,
+   "storage_bytes": 9437184,
+   "storage_id": "storage:72",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.blocks.5.mlp.projection.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:73",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.final_layer_norm.weight",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:74",
+   "tied_with": []
+  },
+  {
+   "name": "transformer.final_layer_norm.bias",
+   "kind": "parameter",
+   "shape": [
+    768
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 768,
+   "element_size": 4,
+   "bytes": 3072,
+   "storage_ptr": null,
+   "storage_bytes": 3072,
+   "storage_id": "storage:75",
+   "tied_with": []
+  },
+  {
+   "name": "lm_head.weight",
+   "kind": "parameter",
+   "shape": [
+    50257,
+    768
+   ],
+   "stride": [
+    768,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "float32",
+   "device": "cpu",
+   "requires_grad": true,
+   "numel": 38597376,
+   "element_size": 4,
+   "bytes": 154389504,
+   "storage_ptr": null,
+   "storage_bytes": 154389504,
+   "storage_id": "storage:0",
+   "tied_with": [
+    "transformer.embeddings.token_embedding.weight"
+   ]
+  }
+ ],
+ "buffers": [
+  {
+   "name": "transformer.embeddings.position_ids",
+   "kind": "buffer",
+   "shape": [
+    1024
+   ],
+   "stride": [
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "int64",
+   "device": "cpu",
+   "requires_grad": false,
+   "numel": 1024,
+   "element_size": 8,
+   "bytes": 8192,
+   "storage_ptr": null,
+   "storage_bytes": 8192
+  },
+  {
+   "name": "transformer.blocks.0.attention.causal_mask",
+   "kind": "buffer",
+   "shape": [
+    1024,
+    1024
+   ],
+   "stride": [
+    1024,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "bool",
+   "device": "cpu",
+   "requires_grad": false,
+   "numel": 1048576,
+   "element_size": 1,
+   "bytes": 1048576,
+   "storage_ptr": null,
+   "storage_bytes": 1048576
+  },
+  {
+   "name": "transformer.blocks.1.attention.causal_mask",
+   "kind": "buffer",
+   "shape": [
+    1024,
+    1024
+   ],
+   "stride": [
+    1024,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "bool",
+   "device": "cpu",
+   "requires_grad": false,
+   "numel": 1048576,
+   "element_size": 1,
+   "bytes": 1048576,
+   "storage_ptr": null,
+   "storage_bytes": 1048576
+  },
+  {
+   "name": "transformer.blocks.2.attention.causal_mask",
+   "kind": "buffer",
+   "shape": [
+    1024,
+    1024
+   ],
+   "stride": [
+    1024,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "bool",
+   "device": "cpu",
+   "requires_grad": false,
+   "numel": 1048576,
+   "element_size": 1,
+   "bytes": 1048576,
+   "storage_ptr": null,
+   "storage_bytes": 1048576
+  },
+  {
+   "name": "transformer.blocks.3.attention.causal_mask",
+   "kind": "buffer",
+   "shape": [
+    1024,
+    1024
+   ],
+   "stride": [
+    1024,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "bool",
+   "device": "cpu",
+   "requires_grad": false,
+   "numel": 1048576,
+   "element_size": 1,
+   "bytes": 1048576,
+   "storage_ptr": null,
+   "storage_bytes": 1048576
+  },
+  {
+   "name": "transformer.blocks.4.attention.causal_mask",
+   "kind": "buffer",
+   "shape": [
+    1024,
+    1024
+   ],
+   "stride": [
+    1024,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "bool",
+   "device": "cpu",
+   "requires_grad": false,
+   "numel": 1048576,
+   "element_size": 1,
+   "bytes": 1048576,
+   "storage_ptr": null,
+   "storage_bytes": 1048576
+  },
+  {
+   "name": "transformer.blocks.5.attention.causal_mask",
+   "kind": "buffer",
+   "shape": [
+    1024,
+    1024
+   ],
+   "stride": [
+    1024,
+    1
+   ],
+   "storage_offset": 0,
+   "is_contiguous": true,
+   "is_view": false,
+   "dtype": "bool",
+   "device": "cpu",
+   "requires_grad": false,
+   "numel": 1048576,
+   "element_size": 1,
+   "bytes": 1048576,
+   "storage_ptr": null,
+   "storage_bytes": 1048576
+  }
+ ],
+ "events": [
+  {
+   "index": 0,
+   "exit_index": 85,
+   "depth": 0,
+   "module": "model",
+   "module_type": "DistilGPT2LMHeadModel",
+   "input_shapes": [
+    [
+     2,
+     8
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     50257
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "input.input_ids",
+     "shape": [
+      2,
+      8
+     ],
+     "dtype": "int64",
+     "device": "cpu",
+     "numel": 16
+    }
+   ],
+   "outputs": [
+    {
+     "name": "model.logits",
+     "shape": [
+      2,
+      8,
+      50257
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 804112
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 1,
+   "exit_index": 83,
+   "depth": 1,
+   "module": "transformer",
+   "module_type": "GPT2Model",
+   "input_shapes": [
+    [
+     2,
+     8
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "transformer.input",
+     "shape": [
+      2,
+      8
+     ],
+     "dtype": "int64",
+     "device": "cpu",
+     "numel": 16
+    }
+   ],
+   "outputs": [
+    {
+     "name": "model.final_hidden",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 2,
+   "exit_index": 3,
+   "depth": 2,
+   "module": "transformer.embeddings",
+   "module_type": "GPT2Embeddings",
+   "input_shapes": [
+    [
+     2,
+     8
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "embeddings.input",
+     "shape": [
+      2,
+      8
+     ],
+     "dtype": "int64",
+     "device": "cpu",
+     "numel": 16
+    }
+   ],
+   "outputs": [
+    {
+     "name": "embeddings.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 3,
+   "exit_index": 0,
+   "depth": 3,
+   "module": "transformer.embeddings.token_embedding",
+   "module_type": "TokenEmbedding",
+   "input_shapes": [
+    [
+     2,
+     8
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "embedding.token.input",
+     "shape": [
+      2,
+      8
+     ],
+     "dtype": "int64",
+     "device": "cpu",
+     "numel": 16
+    }
+   ],
+   "outputs": [
+    {
+     "name": "embedding.token.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.embeddings.token_embedding.weight"
+   ],
+   "internals": []
+  },
+  {
+   "index": 4,
+   "exit_index": 1,
+   "depth": 3,
+   "module": "transformer.embeddings.position_embedding",
+   "module_type": "PositionEmbedding",
+   "input_shapes": [
+    [
+     1,
+     8
+    ]
+   ],
+   "output_shapes": [
+    [
+     1,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "embedding.position.input",
+     "shape": [
+      1,
+      8
+     ],
+     "dtype": "int64",
+     "device": "cpu",
+     "numel": 8
+    }
+   ],
+   "outputs": [
+    {
+     "name": "embedding.position.output",
+     "shape": [
+      1,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 6144
+    }
+   ],
+   "parameters": [
+    "transformer.embeddings.position_embedding.weight"
+   ],
+   "internals": []
+  },
+  {
+   "index": 5,
+   "exit_index": 2,
+   "depth": 3,
+   "module": "transformer.embeddings.dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "embeddings.dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "embeddings.dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 6,
+   "exit_index": 16,
+   "depth": 2,
+   "module": "transformer.blocks.0",
+   "module_type": "TransformerBlock",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 7,
+   "exit_index": 4,
+   "depth": 3,
+   "module": "transformer.blocks.0.ln_1",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.ln_1.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.ln_1.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.0.ln_1.weight",
+    "transformer.blocks.0.ln_1.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 8,
+   "exit_index": 9,
+   "depth": 3,
+   "module": "transformer.blocks.0.attention",
+   "module_type": "CausalSelfAttention",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.attention.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.attention.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": [
+    {
+     "name": "block.0.attention.qkv",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    },
+    {
+     "name": "block.0.attention.q",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.0.attention.k",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.0.attention.v",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.0.attention.scores",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.0.attention.mask",
+     "shape": [
+      8,
+      8
+     ],
+     "dtype": "bool",
+     "device": "cpu",
+     "numel": 64
+    },
+    {
+     "name": "block.0.attention.probs",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.0.attention.context",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ]
+  },
+  {
+   "index": 9,
+   "exit_index": 5,
+   "depth": 4,
+   "module": "transformer.blocks.0.attention.qkv_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     2304
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.attention.qkv_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.attention.qkv_projection.output",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.0.attention.qkv_projection.weight",
+    "transformer.blocks.0.attention.qkv_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 10,
+   "exit_index": 6,
+   "depth": 4,
+   "module": "transformer.blocks.0.attention.attention_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.attention.attention_dropout.input",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.attention.attention_dropout.output",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 11,
+   "exit_index": 7,
+   "depth": 4,
+   "module": "transformer.blocks.0.attention.output_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.attention.output_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.attention.output_projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.0.attention.output_projection.weight",
+    "transformer.blocks.0.attention.output_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 12,
+   "exit_index": 8,
+   "depth": 4,
+   "module": "transformer.blocks.0.attention.residual_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.attention.residual_dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.attention.residual_dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 13,
+   "exit_index": 10,
+   "depth": 3,
+   "module": "transformer.blocks.0.ln_2",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.ln_2.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.ln_2.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.0.ln_2.weight",
+    "transformer.blocks.0.ln_2.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 14,
+   "exit_index": 15,
+   "depth": 3,
+   "module": "transformer.blocks.0.mlp",
+   "module_type": "GPT2MLP",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.mlp.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.mlp.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 15,
+   "exit_index": 11,
+   "depth": 4,
+   "module": "transformer.blocks.0.mlp.fc",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.mlp.fc.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.mlp.fc.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.0.mlp.fc.weight",
+    "transformer.blocks.0.mlp.fc.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 16,
+   "exit_index": 12,
+   "depth": 4,
+   "module": "transformer.blocks.0.mlp.activation",
+   "module_type": "GPT2GELU",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.mlp.activation.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.mlp.activation.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 17,
+   "exit_index": 13,
+   "depth": 4,
+   "module": "transformer.blocks.0.mlp.projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.mlp.projection.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.mlp.projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.0.mlp.projection.weight",
+    "transformer.blocks.0.mlp.projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 18,
+   "exit_index": 14,
+   "depth": 4,
+   "module": "transformer.blocks.0.mlp.dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.0.mlp.dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.0.mlp.dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 19,
+   "exit_index": 29,
+   "depth": 2,
+   "module": "transformer.blocks.1",
+   "module_type": "TransformerBlock",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 20,
+   "exit_index": 17,
+   "depth": 3,
+   "module": "transformer.blocks.1.ln_1",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.ln_1.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.ln_1.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.1.ln_1.weight",
+    "transformer.blocks.1.ln_1.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 21,
+   "exit_index": 22,
+   "depth": 3,
+   "module": "transformer.blocks.1.attention",
+   "module_type": "CausalSelfAttention",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.attention.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.attention.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": [
+    {
+     "name": "block.1.attention.qkv",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    },
+    {
+     "name": "block.1.attention.q",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.1.attention.k",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.1.attention.v",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.1.attention.scores",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.1.attention.mask",
+     "shape": [
+      8,
+      8
+     ],
+     "dtype": "bool",
+     "device": "cpu",
+     "numel": 64
+    },
+    {
+     "name": "block.1.attention.probs",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.1.attention.context",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ]
+  },
+  {
+   "index": 22,
+   "exit_index": 18,
+   "depth": 4,
+   "module": "transformer.blocks.1.attention.qkv_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     2304
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.attention.qkv_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.attention.qkv_projection.output",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.1.attention.qkv_projection.weight",
+    "transformer.blocks.1.attention.qkv_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 23,
+   "exit_index": 19,
+   "depth": 4,
+   "module": "transformer.blocks.1.attention.attention_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.attention.attention_dropout.input",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.attention.attention_dropout.output",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 24,
+   "exit_index": 20,
+   "depth": 4,
+   "module": "transformer.blocks.1.attention.output_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.attention.output_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.attention.output_projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.1.attention.output_projection.weight",
+    "transformer.blocks.1.attention.output_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 25,
+   "exit_index": 21,
+   "depth": 4,
+   "module": "transformer.blocks.1.attention.residual_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.attention.residual_dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.attention.residual_dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 26,
+   "exit_index": 23,
+   "depth": 3,
+   "module": "transformer.blocks.1.ln_2",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.ln_2.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.ln_2.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.1.ln_2.weight",
+    "transformer.blocks.1.ln_2.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 27,
+   "exit_index": 28,
+   "depth": 3,
+   "module": "transformer.blocks.1.mlp",
+   "module_type": "GPT2MLP",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.mlp.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.mlp.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 28,
+   "exit_index": 24,
+   "depth": 4,
+   "module": "transformer.blocks.1.mlp.fc",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.mlp.fc.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.mlp.fc.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.1.mlp.fc.weight",
+    "transformer.blocks.1.mlp.fc.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 29,
+   "exit_index": 25,
+   "depth": 4,
+   "module": "transformer.blocks.1.mlp.activation",
+   "module_type": "GPT2GELU",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.mlp.activation.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.mlp.activation.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 30,
+   "exit_index": 26,
+   "depth": 4,
+   "module": "transformer.blocks.1.mlp.projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.mlp.projection.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.mlp.projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.1.mlp.projection.weight",
+    "transformer.blocks.1.mlp.projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 31,
+   "exit_index": 27,
+   "depth": 4,
+   "module": "transformer.blocks.1.mlp.dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.1.mlp.dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.1.mlp.dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 32,
+   "exit_index": 42,
+   "depth": 2,
+   "module": "transformer.blocks.2",
+   "module_type": "TransformerBlock",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 33,
+   "exit_index": 30,
+   "depth": 3,
+   "module": "transformer.blocks.2.ln_1",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.ln_1.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.ln_1.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.2.ln_1.weight",
+    "transformer.blocks.2.ln_1.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 34,
+   "exit_index": 35,
+   "depth": 3,
+   "module": "transformer.blocks.2.attention",
+   "module_type": "CausalSelfAttention",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.attention.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.attention.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": [
+    {
+     "name": "block.2.attention.qkv",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    },
+    {
+     "name": "block.2.attention.q",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.2.attention.k",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.2.attention.v",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.2.attention.scores",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.2.attention.mask",
+     "shape": [
+      8,
+      8
+     ],
+     "dtype": "bool",
+     "device": "cpu",
+     "numel": 64
+    },
+    {
+     "name": "block.2.attention.probs",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.2.attention.context",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ]
+  },
+  {
+   "index": 35,
+   "exit_index": 31,
+   "depth": 4,
+   "module": "transformer.blocks.2.attention.qkv_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     2304
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.attention.qkv_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.attention.qkv_projection.output",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.2.attention.qkv_projection.weight",
+    "transformer.blocks.2.attention.qkv_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 36,
+   "exit_index": 32,
+   "depth": 4,
+   "module": "transformer.blocks.2.attention.attention_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.attention.attention_dropout.input",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.attention.attention_dropout.output",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 37,
+   "exit_index": 33,
+   "depth": 4,
+   "module": "transformer.blocks.2.attention.output_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.attention.output_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.attention.output_projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.2.attention.output_projection.weight",
+    "transformer.blocks.2.attention.output_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 38,
+   "exit_index": 34,
+   "depth": 4,
+   "module": "transformer.blocks.2.attention.residual_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.attention.residual_dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.attention.residual_dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 39,
+   "exit_index": 36,
+   "depth": 3,
+   "module": "transformer.blocks.2.ln_2",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.ln_2.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.ln_2.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.2.ln_2.weight",
+    "transformer.blocks.2.ln_2.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 40,
+   "exit_index": 41,
+   "depth": 3,
+   "module": "transformer.blocks.2.mlp",
+   "module_type": "GPT2MLP",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.mlp.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.mlp.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 41,
+   "exit_index": 37,
+   "depth": 4,
+   "module": "transformer.blocks.2.mlp.fc",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.mlp.fc.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.mlp.fc.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.2.mlp.fc.weight",
+    "transformer.blocks.2.mlp.fc.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 42,
+   "exit_index": 38,
+   "depth": 4,
+   "module": "transformer.blocks.2.mlp.activation",
+   "module_type": "GPT2GELU",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.mlp.activation.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.mlp.activation.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 43,
+   "exit_index": 39,
+   "depth": 4,
+   "module": "transformer.blocks.2.mlp.projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.mlp.projection.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.mlp.projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.2.mlp.projection.weight",
+    "transformer.blocks.2.mlp.projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 44,
+   "exit_index": 40,
+   "depth": 4,
+   "module": "transformer.blocks.2.mlp.dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.2.mlp.dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.2.mlp.dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 45,
+   "exit_index": 55,
+   "depth": 2,
+   "module": "transformer.blocks.3",
+   "module_type": "TransformerBlock",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 46,
+   "exit_index": 43,
+   "depth": 3,
+   "module": "transformer.blocks.3.ln_1",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.ln_1.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.ln_1.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.3.ln_1.weight",
+    "transformer.blocks.3.ln_1.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 47,
+   "exit_index": 48,
+   "depth": 3,
+   "module": "transformer.blocks.3.attention",
+   "module_type": "CausalSelfAttention",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.attention.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.attention.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": [
+    {
+     "name": "block.3.attention.qkv",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    },
+    {
+     "name": "block.3.attention.q",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.3.attention.k",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.3.attention.v",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.3.attention.scores",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.3.attention.mask",
+     "shape": [
+      8,
+      8
+     ],
+     "dtype": "bool",
+     "device": "cpu",
+     "numel": 64
+    },
+    {
+     "name": "block.3.attention.probs",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.3.attention.context",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ]
+  },
+  {
+   "index": 48,
+   "exit_index": 44,
+   "depth": 4,
+   "module": "transformer.blocks.3.attention.qkv_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     2304
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.attention.qkv_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.attention.qkv_projection.output",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.3.attention.qkv_projection.weight",
+    "transformer.blocks.3.attention.qkv_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 49,
+   "exit_index": 45,
+   "depth": 4,
+   "module": "transformer.blocks.3.attention.attention_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.attention.attention_dropout.input",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.attention.attention_dropout.output",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 50,
+   "exit_index": 46,
+   "depth": 4,
+   "module": "transformer.blocks.3.attention.output_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.attention.output_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.attention.output_projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.3.attention.output_projection.weight",
+    "transformer.blocks.3.attention.output_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 51,
+   "exit_index": 47,
+   "depth": 4,
+   "module": "transformer.blocks.3.attention.residual_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.attention.residual_dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.attention.residual_dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 52,
+   "exit_index": 49,
+   "depth": 3,
+   "module": "transformer.blocks.3.ln_2",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.ln_2.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.ln_2.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.3.ln_2.weight",
+    "transformer.blocks.3.ln_2.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 53,
+   "exit_index": 54,
+   "depth": 3,
+   "module": "transformer.blocks.3.mlp",
+   "module_type": "GPT2MLP",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.mlp.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.mlp.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 54,
+   "exit_index": 50,
+   "depth": 4,
+   "module": "transformer.blocks.3.mlp.fc",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.mlp.fc.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.mlp.fc.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.3.mlp.fc.weight",
+    "transformer.blocks.3.mlp.fc.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 55,
+   "exit_index": 51,
+   "depth": 4,
+   "module": "transformer.blocks.3.mlp.activation",
+   "module_type": "GPT2GELU",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.mlp.activation.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.mlp.activation.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 56,
+   "exit_index": 52,
+   "depth": 4,
+   "module": "transformer.blocks.3.mlp.projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.mlp.projection.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.mlp.projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.3.mlp.projection.weight",
+    "transformer.blocks.3.mlp.projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 57,
+   "exit_index": 53,
+   "depth": 4,
+   "module": "transformer.blocks.3.mlp.dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.3.mlp.dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.3.mlp.dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 58,
+   "exit_index": 68,
+   "depth": 2,
+   "module": "transformer.blocks.4",
+   "module_type": "TransformerBlock",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 59,
+   "exit_index": 56,
+   "depth": 3,
+   "module": "transformer.blocks.4.ln_1",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.ln_1.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.ln_1.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.4.ln_1.weight",
+    "transformer.blocks.4.ln_1.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 60,
+   "exit_index": 61,
+   "depth": 3,
+   "module": "transformer.blocks.4.attention",
+   "module_type": "CausalSelfAttention",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.attention.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.attention.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": [
+    {
+     "name": "block.4.attention.qkv",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    },
+    {
+     "name": "block.4.attention.q",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.4.attention.k",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.4.attention.v",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.4.attention.scores",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.4.attention.mask",
+     "shape": [
+      8,
+      8
+     ],
+     "dtype": "bool",
+     "device": "cpu",
+     "numel": 64
+    },
+    {
+     "name": "block.4.attention.probs",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.4.attention.context",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ]
+  },
+  {
+   "index": 61,
+   "exit_index": 57,
+   "depth": 4,
+   "module": "transformer.blocks.4.attention.qkv_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     2304
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.attention.qkv_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.attention.qkv_projection.output",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.4.attention.qkv_projection.weight",
+    "transformer.blocks.4.attention.qkv_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 62,
+   "exit_index": 58,
+   "depth": 4,
+   "module": "transformer.blocks.4.attention.attention_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.attention.attention_dropout.input",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.attention.attention_dropout.output",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 63,
+   "exit_index": 59,
+   "depth": 4,
+   "module": "transformer.blocks.4.attention.output_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.attention.output_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.attention.output_projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.4.attention.output_projection.weight",
+    "transformer.blocks.4.attention.output_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 64,
+   "exit_index": 60,
+   "depth": 4,
+   "module": "transformer.blocks.4.attention.residual_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.attention.residual_dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.attention.residual_dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 65,
+   "exit_index": 62,
+   "depth": 3,
+   "module": "transformer.blocks.4.ln_2",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.ln_2.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.ln_2.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.4.ln_2.weight",
+    "transformer.blocks.4.ln_2.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 66,
+   "exit_index": 67,
+   "depth": 3,
+   "module": "transformer.blocks.4.mlp",
+   "module_type": "GPT2MLP",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.mlp.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.mlp.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 67,
+   "exit_index": 63,
+   "depth": 4,
+   "module": "transformer.blocks.4.mlp.fc",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.mlp.fc.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.mlp.fc.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.4.mlp.fc.weight",
+    "transformer.blocks.4.mlp.fc.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 68,
+   "exit_index": 64,
+   "depth": 4,
+   "module": "transformer.blocks.4.mlp.activation",
+   "module_type": "GPT2GELU",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.mlp.activation.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.mlp.activation.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 69,
+   "exit_index": 65,
+   "depth": 4,
+   "module": "transformer.blocks.4.mlp.projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.mlp.projection.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.mlp.projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.4.mlp.projection.weight",
+    "transformer.blocks.4.mlp.projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 70,
+   "exit_index": 66,
+   "depth": 4,
+   "module": "transformer.blocks.4.mlp.dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.4.mlp.dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.4.mlp.dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 71,
+   "exit_index": 81,
+   "depth": 2,
+   "module": "transformer.blocks.5",
+   "module_type": "TransformerBlock",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 72,
+   "exit_index": 69,
+   "depth": 3,
+   "module": "transformer.blocks.5.ln_1",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.ln_1.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.ln_1.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.5.ln_1.weight",
+    "transformer.blocks.5.ln_1.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 73,
+   "exit_index": 74,
+   "depth": 3,
+   "module": "transformer.blocks.5.attention",
+   "module_type": "CausalSelfAttention",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.attention.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.attention.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": [
+    {
+     "name": "block.5.attention.qkv",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    },
+    {
+     "name": "block.5.attention.q",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.5.attention.k",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.5.attention.v",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    },
+    {
+     "name": "block.5.attention.scores",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.5.attention.mask",
+     "shape": [
+      8,
+      8
+     ],
+     "dtype": "bool",
+     "device": "cpu",
+     "numel": 64
+    },
+    {
+     "name": "block.5.attention.probs",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    },
+    {
+     "name": "block.5.attention.context",
+     "shape": [
+      2,
+      12,
+      8,
+      64
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ]
+  },
+  {
+   "index": 74,
+   "exit_index": 70,
+   "depth": 4,
+   "module": "transformer.blocks.5.attention.qkv_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     2304
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.attention.qkv_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.attention.qkv_projection.output",
+     "shape": [
+      2,
+      8,
+      2304
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 36864
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.5.attention.qkv_projection.weight",
+    "transformer.blocks.5.attention.qkv_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 75,
+   "exit_index": 71,
+   "depth": 4,
+   "module": "transformer.blocks.5.attention.attention_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     12,
+     8,
+     8
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.attention.attention_dropout.input",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.attention.attention_dropout.output",
+     "shape": [
+      2,
+      12,
+      8,
+      8
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 1536
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 76,
+   "exit_index": 72,
+   "depth": 4,
+   "module": "transformer.blocks.5.attention.output_projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.attention.output_projection.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.attention.output_projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.5.attention.output_projection.weight",
+    "transformer.blocks.5.attention.output_projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 77,
+   "exit_index": 73,
+   "depth": 4,
+   "module": "transformer.blocks.5.attention.residual_dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.attention.residual_dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.attention.residual_dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 78,
+   "exit_index": 75,
+   "depth": 3,
+   "module": "transformer.blocks.5.ln_2",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.ln_2.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.ln_2.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.5.ln_2.weight",
+    "transformer.blocks.5.ln_2.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 79,
+   "exit_index": 80,
+   "depth": 3,
+   "module": "transformer.blocks.5.mlp",
+   "module_type": "GPT2MLP",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.mlp.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.mlp.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 80,
+   "exit_index": 76,
+   "depth": 4,
+   "module": "transformer.blocks.5.mlp.fc",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.mlp.fc.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.mlp.fc.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.5.mlp.fc.weight",
+    "transformer.blocks.5.mlp.fc.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 81,
+   "exit_index": 77,
+   "depth": 4,
+   "module": "transformer.blocks.5.mlp.activation",
+   "module_type": "GPT2GELU",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.mlp.activation.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.mlp.activation.output",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 82,
+   "exit_index": 78,
+   "depth": 4,
+   "module": "transformer.blocks.5.mlp.projection",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     3072
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.mlp.projection.input",
+     "shape": [
+      2,
+      8,
+      3072
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 49152
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.mlp.projection.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.blocks.5.mlp.projection.weight",
+    "transformer.blocks.5.mlp.projection.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 83,
+   "exit_index": 79,
+   "depth": 4,
+   "module": "transformer.blocks.5.mlp.dropout",
+   "module_type": "Dropout",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "block.5.mlp.dropout.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "block.5.mlp.dropout.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [],
+   "internals": []
+  },
+  {
+   "index": 84,
+   "exit_index": 82,
+   "depth": 2,
+   "module": "transformer.final_layer_norm",
+   "module_type": "LayerNorm",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "final_layer_norm.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "final_layer_norm.output",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "parameters": [
+    "transformer.final_layer_norm.weight",
+    "transformer.final_layer_norm.bias"
+   ],
+   "internals": []
+  },
+  {
+   "index": 85,
+   "exit_index": 84,
+   "depth": 1,
+   "module": "lm_head",
+   "module_type": "Linear",
+   "input_shapes": [
+    [
+     2,
+     8,
+     768
+    ]
+   ],
+   "output_shapes": [
+    [
+     2,
+     8,
+     50257
+    ]
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "inputs": [
+    {
+     "name": "lm_head.input",
+     "shape": [
+      2,
+      8,
+      768
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 12288
+    }
+   ],
+   "outputs": [
+    {
+     "name": "lm_head.output",
+     "shape": [
+      2,
+      8,
+      50257
+     ],
+     "dtype": "float32",
+     "device": "cpu",
+     "numel": 804112
+    }
+   ],
+   "parameters": [
+    "lm_head.weight"
+   ],
+   "internals": []
+  }
+ ],
+ "outputs": [
+  {
+   "name": "model.final_hidden",
+   "shape": [
+    2,
+    8,
+    768
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "numel": 12288
+  },
+  {
+   "name": "model.logits",
+   "shape": [
+    2,
+    8,
+    50257
+   ],
+   "dtype": "float32",
+   "device": "cpu",
+   "numel": 804112
+  }
+ ]
+}

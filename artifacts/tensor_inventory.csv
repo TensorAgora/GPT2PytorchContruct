@@ -1,0 +1,85 @@
+name,module,role,shape,rank,dtype,numel,bytes,requires_grad,shared,stride,storage_offset,is_contiguous,is_view,storage_id
+transformer.embeddings.token_embedding.weight,TokenEmbedding,parameter,"[50257, 768]",2,float32,38597376,154389504,True,shared-with-lm_head.weight,"[768, 1]",0,True,False,storage:0
+transformer.embeddings.position_embedding.weight,PositionEmbedding,parameter,"[1024, 768]",2,float32,786432,3145728,True,no,"[768, 1]",0,True,False,storage:1
+transformer.blocks.0.ln_1.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:2
+transformer.blocks.0.ln_1.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:3
+transformer.blocks.0.attention.qkv_projection.weight,Linear,parameter,"[2304, 768]",2,float32,1769472,7077888,True,no,"[768, 1]",0,True,False,storage:4
+transformer.blocks.0.attention.qkv_projection.bias,Linear,parameter,[2304],1,float32,2304,9216,True,no,[1],0,True,False,storage:5
+transformer.blocks.0.attention.output_projection.weight,Linear,parameter,"[768, 768]",2,float32,589824,2359296,True,no,"[768, 1]",0,True,False,storage:6
+transformer.blocks.0.attention.output_projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:7
+transformer.blocks.0.ln_2.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:8
+transformer.blocks.0.ln_2.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:9
+transformer.blocks.0.mlp.fc.weight,Linear,parameter,"[3072, 768]",2,float32,2359296,9437184,True,no,"[768, 1]",0,True,False,storage:10
+transformer.blocks.0.mlp.fc.bias,Linear,parameter,[3072],1,float32,3072,12288,True,no,[1],0,True,False,storage:11
+transformer.blocks.0.mlp.projection.weight,Linear,parameter,"[768, 3072]",2,float32,2359296,9437184,True,no,"[3072, 1]",0,True,False,storage:12
+transformer.blocks.0.mlp.projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:13
+transformer.blocks.1.ln_1.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:14
+transformer.blocks.1.ln_1.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:15
+transformer.blocks.1.attention.qkv_projection.weight,Linear,parameter,"[2304, 768]",2,float32,1769472,7077888,True,no,"[768, 1]",0,True,False,storage:16
+transformer.blocks.1.attention.qkv_projection.bias,Linear,parameter,[2304],1,float32,2304,9216,True,no,[1],0,True,False,storage:17
+transformer.blocks.1.attention.output_projection.weight,Linear,parameter,"[768, 768]",2,float32,589824,2359296,True,no,"[768, 1]",0,True,False,storage:18
+transformer.blocks.1.attention.output_projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:19
+transformer.blocks.1.ln_2.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:20
+transformer.blocks.1.ln_2.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:21
+transformer.blocks.1.mlp.fc.weight,Linear,parameter,"[3072, 768]",2,float32,2359296,9437184,True,no,"[768, 1]",0,True,False,storage:22
+transformer.blocks.1.mlp.fc.bias,Linear,parameter,[3072],1,float32,3072,12288,True,no,[1],0,True,False,storage:23
+transformer.blocks.1.mlp.projection.weight,Linear,parameter,"[768, 3072]",2,float32,2359296,9437184,True,no,"[3072, 1]",0,True,False,storage:24
+transformer.blocks.1.mlp.projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:25
+transformer.blocks.2.ln_1.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:26
+transformer.blocks.2.ln_1.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:27
+transformer.blocks.2.attention.qkv_projection.weight,Linear,parameter,"[2304, 768]",2,float32,1769472,7077888,True,no,"[768, 1]",0,True,False,storage:28
+transformer.blocks.2.attention.qkv_projection.bias,Linear,parameter,[2304],1,float32,2304,9216,True,no,[1],0,True,False,storage:29
+transformer.blocks.2.attention.output_projection.weight,Linear,parameter,"[768, 768]",2,float32,589824,2359296,True,no,"[768, 1]",0,True,False,storage:30
+transformer.blocks.2.attention.output_projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:31
+transformer.blocks.2.ln_2.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:32
+transformer.blocks.2.ln_2.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:33
+transformer.blocks.2.mlp.fc.weight,Linear,parameter,"[3072, 768]",2,float32,2359296,9437184,True,no,"[768, 1]",0,True,False,storage:34
+transformer.blocks.2.mlp.fc.bias,Linear,parameter,[3072],1,float32,3072,12288,True,no,[1],0,True,False,storage:35
+transformer.blocks.2.mlp.projection.weight,Linear,parameter,"[768, 3072]",2,float32,2359296,9437184,True,no,"[3072, 1]",0,True,False,storage:36
+transformer.blocks.2.mlp.projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:37
+transformer.blocks.3.ln_1.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:38
+transformer.blocks.3.ln_1.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:39
+transformer.blocks.3.attention.qkv_projection.weight,Linear,parameter,"[2304, 768]",2,float32,1769472,7077888,True,no,"[768, 1]",0,True,False,storage:40
+transformer.blocks.3.attention.qkv_projection.bias,Linear,parameter,[2304],1,float32,2304,9216,True,no,[1],0,True,False,storage:41
+transformer.blocks.3.attention.output_projection.weight,Linear,parameter,"[768, 768]",2,float32,589824,2359296,True,no,"[768, 1]",0,True,False,storage:42
+transformer.blocks.3.attention.output_projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:43
+transformer.blocks.3.ln_2.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:44
+transformer.blocks.3.ln_2.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:45
+transformer.blocks.3.mlp.fc.weight,Linear,parameter,"[3072, 768]",2,float32,2359296,9437184,True,no,"[768, 1]",0,True,False,storage:46
+transformer.blocks.3.mlp.fc.bias,Linear,parameter,[3072],1,float32,3072,12288,True,no,[1],0,True,False,storage:47
+transformer.blocks.3.mlp.projection.weight,Linear,parameter,"[768, 3072]",2,float32,2359296,9437184,True,no,"[3072, 1]",0,True,False,storage:48
+transformer.blocks.3.mlp.projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:49
+transformer.blocks.4.ln_1.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:50
+transformer.blocks.4.ln_1.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:51
+transformer.blocks.4.attention.qkv_projection.weight,Linear,parameter,"[2304, 768]",2,float32,1769472,7077888,True,no,"[768, 1]",0,True,False,storage:52
+transformer.blocks.4.attention.qkv_projection.bias,Linear,parameter,[2304],1,float32,2304,9216,True,no,[1],0,True,False,storage:53
+transformer.blocks.4.attention.output_projection.weight,Linear,parameter,"[768, 768]",2,float32,589824,2359296,True,no,"[768, 1]",0,True,False,storage:54
+transformer.blocks.4.attention.output_projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:55
+transformer.blocks.4.ln_2.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:56
+transformer.blocks.4.ln_2.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:57
+transformer.blocks.4.mlp.fc.weight,Linear,parameter,"[3072, 768]",2,float32,2359296,9437184,True,no,"[768, 1]",0,True,False,storage:58
+transformer.blocks.4.mlp.fc.bias,Linear,parameter,[3072],1,float32,3072,12288,True,no,[1],0,True,False,storage:59
+transformer.blocks.4.mlp.projection.weight,Linear,parameter,"[768, 3072]",2,float32,2359296,9437184,True,no,"[3072, 1]",0,True,False,storage:60
+transformer.blocks.4.mlp.projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:61
+transformer.blocks.5.ln_1.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:62
+transformer.blocks.5.ln_1.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:63
+transformer.blocks.5.attention.qkv_projection.weight,Linear,parameter,"[2304, 768]",2,float32,1769472,7077888,True,no,"[768, 1]",0,True,False,storage:64
+transformer.blocks.5.attention.qkv_projection.bias,Linear,parameter,[2304],1,float32,2304,9216,True,no,[1],0,True,False,storage:65
+transformer.blocks.5.attention.output_projection.weight,Linear,parameter,"[768, 768]",2,float32,589824,2359296,True,no,"[768, 1]",0,True,False,storage:66
+transformer.blocks.5.attention.output_projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:67
+transformer.blocks.5.ln_2.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:68
+transformer.blocks.5.ln_2.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:69
+transformer.blocks.5.mlp.fc.weight,Linear,parameter,"[3072, 768]",2,float32,2359296,9437184,True,no,"[768, 1]",0,True,False,storage:70
+transformer.blocks.5.mlp.fc.bias,Linear,parameter,[3072],1,float32,3072,12288,True,no,[1],0,True,False,storage:71
+transformer.blocks.5.mlp.projection.weight,Linear,parameter,"[768, 3072]",2,float32,2359296,9437184,True,no,"[3072, 1]",0,True,False,storage:72
+transformer.blocks.5.mlp.projection.bias,Linear,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:73
+transformer.final_layer_norm.weight,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:74
+transformer.final_layer_norm.bias,LayerNorm,parameter,[768],1,float32,768,3072,True,no,[1],0,True,False,storage:75
+lm_head.weight,Linear,parameter,"[50257, 768]",2,float32,38597376,154389504,True,shared-with-transformer.embeddings.token_embedding.weight,"[768, 1]",0,True,False,storage:0
+transformer.embeddings.position_ids,GPT2Embeddings,buffer,[1024],1,int64,1024,8192,False,no,[1],0,True,False,storage:76
+transformer.blocks.0.attention.causal_mask,CausalSelfAttention,buffer,"[1024, 1024]",2,bool,1048576,1048576,False,no,"[1024, 1]",0,True,False,storage:77
+transformer.blocks.1.attention.causal_mask,CausalSelfAttention,buffer,"[1024, 1024]",2,bool,1048576,1048576,False,no,"[1024, 1]",0,True,False,storage:78
+transformer.blocks.2.attention.causal_mask,CausalSelfAttention,buffer,"[1024, 1024]",2,bool,1048576,1048576,False,no,"[1024, 1]",0,True,False,storage:79
+transformer.blocks.3.attention.causal_mask,CausalSelfAttention,buffer,"[1024, 1024]",2,bool,1048576,1048576,False,no,"[1024, 1]",0,True,False,storage:80
+transformer.blocks.4.attention.causal_mask,CausalSelfAttention,buffer,"[1024, 1024]",2,bool,1048576,1048576,False,no,"[1024, 1]",0,True,False,storage:81
+transformer.blocks.5.attention.causal_mask,CausalSelfAttention,buffer,"[1024, 1024]",2,bool,1048576,1048576,False,no,"[1024, 1]",0,True,False,storage:82
