@@ -38,7 +38,7 @@ Project root:
 An existing Hugging Face checkpoint has already been downloaded:
 
 ```text
-/Users/thanh/Tensormorph/GPT2PytorchContruct/pytorch_model.bin
+/Users/thanh/Tensormorph/GPT2PytorchContruct/weights/pytorch_model.bin
 ```
 
 The original model is:
@@ -131,7 +131,7 @@ The architecture itself must belong entirely to this repository.
 Before implementing the architecture, inspect:
 
 ```text
-/Users/thanh/Tensormorph/GPT2PytorchContruct/pytorch_model.bin
+/Users/thanh/Tensormorph/GPT2PytorchContruct/weights/pytorch_model.bin
 ```
 
 Do not begin by blindly hardcoding assumptions.

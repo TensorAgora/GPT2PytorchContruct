@@ -1,0 +1,665 @@
+{
+ "model": {
+  "layers": 6,
+  "hidden": 768,
+  "heads": 12,
+  "input_shape": [
+   2,
+   8
+  ]
+ },
+ "equivalence": {
+  "fx_equals_eager_bitwise": true,
+  "export_max_abs_diff_vs_eager": 0.0
+ },
+ "fx": {
+  "nodes": 335,
+  "by_opcode": {
+   "placeholder": 4,
+   "call_function": 136,
+   "call_method": 128,
+   "get_attr": 9,
+   "call_module": 57,
+   "output": 1
+  },
+  "leaf_modules": {
+   "Dropout": 19,
+   "LayerNorm": 13,
+   "Linear": 25
+  },
+  "top_functions": {
+   "size": 55,
+   "mul": 36,
+   "add": 25,
+   "view": 24,
+   "permute": 24,
+   "getitem": 18,
+   "narrow": 13,
+   "matmul": 12,
+   "chunk": 6,
+   "transpose": 6
+  }
+ },
+ "export": {
+  "nodes": 346,
+  "inputs_by_kind": {
+   "PARAMETER": 77,
+   "BUFFER": 7,
+   "USER_INPUT": 1
+  },
+  "parameter_elements": 81912576,
+  "tied_parameters": [
+   {
+    "param": "p_lm_head_weight",
+    "used_by": [
+     "aten.embedding.default",
+     "aten.linear.default"
+    ]
+   }
+  ],
+  "aten_ops": {
+   "aten.mul.Tensor": 36,
+   "aten.add.Tensor": 25,
+   "aten.linear.default": 25,
+   "aten.view.default": 24,
+   "aten.permute.default": 24,
+   "aten.dropout.default": 19,
+   "<built-in function getitem>": 18,
+   "aten.narrow.default": 13,
+   "aten.layer_norm.default": 13,
+   "aten.matmul.default": 12,
+   "aten.chunk.default": 6,
+   "aten.transpose.int": 6,
+   "aten.div.Tensor": 6,
+   "aten.bitwise_not.default": 6,
+   "aten.masked_fill.Scalar": 6,
+   "aten.softmax.int": 6,
+   "aten.contiguous.default": 6,
+   "aten.tanh.default": 6,
+   "aten.embedding.default": 2,
+   "aten.unsqueeze.default": 1
+  },
+  "matmul_flops": 2596429824,
+  "matmuls": [
+   {
+    "name": "linear",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     2304
+    ],
+    "flops": 56623104
+   },
+   {
+    "name": "matmul",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "matmul_1",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "linear_1",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 18874368
+   },
+   {
+    "name": "linear_2",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     3072
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_3",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     3072
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_4",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     2304
+    ],
+    "flops": 56623104
+   },
+   {
+    "name": "matmul_2",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "matmul_3",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "linear_5",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 18874368
+   },
+   {
+    "name": "linear_6",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     3072
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_7",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     3072
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_8",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     2304
+    ],
+    "flops": 56623104
+   },
+   {
+    "name": "matmul_4",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "matmul_5",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "linear_9",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 18874368
+   },
+   {
+    "name": "linear_10",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     3072
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_11",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     3072
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_12",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     2304
+    ],
+    "flops": 56623104
+   },
+   {
+    "name": "matmul_6",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "matmul_7",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "linear_13",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 18874368
+   },
+   {
+    "name": "linear_14",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     3072
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_15",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     3072
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_16",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     2304
+    ],
+    "flops": 56623104
+   },
+   {
+    "name": "matmul_8",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "matmul_9",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "linear_17",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 18874368
+   },
+   {
+    "name": "linear_18",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     3072
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_19",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     3072
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_20",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     2304
+    ],
+    "flops": 56623104
+   },
+   {
+    "name": "matmul_10",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "matmul_11",
+    "op": "aten.matmul.default",
+    "in": [
+     2,
+     12,
+     8,
+     8
+    ],
+    "out": [
+     2,
+     12,
+     8,
+     64
+    ],
+    "flops": 196608
+   },
+   {
+    "name": "linear_21",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 18874368
+   },
+   {
+    "name": "linear_22",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     3072
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_23",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     3072
+    ],
+    "out": [
+     2,
+     8,
+     768
+    ],
+    "flops": 75497472
+   },
+   {
+    "name": "linear_24",
+    "op": "aten.linear.default",
+    "in": [
+     2,
+     8,
+     768
+    ],
+    "out": [
+     2,
+     8,
+     50257
+    ],
+    "flops": 1235116032
+   }
+  ]
+ }
+}

@@ -6,26 +6,26 @@ Generated 2026-10-05 19:41:41 on macOS-26.6.2-arm64-arm-64bit-Mach-O | Python 3.
 
 ## Summary
 
-| # | Step | Command | Result | Time | Produces |
-|--:|---|---|---|--:|---|
-| 1 | Inspect checkpoint | `python -m tools.inspect_checkpoint` | PASS | 0.7s | 83 tensors, tying, inferred architecture, tree |
-| 2 | Print model | `python -m tools.print_model` | PASS | 1.1s | module tree, parameter counts, logical vs unique accounting |
-| 3 | Tensor inventory | `python -m tools.tensor_inventory` | PASS | 1.7s | every parameter/buffer -> artifacts/tensor_inventory.{json,csv} |
-| 4 | Tensor program | `python -m tools.tensor_program` | PASS | 1.4s | every layer as tensor operations, verified vs PyTorch -> artifacts/tensor_program.* |
-| 5 | Fixed forward | `python -m examples.forward_fixed` | PASS | 1.7s | deterministic eval forward, intermediate shapes, logits stats |
-| 6 | DataLoader forward | `python -m examples.dataloader_forward` | PASS | 1.7s | Dataset -> DataLoader -> batch -> logits |
-| 7 | Inspect attention | `python -m examples.inspect_attention` | PASS | 1.7s | Q/K/V, mask, probabilities, causality |
-| 8 | Forward hooks | `python -m examples.forward_hooks` | PASS | 1.7s | pre/post hook execution order |
-| 9 | Execution trace | `python -m examples.execution_trace` | PASS | 1.7s | artifacts/execution_trace.json |
-| 10 | Causal LM loss | `python -m examples.causal_lm_loss` | PASS | 1.7s | shift_logits, shift_labels, loss |
-| 11 | Single train step | `python -m examples.single_train_step` | PASS | 1.8s | backward, gradients, one SGD step |
-| 12 | Autograd inspect | `python -m examples.autograd_inspect` | PASS | 1.7s | grad_fn, is_leaf, backward graph |
-| 13 | Convert to Safetensors | `python -m tools.convert_to_safetensors` | PASS | 1.3s | weights/pytorch_model.bin -> artifacts/model.safetensors |
-| 14 | Inspect Safetensors | `python -m tools.inspect_safetensors` | PASS | 0.6s | header-only inspection |
-| 15 | Hugging Face parity | `python -m reference.compare_huggingface` | PASS | 4.6s | optional; needs transformers |
-| 16 | FX trace | `python -m examples.fx_trace` | PASS | 1.9s | artifacts/fx_graph.{txt,json} |
-| 17 | torch.export | `python -m examples.export_model` | PASS | 2.2s | artifacts/export/ |
-| 18 | Tests | `pytest` | PASS | 9.4s | full pytest suite |
+|    # | Step                   | Command                                   | Result | Time | Produces                                                                            |
+| ---: | ---------------------- | ----------------------------------------- | ------ | ---: | ----------------------------------------------------------------------------------- |
+|    1 | Inspect checkpoint     | `python -m tools.inspect_checkpoint`      | PASS   | 0.7s | 83 tensors, tying, inferred architecture, tree                                      |
+|    2 | Print model            | `python -m tools.print_model`             | PASS   | 1.1s | module tree, parameter counts, logical vs unique accounting                         |
+|    3 | Tensor inventory       | `python -m tools.tensor_inventory`        | PASS   | 1.7s | every parameter/buffer -> artifacts/tensor_inventory.{json,csv}                     |
+|    4 | Tensor program         | `python -m tools.tensor_program`          | PASS   | 1.4s | every layer as tensor operations, verified vs PyTorch -> artifacts/tensor_program.* |
+|    5 | Fixed forward          | `python -m examples.forward_fixed`        | PASS   | 1.7s | deterministic eval forward, intermediate shapes, logits stats                       |
+|    6 | DataLoader forward     | `python -m examples.dataloader_forward`   | PASS   | 1.7s | Dataset -> DataLoader -> batch -> logits                                            |
+|    7 | Inspect attention      | `python -m examples.inspect_attention`    | PASS   | 1.7s | Q/K/V, mask, probabilities, causality                                               |
+|    8 | Forward hooks          | `python -m examples.forward_hooks`        | PASS   | 1.7s | pre/post hook execution order                                                       |
+|    9 | Execution trace        | `python -m examples.execution_trace`      | PASS   | 1.7s | artifacts/execution_trace.json                                                      |
+|   10 | Causal LM loss         | `python -m examples.causal_lm_loss`       | PASS   | 1.7s | shift_logits, shift_labels, loss                                                    |
+|   11 | Single train step      | `python -m examples.single_train_step`    | PASS   | 1.8s | backward, gradients, one SGD step                                                   |
+|   12 | Autograd inspect       | `python -m examples.autograd_inspect`     | PASS   | 1.7s | grad_fn, is_leaf, backward graph                                                    |
+|   13 | Convert to Safetensors | `python -m tools.convert_to_safetensors`  | PASS   | 1.3s | weights/pytorch_model.bin -> artifacts/model.safetensors                            |
+|   14 | Inspect Safetensors    | `python -m tools.inspect_safetensors`     | PASS   | 0.6s | header-only inspection                                                              |
+|   15 | Hugging Face parity    | `python -m reference.compare_huggingface` | PASS   | 4.6s | optional; needs transformers                                                        |
+|   16 | FX trace               | `python -m examples.fx_trace`             | PASS   | 1.9s | artifacts/fx_graph.{txt,json}                                                       |
+|   17 | torch.export           | `python -m examples.export_model`         | PASS   | 2.2s | artifacts/export/                                                                   |
+|   18 | Tests                  | `pytest`                                  | PASS   | 9.4s | full pytest suite                                                                   |
 
 ## Key results
 
@@ -640,20 +640,20 @@ exported module matches eager: True
 
 ## Generated artifacts
 
-| file | size |
-|---|--:|
-| `artifacts/execution_trace.json` | 115,037 B |
-| `artifacts/export/exported_program.txt` | 77,897 B |
-| `artifacts/export/graph.json` | 90,996 B |
-| `artifacts/fx_graph.json` | 68,763 B |
-| `artifacts/fx_graph.txt` | 53,533 B |
-| `artifacts/model.safetensors` | 352,824,504 B |
-| `artifacts/pipeline_report.md` | 45,109 B |
-| `artifacts/tel/model.json` | 2,003,256 B |
-| `artifacts/tel/model.tel` | 6,411 B |
-| `artifacts/tensor_inventory.csv` | 11,185 B |
-| `artifacts/tensor_inventory.json` | 31,542 B |
-| `artifacts/tensor_multiplications.csv` | 12,224 B |
-| `artifacts/tensor_program.json` | 276,278 B |
-| `artifacts/tensor_program.md` | 33,012 B |
-| `artifacts/tensor_program.txt` | 49,011 B |
+| file                                    |          size |
+| --------------------------------------- | ------------: |
+| `artifacts/execution_trace.json`        |     115,037 B |
+| `artifacts/export/exported_program.txt` |      77,897 B |
+| `artifacts/export/graph.json`           |      90,996 B |
+| `artifacts/fx_graph.json`               |      68,763 B |
+| `artifacts/fx_graph.txt`                |      53,533 B |
+| `artifacts/model.safetensors`           | 352,824,504 B |
+| `artifacts/pipeline_report.md`          |      45,109 B |
+| `artifacts/tel/model.json`              |   2,003,256 B |
+| `artifacts/tel/model.tel`               |       6,411 B |
+| `artifacts/tensor_inventory.csv`        |      11,185 B |
+| `artifacts/tensor_inventory.json`       |      31,542 B |
+| `artifacts/tensor_multiplications.csv`  |      12,224 B |
+| `artifacts/tensor_program.json`         |     276,278 B |
+| `artifacts/tensor_program.md`           |      33,012 B |
+| `artifacts/tensor_program.txt`          |      49,011 B |
