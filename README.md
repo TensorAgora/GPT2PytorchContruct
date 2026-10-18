@@ -24,6 +24,7 @@ python -m tools.inspect_checkpoint        # keys, shapes, tying, inferred archit
 python -m tools.print_model               # module tree + parameter counts + logical/unique accounting
 python -m tools.tensor_inventory          # every parameter/buffer -> artifacts/tensor_inventory.{json,csv}
 python -m tools.tensor_program            # every layer as tensor operations (all operands tensors) -> artifacts/tensor_program.{md,json,txt}, tensor_multiplications.csv
+python -m tools.matmul_graph              # any state_dict + model code -> matrix multiplications as a graph, in order -> artifacts/matmul_graph.{json,md}
 python -m examples.forward_fixed          # one deterministic forward, all intermediate shapes + logits stats
 python -m examples.dataloader_forward     # Dataset -> DataLoader -> batch -> model -> logits
 python -m examples.inspect_attention      # Q/K/V, scores, mask, probabilities of one block
@@ -143,6 +144,34 @@ Any unmapped checkpoint key, missing model key, wrong shape, an `attn.bias` that
 
 The program is executed straight from the checkpoint's original Hugging Face tensors (Conv1D `[in,out]`, no transposition) and 93 intermediates are compared with the pure model's `return_debug` tensors on all five samples (worst error 4.7e-6 of each tensor's max magnitude). Output: `artifacts/tensor_program.md` (report with the full multiplication list), `.json` (machine-readable), `.txt` (all 385 operations), `tensor_multiplications.csv`. Implementation: `src/gpt2_pytorch/tensorprog/` (one lowering rule per module type; an unknown module type raises).
 
+## Any model: state_dict + model code → matmul graph
+
+A weights file has names and tensors but no graph; the model code supplies the order. `python -m tools.matmul_graph --model pkg.mod:build --checkpoint my.pt` calls `build(state_dict) -> (loaded model, example_args)` (use `load_state_dict_checked`, which only tolerates missing keys that are tied aliases), then `torch.export(...).run_decompositions()` lowers `linear`/`matmul`/`einsum`/SDPA/conv to `mm`, `bmm`, `addmm`, `baddbmm`, `convolution`. Those are the nodes. Every other op passes dependencies through, so an edge `u → v` means `v` reads something computed from `u` without another matmul in between (residuals give edges that skip blocks). Each operand is traced back through view ops to its state_dict key (`qkv_projection.weight via permute` = `x·Wᵀ`), with shapes, FLOPs and the owning module. The decomposed graph is checked against eager before anything is written.
+
+For DistilGPT2 (the default): 37 matmuls in order, matching the 37 contractions of the tensor program, 127 edges (one per operand that reads an earlier matmul, tagged left/right/bias), 2,596 MFLOPs, max relative diff vs eager 0. No architecture-specific rules, unlike `tensorprog/lower.py`; the cost is ATen names (`addmm_4`) instead of TEL symbols. Implementation: `src/gpt2_pytorch/tracing/matmul_graph.py`; test with a conv + einsum + SDPA + tied-head model: `tests/test_matmul_graph.py`.
+
+## Export fixtures: one model in every format Tensormorph must read
+
+`tools/export_formats/` writes the same weights (real DistilGPT2, and a 2-layer `tiny` random model small enough for test fixtures) to every format on the import list, and loads each file back with that format's own runtime to compare logits with PyTorch:
+
+```bash
+uv venv --python 3.12 .venv-export
+uv pip install --python .venv-export/bin/python -e '.[export]'
+.venv-export/bin/python -m tools.export_formats.run_all --model all        # or --model tiny, --only onnx_format,gguf_format
+```
+
+| exporter | formats written |
+|---|---|
+| `pytorch_formats` | state_dict `.pt` / `.pth`, training checkpoint `.pt` (`module.` prefix + AdamW state), Lightning-style `.ckpt`, full-model pickle (an importer must refuse it), TorchScript `.pt`, `torch.export` `.pt2`, `pytorch_model.bin` zip and legacy pickle, Safetensors |
+| `onnx_format` | dynamo exporter static / dynamic axes, legacy opset 17, external data in a `.bin`, dynamic int8 |
+| `gguf_format` | GGUF arch `gpt2` in f32 / f16 / q8_0 / q4_0 (tensor names from gguf-py; no tokenizer) |
+| `tensorflow_formats` | Keras `.keras`, HDF5 full model `.h5` and weights-only `.weights.h5`, TF2 checkpoint `.ckpt`, TF1 checkpoint `.ckpt` + `.meta`, SavedModel, TFLite float32 / float16 / int8 |
+| `coreml_format` | mlprogram `.mlpackage` FP32 / FP16, neuralnetwork `.mlmodel` |
+| `openvino_format` | OpenVINO IR `.xml` + `.bin` (fp32, fp16-compressed) |
+| `tensorrt_format` | `.engine` from the ONNX file; needs an NVIDIA GPU + TensorRT, otherwise recorded as skipped with the `trtexec` command |
+
+Output: `exports/<model>/<family>/...`, `manifest.json` (files, sizes, sha256, what graph each file carries, verification, tolerance, library versions) and an index `README.md`. Each exporter runs in its own process; a variant that fails or misses its tolerance is recorded as `failed` / `mismatch`, never dropped. `exports/distilgpt2/` (several GB) is git-ignored.
+
 ## Parameter accounting
 
 | Category | Logical references | Unique parameters |
@@ -212,7 +241,7 @@ Three levels:
 
 ## Tests
 
-`pytest` (108 tests, ~10 s, offline) covers: checkpoint inspection and config inference, the key mapping (every category, transposition, and each failure mode), embeddings, attention (shapes, QKV order, SDPA cross-check *in tests only*, causality incl. "changing future tokens cannot change past logits"), MLP/GELU variant, residual structure, tied weights and gradients, the fixed DataLoader, golden logits, `.bin` ↔ Safetensors equality, the recorder, the trace format, and FX/export on a tiny seeded model. Tests that need the real weights skip if `weights/pytorch_model.bin` is absent; the Hugging Face parity test skips without `transformers`; one test asserts nothing under `src/` imports `transformers`.
+`pytest` (111 tests, ~10 s, offline) covers: checkpoint inspection and config inference, the key mapping (every category, transposition, and each failure mode), embeddings, attention (shapes, QKV order, SDPA cross-check *in tests only*, causality incl. "changing future tokens cannot change past logits"), MLP/GELU variant, residual structure, tied weights and gradients, the fixed DataLoader, golden logits, `.bin` ↔ Safetensors equality, the recorder, the trace format, and FX/export on a tiny seeded model. Tests that need the real weights skip if `weights/pytorch_model.bin` is absent; the Hugging Face parity test skips without `transformers`; one test asserts nothing under `src/` imports `transformers`.
 
 ## Hugging Face parity
 

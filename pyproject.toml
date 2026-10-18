@@ -13,6 +13,8 @@ dependencies = ["torch", "safetensors"]
 [project.optional-dependencies]
 dev = ["pytest"]
 reference = ["transformers"]  # only reference/compare_huggingface.py uses it
+# only tools/export_formats/ uses these; install into a separate Python 3.12 env (.venv-export), see README
+export = ["numpy", "onnx", "onnxscript", "onnxruntime", "gguf", "tensorflow", "coremltools", "openvino"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/gpt2_pytorch"]

@@ -1,0 +1,2764 @@
+{
+ "format": "tensormorph-matmul-graph",
+ "version": 1,
+ "inputs": [
+  {
+   "name": "input_ids",
+   "shape": [
+    2,
+    8
+   ],
+   "dtype": "torch.int64"
+  }
+ ],
+ "nodes": [
+  {
+   "id": "addmm",
+   "index": 0,
+   "op": "addmm",
+   "module": "transformer.blocks.0.attention.qkv_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.0.attention.qkv_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      2304
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.0.attention.qkv_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      2304
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    2304
+   ],
+   "flops": 56623104,
+   "deps": [
+    "input"
+   ]
+  },
+  {
+   "id": "bmm",
+   "index": 1,
+   "op": "bmm",
+   "module": "transformer.blocks.0.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      64,
+      8
+     ],
+     "from": [
+      "addmm"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    8
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm"
+   ]
+  },
+  {
+   "id": "bmm_1",
+   "index": 2,
+   "op": "bmm",
+   "module": "transformer.blocks.0.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "expand"
+     ],
+     "shape": [
+      24,
+      8,
+      8
+     ],
+     "from": [
+      "bmm"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    64
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm",
+    "bmm"
+   ]
+  },
+  {
+   "id": "addmm_1",
+   "index": 3,
+   "op": "addmm",
+   "module": "transformer.blocks.0.attention.output_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "view",
+      "clone",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "bmm_1"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.0.attention.output_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.0.attention.output_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 18874368,
+   "deps": [
+    "bmm_1"
+   ]
+  },
+  {
+   "id": "addmm_2",
+   "index": 4,
+   "op": "addmm",
+   "module": "transformer.blocks.0.mlp.fc",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.0.mlp.fc.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      3072
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.0.mlp.fc.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      3072
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    3072
+   ],
+   "flops": 75497472,
+   "deps": [
+    "input",
+    "addmm_1"
+   ]
+  },
+  {
+   "id": "addmm_3",
+   "index": 5,
+   "op": "addmm",
+   "module": "transformer.blocks.0.mlp.projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      3072
+     ],
+     "from": [
+      "addmm_2"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.0.mlp.projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      3072,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.0.mlp.projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 75497472,
+   "deps": [
+    "addmm_2"
+   ]
+  },
+  {
+   "id": "addmm_4",
+   "index": 6,
+   "op": "addmm",
+   "module": "transformer.blocks.1.attention.qkv_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1",
+      "addmm_3"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.1.attention.qkv_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      2304
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.1.attention.qkv_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      2304
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    2304
+   ],
+   "flops": 56623104,
+   "deps": [
+    "input",
+    "addmm_1",
+    "addmm_3"
+   ]
+  },
+  {
+   "id": "bmm_2",
+   "index": 7,
+   "op": "bmm",
+   "module": "transformer.blocks.1.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm_4"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      64,
+      8
+     ],
+     "from": [
+      "addmm_4"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    8
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm_4"
+   ]
+  },
+  {
+   "id": "bmm_3",
+   "index": 8,
+   "op": "bmm",
+   "module": "transformer.blocks.1.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "expand"
+     ],
+     "shape": [
+      24,
+      8,
+      8
+     ],
+     "from": [
+      "bmm_2"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm_4"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    64
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm_4",
+    "bmm_2"
+   ]
+  },
+  {
+   "id": "addmm_5",
+   "index": 9,
+   "op": "addmm",
+   "module": "transformer.blocks.1.attention.output_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "view",
+      "clone",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "bmm_3"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.1.attention.output_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.1.attention.output_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 18874368,
+   "deps": [
+    "bmm_3"
+   ]
+  },
+  {
+   "id": "addmm_6",
+   "index": 10,
+   "op": "addmm",
+   "module": "transformer.blocks.1.mlp.fc",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1",
+      "addmm_3",
+      "addmm_5"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.1.mlp.fc.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      3072
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.1.mlp.fc.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      3072
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    3072
+   ],
+   "flops": 75497472,
+   "deps": [
+    "input",
+    "addmm_1",
+    "addmm_3",
+    "addmm_5"
+   ]
+  },
+  {
+   "id": "addmm_7",
+   "index": 11,
+   "op": "addmm",
+   "module": "transformer.blocks.1.mlp.projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      3072
+     ],
+     "from": [
+      "addmm_6"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.1.mlp.projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      3072,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.1.mlp.projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 75497472,
+   "deps": [
+    "addmm_6"
+   ]
+  },
+  {
+   "id": "addmm_8",
+   "index": 12,
+   "op": "addmm",
+   "module": "transformer.blocks.2.attention.qkv_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1",
+      "addmm_3",
+      "addmm_5",
+      "addmm_7"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.2.attention.qkv_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      2304
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.2.attention.qkv_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      2304
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    2304
+   ],
+   "flops": 56623104,
+   "deps": [
+    "input",
+    "addmm_1",
+    "addmm_3",
+    "addmm_5",
+    "addmm_7"
+   ]
+  },
+  {
+   "id": "bmm_4",
+   "index": 13,
+   "op": "bmm",
+   "module": "transformer.blocks.2.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm_8"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      64,
+      8
+     ],
+     "from": [
+      "addmm_8"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    8
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm_8"
+   ]
+  },
+  {
+   "id": "bmm_5",
+   "index": 14,
+   "op": "bmm",
+   "module": "transformer.blocks.2.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "expand"
+     ],
+     "shape": [
+      24,
+      8,
+      8
+     ],
+     "from": [
+      "bmm_4"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm_8"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    64
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm_8",
+    "bmm_4"
+   ]
+  },
+  {
+   "id": "addmm_9",
+   "index": 15,
+   "op": "addmm",
+   "module": "transformer.blocks.2.attention.output_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "view",
+      "clone",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "bmm_5"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.2.attention.output_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.2.attention.output_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 18874368,
+   "deps": [
+    "bmm_5"
+   ]
+  },
+  {
+   "id": "addmm_10",
+   "index": 16,
+   "op": "addmm",
+   "module": "transformer.blocks.2.mlp.fc",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1",
+      "addmm_3",
+      "addmm_5",
+      "addmm_7",
+      "addmm_9"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.2.mlp.fc.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      3072
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.2.mlp.fc.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      3072
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    3072
+   ],
+   "flops": 75497472,
+   "deps": [
+    "input",
+    "addmm_1",
+    "addmm_3",
+    "addmm_5",
+    "addmm_7",
+    "addmm_9"
+   ]
+  },
+  {
+   "id": "addmm_11",
+   "index": 17,
+   "op": "addmm",
+   "module": "transformer.blocks.2.mlp.projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      3072
+     ],
+     "from": [
+      "addmm_10"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.2.mlp.projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      3072,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.2.mlp.projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 75497472,
+   "deps": [
+    "addmm_10"
+   ]
+  },
+  {
+   "id": "addmm_12",
+   "index": 18,
+   "op": "addmm",
+   "module": "transformer.blocks.3.attention.qkv_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1",
+      "addmm_3",
+      "addmm_5",
+      "addmm_7",
+      "addmm_9",
+      "addmm_11"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.3.attention.qkv_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      2304
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.3.attention.qkv_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      2304
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    2304
+   ],
+   "flops": 56623104,
+   "deps": [
+    "input",
+    "addmm_1",
+    "addmm_3",
+    "addmm_5",
+    "addmm_7",
+    "addmm_9",
+    "addmm_11"
+   ]
+  },
+  {
+   "id": "bmm_6",
+   "index": 19,
+   "op": "bmm",
+   "module": "transformer.blocks.3.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm_12"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      64,
+      8
+     ],
+     "from": [
+      "addmm_12"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    8
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm_12"
+   ]
+  },
+  {
+   "id": "bmm_7",
+   "index": 20,
+   "op": "bmm",
+   "module": "transformer.blocks.3.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "expand"
+     ],
+     "shape": [
+      24,
+      8,
+      8
+     ],
+     "from": [
+      "bmm_6"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm_12"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    64
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm_12",
+    "bmm_6"
+   ]
+  },
+  {
+   "id": "addmm_13",
+   "index": 21,
+   "op": "addmm",
+   "module": "transformer.blocks.3.attention.output_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "view",
+      "clone",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "bmm_7"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.3.attention.output_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.3.attention.output_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 18874368,
+   "deps": [
+    "bmm_7"
+   ]
+  },
+  {
+   "id": "addmm_14",
+   "index": 22,
+   "op": "addmm",
+   "module": "transformer.blocks.3.mlp.fc",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1",
+      "addmm_3",
+      "addmm_5",
+      "addmm_7",
+      "addmm_9",
+      "addmm_11",
+      "addmm_13"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.3.mlp.fc.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      3072
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.3.mlp.fc.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      3072
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    3072
+   ],
+   "flops": 75497472,
+   "deps": [
+    "input",
+    "addmm_1",
+    "addmm_3",
+    "addmm_5",
+    "addmm_7",
+    "addmm_9",
+    "addmm_11",
+    "addmm_13"
+   ]
+  },
+  {
+   "id": "addmm_15",
+   "index": 23,
+   "op": "addmm",
+   "module": "transformer.blocks.3.mlp.projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      3072
+     ],
+     "from": [
+      "addmm_14"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.3.mlp.projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      3072,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.3.mlp.projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 75497472,
+   "deps": [
+    "addmm_14"
+   ]
+  },
+  {
+   "id": "addmm_16",
+   "index": 24,
+   "op": "addmm",
+   "module": "transformer.blocks.4.attention.qkv_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1",
+      "addmm_3",
+      "addmm_5",
+      "addmm_7",
+      "addmm_9",
+      "addmm_11",
+      "addmm_13",
+      "addmm_15"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.4.attention.qkv_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      2304
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.4.attention.qkv_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      2304
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    2304
+   ],
+   "flops": 56623104,
+   "deps": [
+    "input",
+    "addmm_1",
+    "addmm_3",
+    "addmm_5",
+    "addmm_7",
+    "addmm_9",
+    "addmm_11",
+    "addmm_13",
+    "addmm_15"
+   ]
+  },
+  {
+   "id": "bmm_8",
+   "index": 25,
+   "op": "bmm",
+   "module": "transformer.blocks.4.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm_16"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      64,
+      8
+     ],
+     "from": [
+      "addmm_16"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    8
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm_16"
+   ]
+  },
+  {
+   "id": "bmm_9",
+   "index": 26,
+   "op": "bmm",
+   "module": "transformer.blocks.4.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "expand"
+     ],
+     "shape": [
+      24,
+      8,
+      8
+     ],
+     "from": [
+      "bmm_8"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm_16"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    64
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm_16",
+    "bmm_8"
+   ]
+  },
+  {
+   "id": "addmm_17",
+   "index": 27,
+   "op": "addmm",
+   "module": "transformer.blocks.4.attention.output_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "view",
+      "clone",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "bmm_9"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.4.attention.output_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.4.attention.output_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 18874368,
+   "deps": [
+    "bmm_9"
+   ]
+  },
+  {
+   "id": "addmm_18",
+   "index": 28,
+   "op": "addmm",
+   "module": "transformer.blocks.4.mlp.fc",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1",
+      "addmm_3",
+      "addmm_5",
+      "addmm_7",
+      "addmm_9",
+      "addmm_11",
+      "addmm_13",
+      "addmm_15",
+      "addmm_17"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.4.mlp.fc.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      3072
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.4.mlp.fc.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      3072
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    3072
+   ],
+   "flops": 75497472,
+   "deps": [
+    "input",
+    "addmm_1",
+    "addmm_3",
+    "addmm_5",
+    "addmm_7",
+    "addmm_9",
+    "addmm_11",
+    "addmm_13",
+    "addmm_15",
+    "addmm_17"
+   ]
+  },
+  {
+   "id": "addmm_19",
+   "index": 29,
+   "op": "addmm",
+   "module": "transformer.blocks.4.mlp.projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      3072
+     ],
+     "from": [
+      "addmm_18"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.4.mlp.projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      3072,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.4.mlp.projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 75497472,
+   "deps": [
+    "addmm_18"
+   ]
+  },
+  {
+   "id": "addmm_20",
+   "index": 30,
+   "op": "addmm",
+   "module": "transformer.blocks.5.attention.qkv_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1",
+      "addmm_3",
+      "addmm_5",
+      "addmm_7",
+      "addmm_9",
+      "addmm_11",
+      "addmm_13",
+      "addmm_15",
+      "addmm_17",
+      "addmm_19"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.5.attention.qkv_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      2304
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.5.attention.qkv_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      2304
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    2304
+   ],
+   "flops": 56623104,
+   "deps": [
+    "input",
+    "addmm_1",
+    "addmm_3",
+    "addmm_5",
+    "addmm_7",
+    "addmm_9",
+    "addmm_11",
+    "addmm_13",
+    "addmm_15",
+    "addmm_17",
+    "addmm_19"
+   ]
+  },
+  {
+   "id": "bmm_10",
+   "index": 31,
+   "op": "bmm",
+   "module": "transformer.blocks.5.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm_20"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      64,
+      8
+     ],
+     "from": [
+      "addmm_20"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    8
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm_20"
+   ]
+  },
+  {
+   "id": "bmm_11",
+   "index": 32,
+   "op": "bmm",
+   "module": "transformer.blocks.5.attention",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "expand"
+     ],
+     "shape": [
+      24,
+      8,
+      8
+     ],
+     "from": [
+      "bmm_10"
+     ]
+    },
+    "right": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "clone",
+      "expand",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      24,
+      8,
+      64
+     ],
+     "from": [
+      "addmm_20"
+     ]
+    }
+   },
+   "out_shape": [
+    24,
+    8,
+    64
+   ],
+   "flops": 196608,
+   "deps": [
+    "addmm_20",
+    "bmm_10"
+   ]
+  },
+  {
+   "id": "addmm_21",
+   "index": 33,
+   "op": "addmm",
+   "module": "transformer.blocks.5.attention.output_projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view",
+      "view",
+      "clone",
+      "permute",
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "bmm_11"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.5.attention.output_projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.5.attention.output_projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 18874368,
+   "deps": [
+    "bmm_11"
+   ]
+  },
+  {
+   "id": "addmm_22",
+   "index": 34,
+   "op": "addmm",
+   "module": "transformer.blocks.5.mlp.fc",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1",
+      "addmm_3",
+      "addmm_5",
+      "addmm_7",
+      "addmm_9",
+      "addmm_11",
+      "addmm_13",
+      "addmm_15",
+      "addmm_17",
+      "addmm_19",
+      "addmm_21"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.5.mlp.fc.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      3072
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.5.mlp.fc.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      3072
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    3072
+   ],
+   "flops": 75497472,
+   "deps": [
+    "input",
+    "addmm_1",
+    "addmm_3",
+    "addmm_5",
+    "addmm_7",
+    "addmm_9",
+    "addmm_11",
+    "addmm_13",
+    "addmm_15",
+    "addmm_17",
+    "addmm_19",
+    "addmm_21"
+   ]
+  },
+  {
+   "id": "addmm_23",
+   "index": 35,
+   "op": "addmm",
+   "module": "transformer.blocks.5.mlp.projection",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      3072
+     ],
+     "from": [
+      "addmm_22"
+     ]
+    },
+    "right": {
+     "source": "transformer.blocks.5.mlp.projection.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      3072,
+      768
+     ],
+     "from": []
+    },
+    "bias": {
+     "source": "transformer.blocks.5.mlp.projection.bias",
+     "kind": "parameter",
+     "via": [],
+     "shape": [
+      768
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    768
+   ],
+   "flops": 75497472,
+   "deps": [
+    "addmm_22"
+   ]
+  },
+  {
+   "id": "mm",
+   "index": 36,
+   "op": "mm",
+   "module": "lm_head",
+   "operands": {
+    "left": {
+     "source": null,
+     "kind": "activation",
+     "via": [
+      "view"
+     ],
+     "shape": [
+      16,
+      768
+     ],
+     "from": [
+      "input",
+      "addmm_1",
+      "addmm_3",
+      "addmm_5",
+      "addmm_7",
+      "addmm_9",
+      "addmm_11",
+      "addmm_13",
+      "addmm_15",
+      "addmm_17",
+      "addmm_19",
+      "addmm_21",
+      "addmm_23"
+     ]
+    },
+    "right": {
+     "source": "lm_head.weight",
+     "kind": "parameter",
+     "via": [
+      "permute"
+     ],
+     "shape": [
+      768,
+      50257
+     ],
+     "from": []
+    }
+   },
+   "out_shape": [
+    16,
+    50257
+   ],
+   "flops": 1235116032,
+   "deps": [
+    "input",
+    "addmm_1",
+    "addmm_3",
+    "addmm_5",
+    "addmm_7",
+    "addmm_9",
+    "addmm_11",
+    "addmm_13",
+    "addmm_15",
+    "addmm_17",
+    "addmm_19",
+    "addmm_21",
+    "addmm_23"
+   ]
+  }
+ ],
+ "edges": [
+  [
+   "input",
+   "addmm",
+   "left"
+  ],
+  [
+   "addmm",
+   "bmm",
+   "left"
+  ],
+  [
+   "addmm",
+   "bmm",
+   "right"
+  ],
+  [
+   "bmm",
+   "bmm_1",
+   "left"
+  ],
+  [
+   "addmm",
+   "bmm_1",
+   "right"
+  ],
+  [
+   "bmm_1",
+   "addmm_1",
+   "left"
+  ],
+  [
+   "input",
+   "addmm_2",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "addmm_2",
+   "left"
+  ],
+  [
+   "addmm_2",
+   "addmm_3",
+   "left"
+  ],
+  [
+   "input",
+   "addmm_4",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "addmm_4",
+   "left"
+  ],
+  [
+   "addmm_3",
+   "addmm_4",
+   "left"
+  ],
+  [
+   "addmm_4",
+   "bmm_2",
+   "left"
+  ],
+  [
+   "addmm_4",
+   "bmm_2",
+   "right"
+  ],
+  [
+   "bmm_2",
+   "bmm_3",
+   "left"
+  ],
+  [
+   "addmm_4",
+   "bmm_3",
+   "right"
+  ],
+  [
+   "bmm_3",
+   "addmm_5",
+   "left"
+  ],
+  [
+   "input",
+   "addmm_6",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "addmm_6",
+   "left"
+  ],
+  [
+   "addmm_3",
+   "addmm_6",
+   "left"
+  ],
+  [
+   "addmm_5",
+   "addmm_6",
+   "left"
+  ],
+  [
+   "addmm_6",
+   "addmm_7",
+   "left"
+  ],
+  [
+   "input",
+   "addmm_8",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "addmm_8",
+   "left"
+  ],
+  [
+   "addmm_3",
+   "addmm_8",
+   "left"
+  ],
+  [
+   "addmm_5",
+   "addmm_8",
+   "left"
+  ],
+  [
+   "addmm_7",
+   "addmm_8",
+   "left"
+  ],
+  [
+   "addmm_8",
+   "bmm_4",
+   "left"
+  ],
+  [
+   "addmm_8",
+   "bmm_4",
+   "right"
+  ],
+  [
+   "bmm_4",
+   "bmm_5",
+   "left"
+  ],
+  [
+   "addmm_8",
+   "bmm_5",
+   "right"
+  ],
+  [
+   "bmm_5",
+   "addmm_9",
+   "left"
+  ],
+  [
+   "input",
+   "addmm_10",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "addmm_10",
+   "left"
+  ],
+  [
+   "addmm_3",
+   "addmm_10",
+   "left"
+  ],
+  [
+   "addmm_5",
+   "addmm_10",
+   "left"
+  ],
+  [
+   "addmm_7",
+   "addmm_10",
+   "left"
+  ],
+  [
+   "addmm_9",
+   "addmm_10",
+   "left"
+  ],
+  [
+   "addmm_10",
+   "addmm_11",
+   "left"
+  ],
+  [
+   "input",
+   "addmm_12",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "addmm_12",
+   "left"
+  ],
+  [
+   "addmm_3",
+   "addmm_12",
+   "left"
+  ],
+  [
+   "addmm_5",
+   "addmm_12",
+   "left"
+  ],
+  [
+   "addmm_7",
+   "addmm_12",
+   "left"
+  ],
+  [
+   "addmm_9",
+   "addmm_12",
+   "left"
+  ],
+  [
+   "addmm_11",
+   "addmm_12",
+   "left"
+  ],
+  [
+   "addmm_12",
+   "bmm_6",
+   "left"
+  ],
+  [
+   "addmm_12",
+   "bmm_6",
+   "right"
+  ],
+  [
+   "bmm_6",
+   "bmm_7",
+   "left"
+  ],
+  [
+   "addmm_12",
+   "bmm_7",
+   "right"
+  ],
+  [
+   "bmm_7",
+   "addmm_13",
+   "left"
+  ],
+  [
+   "input",
+   "addmm_14",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "addmm_14",
+   "left"
+  ],
+  [
+   "addmm_3",
+   "addmm_14",
+   "left"
+  ],
+  [
+   "addmm_5",
+   "addmm_14",
+   "left"
+  ],
+  [
+   "addmm_7",
+   "addmm_14",
+   "left"
+  ],
+  [
+   "addmm_9",
+   "addmm_14",
+   "left"
+  ],
+  [
+   "addmm_11",
+   "addmm_14",
+   "left"
+  ],
+  [
+   "addmm_13",
+   "addmm_14",
+   "left"
+  ],
+  [
+   "addmm_14",
+   "addmm_15",
+   "left"
+  ],
+  [
+   "input",
+   "addmm_16",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "addmm_16",
+   "left"
+  ],
+  [
+   "addmm_3",
+   "addmm_16",
+   "left"
+  ],
+  [
+   "addmm_5",
+   "addmm_16",
+   "left"
+  ],
+  [
+   "addmm_7",
+   "addmm_16",
+   "left"
+  ],
+  [
+   "addmm_9",
+   "addmm_16",
+   "left"
+  ],
+  [
+   "addmm_11",
+   "addmm_16",
+   "left"
+  ],
+  [
+   "addmm_13",
+   "addmm_16",
+   "left"
+  ],
+  [
+   "addmm_15",
+   "addmm_16",
+   "left"
+  ],
+  [
+   "addmm_16",
+   "bmm_8",
+   "left"
+  ],
+  [
+   "addmm_16",
+   "bmm_8",
+   "right"
+  ],
+  [
+   "bmm_8",
+   "bmm_9",
+   "left"
+  ],
+  [
+   "addmm_16",
+   "bmm_9",
+   "right"
+  ],
+  [
+   "bmm_9",
+   "addmm_17",
+   "left"
+  ],
+  [
+   "input",
+   "addmm_18",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "addmm_18",
+   "left"
+  ],
+  [
+   "addmm_3",
+   "addmm_18",
+   "left"
+  ],
+  [
+   "addmm_5",
+   "addmm_18",
+   "left"
+  ],
+  [
+   "addmm_7",
+   "addmm_18",
+   "left"
+  ],
+  [
+   "addmm_9",
+   "addmm_18",
+   "left"
+  ],
+  [
+   "addmm_11",
+   "addmm_18",
+   "left"
+  ],
+  [
+   "addmm_13",
+   "addmm_18",
+   "left"
+  ],
+  [
+   "addmm_15",
+   "addmm_18",
+   "left"
+  ],
+  [
+   "addmm_17",
+   "addmm_18",
+   "left"
+  ],
+  [
+   "addmm_18",
+   "addmm_19",
+   "left"
+  ],
+  [
+   "input",
+   "addmm_20",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "addmm_20",
+   "left"
+  ],
+  [
+   "addmm_3",
+   "addmm_20",
+   "left"
+  ],
+  [
+   "addmm_5",
+   "addmm_20",
+   "left"
+  ],
+  [
+   "addmm_7",
+   "addmm_20",
+   "left"
+  ],
+  [
+   "addmm_9",
+   "addmm_20",
+   "left"
+  ],
+  [
+   "addmm_11",
+   "addmm_20",
+   "left"
+  ],
+  [
+   "addmm_13",
+   "addmm_20",
+   "left"
+  ],
+  [
+   "addmm_15",
+   "addmm_20",
+   "left"
+  ],
+  [
+   "addmm_17",
+   "addmm_20",
+   "left"
+  ],
+  [
+   "addmm_19",
+   "addmm_20",
+   "left"
+  ],
+  [
+   "addmm_20",
+   "bmm_10",
+   "left"
+  ],
+  [
+   "addmm_20",
+   "bmm_10",
+   "right"
+  ],
+  [
+   "bmm_10",
+   "bmm_11",
+   "left"
+  ],
+  [
+   "addmm_20",
+   "bmm_11",
+   "right"
+  ],
+  [
+   "bmm_11",
+   "addmm_21",
+   "left"
+  ],
+  [
+   "input",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_3",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_5",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_7",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_9",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_11",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_13",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_15",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_17",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_19",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_21",
+   "addmm_22",
+   "left"
+  ],
+  [
+   "addmm_22",
+   "addmm_23",
+   "left"
+  ],
+  [
+   "input",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_1",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_3",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_5",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_7",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_9",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_11",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_13",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_15",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_17",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_19",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_21",
+   "mm",
+   "left"
+  ],
+  [
+   "addmm_23",
+   "mm",
+   "left"
+  ]
+ ],
+ "outputs": [
+  "mm"
+ ],
+ "tied_parameters": [
+  [
+   "transformer.embeddings.token_embedding.weight",
+   "lm_head.weight"
+  ]
+ ],
+ "total_flops": 2596429824,
+ "max_rel_diff_vs_eager": 0.0
+}

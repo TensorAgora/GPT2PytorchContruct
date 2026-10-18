@@ -9,3 +9,6 @@ artifacts/export/*.pt2
 .idea/
 artifacts/logs/
 artifacts/tel/model.json
+.venv-export/
+exports/
+netron/
