@@ -19,6 +19,8 @@ STEPS = [
     ("Print model", "tools.print_model", "module tree, parameter counts, logical vs unique accounting"),
     ("Tensor inventory", "tools.tensor_inventory", "every parameter/buffer -> artifacts/tensor_inventory.{json,csv}"),
     ("Tensor program", "tools.tensor_program", "every layer as tensor operations, verified vs PyTorch -> artifacts/tensor_program.*"),
+    ("Viz graph", "tools.viz_graph", "tensor program + edges, group tree, multiplications -> artifacts/viz_graph.json"),
+    ("Viz graph -> TEL", "tools.viz_to_tel", "viz_graph.json -> Quick TEL -> artifacts/tel/from_viz.tel"),
     ("Matmul graph", "tools.matmul_graph", "state_dict + model code -> matmul graph in execution order -> artifacts/matmul_graph.*"),
     ("Fixed forward", "examples.forward_fixed", "deterministic eval forward, intermediate shapes, logits stats"),
     ("DataLoader forward", "examples.dataloader_forward", "Dataset -> DataLoader -> batch -> logits"),

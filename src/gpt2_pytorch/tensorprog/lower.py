@@ -26,7 +26,7 @@ class Lowering:
             "B": batch, "T": seq, "q": seq, "k": seq, "D": c.hidden_size, "Dc": c.hidden_size, "H": c.num_heads,
             "Dh": c.head_dim, "F": c.intermediate_size, "V": c.vocab_size, "P": c.max_position_embeddings,
             "QKV": 3 * c.hidden_size,
-        })
+        }, symbols={"B": "B", "T": "T", "q": "T", "k": "T"})
         self.registered: dict[int, str] = {}  # id(tensor) -> symbol (detects tied weights)
         self.instances: Counter = Counter()
 
@@ -49,7 +49,7 @@ class Lowering:
             return self.registered[id(tensor)]
         self.registered[id(tensor)] = symbol
         key = checkpoint_key_for(target, self.config.num_layers)
-        return self.p.declare(symbol, role, axes, checkpoint_key=key)
+        return self.p.declare(symbol, role, axes, checkpoint_key=key, state_dict_key=target)
 
     def checkpoint_is_in_out(self, target: str) -> bool:
         """HF Conv1D weights are stored [in, out]; embeddings and lm_head are [rows, features]."""
@@ -90,13 +90,14 @@ def lower_layernorm(ctx, m: nn.LayerNorm, path, x, out, g, b):
     gamma = ctx.param(m.weight, f"{path}.weight", g, ("D",))
     beta = ctx.param(m.bias, f"{path}.bias", b, ("D",))
     eps = p.constant("c_eps", m.eps)
-    mean = p.reduce("mean", f"{out}.mean", x, "D")
-    centered = p.elementwise("sub", f"{out}.centered", x, mean)
-    squared = p.elementwise("mul", f"{out}.squared", centered, centered)
-    var = p.reduce("mean", f"{out}.var", squared, "D")
-    var_eps = p.elementwise("add", f"{out}.var_eps", var, eps)
-    rstd = p.elementwise("rsqrt", f"{out}.rstd", var_eps)
-    normalized = p.elementwise("mul", f"{out}.normalized", centered, rstd)
+    with p.composite("layernorm", x, axis="D", eps=m.eps):  # TEL's layernorm has no affine part
+        mean = p.reduce("mean", f"{out}.mean", x, "D")
+        centered = p.elementwise("sub", f"{out}.centered", x, mean)
+        squared = p.elementwise("mul", f"{out}.squared", centered, centered)
+        var = p.reduce("mean", f"{out}.var", squared, "D")
+        var_eps = p.elementwise("add", f"{out}.var_eps", var, eps)
+        rstd = p.elementwise("rsqrt", f"{out}.rstd", var_eps)
+        normalized = p.elementwise("mul", f"{out}.normalized", centered, rstd)
     scaled = p.elementwise("mul", f"{out}.scaled", normalized, gamma)
     return p.elementwise("add", out, scaled, beta)
 
@@ -144,11 +145,12 @@ def lower_attention(ctx, m: CausalSelfAttention, path, x, layer):
     log_mask = p.elementwise("log", f"Mb_{l}.log", mask)
     masked = p.elementwise("add", f"S_{l}.masked", s, log_mask)
     # softmax over k
-    top = p.reduce("max", f"A_{l}.max", masked, "k")
-    shifted = p.elementwise("sub", f"A_{l}.shifted", masked, top)
-    exp = p.elementwise("exp", f"A_{l}.exp", shifted)
-    total = p.reduce("sum", f"A_{l}.sum", exp, "k")
-    probs = p.elementwise("div", f"A_{l}", exp, total)
+    with p.composite("softmax", masked, axis="k"):
+        top = p.reduce("max", f"A_{l}.max", masked, "k")
+        shifted = p.elementwise("sub", f"A_{l}.shifted", masked, top)
+        exp = p.elementwise("exp", f"A_{l}.exp", shifted)
+        total = p.reduce("sum", f"A_{l}.sum", exp, "k")
+        probs = p.elementwise("div", f"A_{l}", exp, total)
     ctx.call(f"{path}.attention_dropout", m.attention_dropout, probs)
     context = p.contract(f"C_{l}", probs, heads["V"], over=["k"])  # [B,H,q,Dh]
     # merge heads [B,H,q,Dh] -> [B,T,Dc]

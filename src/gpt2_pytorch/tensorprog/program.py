@@ -4,6 +4,7 @@ The primitive vocabulary follows TEL's TensorIR (Contraction, Elementwise, Reduc
 """
 import math
 import re
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 
 FORMAT = "tensormorph-tensor-program"
@@ -24,6 +25,7 @@ class TensorDecl:
     value: float | None = None  # constants
     produced_by: int | None = None  # op index
     pytorch_name: str | None = None  # same tensor in model(ids, return_debug=True).debug
+    state_dict_key: str | None = None  # parameter / buffer: name in the pure model's state_dict
 
 
 @dataclass
@@ -36,6 +38,7 @@ class Op:
     attrs: dict
     module: str  # path of the nn.Module whose lowering emitted it
     module_type: str
+    region: int | None = None  # index into Program.regions when the op belongs to a composite
 
 
 def pytorch_name(symbol: str) -> str | None:
@@ -60,8 +63,11 @@ def pytorch_name(symbol: str) -> str | None:
 
 
 class Program:
-    def __init__(self, dims: dict[str, int]):
+    def __init__(self, dims: dict[str, int], symbols: dict[str, str] | None = None):
         self.dims = dims
+        self.symbols = symbols or {}  # axis -> symbolic size it stands for (B, T; q and k are T)
+        self.regions: list[dict] = []  # composites: {id, name, input, attrs, ops, output}
+        self.region: int | None = None
         self.tensors: dict[str, TensorDecl] = {}
         self.ops: list[Op] = []
         self.aliases: dict[str, str] = {}  # extra checkpoint name -> tensor it shares (tied weights)
@@ -91,8 +97,20 @@ class Program:
         dtype = dtype or next(self.tensors[i].dtype for i in inputs if self.tensors[i].role != "constant")
         index = len(self.ops)
         self.declare(out, "activation", out_axes, dtype, produced_by=index, pytorch_name=pytorch_name(out))
-        self.ops.append(Op(index, primitive, fn, out, list(inputs), attrs or {}, self.module, self.module_type))
+        self.ops.append(Op(index, primitive, fn, out, list(inputs), attrs or {}, self.module, self.module_type, self.region))
         return out
+
+    @contextmanager
+    def composite(self, name: str, x: str, **attrs):
+        """Ops emitted inside spell out one TEL composite `name(x, **attrs)`; its output is the last op's."""
+        assert self.region is None, "composites do not nest"
+        self.region, start = len(self.regions), len(self.ops)
+        try:
+            yield
+        finally:
+            self.region = None
+        self.regions.append({"id": len(self.regions), "name": name, "input": x, "attrs": attrs,
+                             "ops": list(range(start, len(self.ops))), "output": self.ops[-1].out})
 
     def contract(self, out, a, b, over):
         """out = a · b summed over the named axes `over`; out axes: a's remaining axes, then b's new ones."""
@@ -175,8 +193,10 @@ class Program:
             "model": {"name": model_name},
             "example": example,
             "dims": self.dims,
+            "axes": [{"name": a, "size": n, "symbol": self.symbols.get(a)} for a, n in self.dims.items()],
             "aliases": self.aliases,
             "elided_modules": self.elided,
+            "regions": self.regions,
             "tensors": [asdict(t) for t in self.tensors.values()],
             "ops": [
                 asdict(op) | {"equation": self.equation(op), "cost": self.cost(op), "multiplication": self.is_multiplication(op)}
