@@ -12,3 +12,5 @@ artifacts/tel/model.json
 .venv-export/
 exports/
 netron/
+
+*.safetensors

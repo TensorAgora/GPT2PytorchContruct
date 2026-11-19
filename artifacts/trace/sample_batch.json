@@ -1,0 +1,66 @@
+{
+ "format": "tensormorph-activation-trace",
+ "version": 1,
+ "model": "distilgpt2",
+ "sample": "sample_batch",
+ "dims": {
+  "B": 2,
+  "T": 8
+ },
+ "input_ids": [
+  [
+   15496,
+   11,
+   616,
+   1438,
+   318,
+   1332,
+   13,
+   198
+  ],
+  [
+   1212,
+   318,
+   257,
+   1332,
+   6827,
+   284,
+   1332,
+   13
+  ]
+ ],
+ "tokens": [
+  [
+   "Hello",
+   ",",
+   " my",
+   " name",
+   " is",
+   " test",
+   ".",
+   "\\n"
+  ],
+  [
+   "This",
+   " is",
+   " a",
+   " test",
+   " sentence",
+   " to",
+   " test",
+   "."
+  ]
+ ],
+ "dtype": "float16",
+ "file": "sample_batch.safetensors",
+ "tensors": 399,
+ "bytes": 14033740,
+ "source": "tools/tensor_program run_program (torch, the checkpoint's own weights)",
+ "check": {
+  "compared": 93,
+  "worst_relative_error": 3.543630725646091e-06,
+  "worst_tensor": "O_1",
+  "logits_max_abs_error": 0.0001068115234375,
+  "argmax_identical": true
+ }
+}

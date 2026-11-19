@@ -114,23 +114,23 @@ The causal mask is a non-persistent boolean buffer (`register_buffer(..., persis
 
 83 tensors in `pytorch_model.bin`. Hugging Face `Conv1D` stores weights as `[in, out]`; `nn.Linear` stores `[out, in]`. The mapping layer (`checkpoint/mapping.py`, the only place that knows HF names) transposes exactly the four projection **weights** per block. Biases, embeddings and LayerNorm parameters are never transposed.
 
-| Checkpoint name | Meaning / where used | Shape (rank) | in → out | Our module | Transposed |
-|---|---|---|---|---|---|
-| `transformer.wte.weight` | token embedding table; row *i* is the vector for token *i*; also the LM head | `[50257, 768]` (2) | vocab → C | `embeddings.token_embedding` | no |
-| `transformer.wpe.weight` | learned absolute position embedding | `[1024, 768]` (2) | position → C | `embeddings.position_embedding` | no |
-| `h.N.ln_1.weight/bias` | scale/shift of the LayerNorm before attention | `[768]` (1) | C → C | `blocks.N.ln_1` | no |
-| `h.N.attn.bias` | HF's precomputed causal mask buffer | `[1,1,1024,1024]` (4) | — | verified `== tril`, then ignored (we build our own mask) | — |
-| `h.N.attn.c_attn.weight` | fused Q,K,V projection | `[768, 2304]` (2) | C → 3C | `attention.qkv_projection` | **yes** → `[2304, 768]` |
-| `h.N.attn.c_attn.bias` | its bias, order Q then K then V | `[2304]` (1) | | same | no |
-| `h.N.attn.c_proj.weight` | attention output projection | `[768, 768]` (2) | C → C | `attention.output_projection` | **yes** |
-| `h.N.attn.c_proj.bias` | its bias | `[768]` (1) | | same | no |
-| `h.N.ln_2.weight/bias` | LayerNorm before the MLP | `[768]` (1) | C → C | `blocks.N.ln_2` | no |
-| `h.N.mlp.c_fc.weight` | MLP expansion | `[768, 3072]` (2) | C → 4C | `mlp.fc` | **yes** → `[3072, 768]` |
-| `h.N.mlp.c_fc.bias` | its bias | `[3072]` (1) | | same | no |
-| `h.N.mlp.c_proj.weight` | MLP contraction | `[3072, 768]` (2) | 4C → C | `mlp.projection` | **yes** → `[768, 3072]` |
-| `h.N.mlp.c_proj.bias` | its bias | `[768]` (1) | | same | no |
-| `transformer.ln_f.weight/bias` | final LayerNorm | `[768]` (1) | C → C | `final_layer_norm` | no |
-| `lm_head.weight` | output projection, **same storage as `wte`** | `[50257, 768]` (2) | C → vocab | `lm_head` (tied) | no |
+| Checkpoint name                | Meaning / where used                                                         | Shape (rank)          | in → out     | Our module                                               | Transposed              |
+| ------------------------------ | ---------------------------------------------------------------------------- | --------------------- | ------------ | -------------------------------------------------------- | ----------------------- |
+| `transformer.wte.weight`       | token embedding table; row *i* is the vector for token *i*; also the LM head | `[50257, 768]` (2)    | vocab → C    | `embeddings.token_embedding`                             | no                      |
+| `transformer.wpe.weight`       | learned absolute position embedding                                          | `[1024, 768]` (2)     | position → C | `embeddings.position_embedding`                          | no                      |
+| `h.N.ln_1.weight/bias`         | scale/shift of the LayerNorm before attention                                | `[768]` (1)           | C → C        | `blocks.N.ln_1`                                          | no                      |
+| `h.N.attn.bias`                | HF's precomputed causal mask buffer                                          | `[1,1,1024,1024]` (4) | —            | verified `== tril`, then ignored (we build our own mask) | —                       |
+| `h.N.attn.c_attn.weight`       | fused Q,K,V projection                                                       | `[768, 2304]` (2)     | C → 3C       | `attention.qkv_projection`                               | **yes** → `[2304, 768]` |
+| `h.N.attn.c_attn.bias`         | its bias, order Q then K then V                                              | `[2304]` (1)          |              | same                                                     | no                      |
+| `h.N.attn.c_proj.weight`       | attention output projection                                                  | `[768, 768]` (2)      | C → C        | `attention.output_projection`                            | **yes**                 |
+| `h.N.attn.c_proj.bias`         | its bias                                                                     | `[768]` (1)           |              | same                                                     | no                      |
+| `h.N.ln_2.weight/bias`         | LayerNorm before the MLP                                                     | `[768]` (1)           | C → C        | `blocks.N.ln_2`                                          | no                      |
+| `h.N.mlp.c_fc.weight`          | MLP expansion                                                                | `[768, 3072]` (2)     | C → 4C       | `mlp.fc`                                                 | **yes** → `[3072, 768]` |
+| `h.N.mlp.c_fc.bias`            | its bias                                                                     | `[3072]` (1)          |              | same                                                     | no                      |
+| `h.N.mlp.c_proj.weight`        | MLP contraction                                                              | `[3072, 768]` (2)     | 4C → C       | `mlp.projection`                                         | **yes** → `[768, 3072]` |
+| `h.N.mlp.c_proj.bias`          | its bias                                                                     | `[768]` (1)           |              | same                                                     | no                      |
+| `transformer.ln_f.weight/bias` | final LayerNorm                                                              | `[768]` (1)           | C → C        | `final_layer_norm`                                       | no                      |
+| `lm_head.weight`               | output projection, **same storage as `wte`**                                 | `[50257, 768]` (2)    | C → vocab    | `lm_head` (tied)                                         | no                      |
 
 (`h.N` = `transformer.h.N`, N = 0…5.) Loader report for the real checkpoint:
 
@@ -164,29 +164,29 @@ uv pip install --python .venv-export/bin/python -e '.[export]'
 .venv-export/bin/python -m tools.export_formats.run_all --model all        # or --model tiny, --only onnx_format,gguf_format
 ```
 
-| exporter | formats written |
-|---|---|
-| `pytorch_formats` | state_dict `.pt` / `.pth`, training checkpoint `.pt` (`module.` prefix + AdamW state), Lightning-style `.ckpt`, full-model pickle (an importer must refuse it), TorchScript `.pt`, `torch.export` `.pt2`, `pytorch_model.bin` zip and legacy pickle, Safetensors |
-| `onnx_format` | dynamo exporter static / dynamic axes, legacy opset 17, external data in a `.bin`, dynamic int8 |
-| `gguf_format` | GGUF arch `gpt2` in f32 / f16 / q8_0 / q4_0 (tensor names from gguf-py; no tokenizer) |
-| `tensorflow_formats` | Keras `.keras`, HDF5 full model `.h5` and weights-only `.weights.h5`, TF2 checkpoint `.ckpt`, TF1 checkpoint `.ckpt` + `.meta`, SavedModel, TFLite float32 / float16 / int8 |
-| `coreml_format` | mlprogram `.mlpackage` FP32 / FP16, neuralnetwork `.mlmodel` |
-| `openvino_format` | OpenVINO IR `.xml` + `.bin` (fp32, fp16-compressed) |
-| `tensorrt_format` | `.engine` from the ONNX file; needs an NVIDIA GPU + TensorRT, otherwise recorded as skipped with the `trtexec` command |
+| exporter             | formats written                                                                                                                                                                                                                                                  |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pytorch_formats`    | state_dict `.pt` / `.pth`, training checkpoint `.pt` (`module.` prefix + AdamW state), Lightning-style `.ckpt`, full-model pickle (an importer must refuse it), TorchScript `.pt`, `torch.export` `.pt2`, `pytorch_model.bin` zip and legacy pickle, Safetensors |
+| `onnx_format`        | dynamo exporter static / dynamic axes, legacy opset 17, external data in a `.bin`, dynamic int8                                                                                                                                                                  |
+| `gguf_format`        | GGUF arch `gpt2` in f32 / f16 / q8_0 / q4_0 (tensor names from gguf-py; no tokenizer)                                                                                                                                                                            |
+| `tensorflow_formats` | Keras `.keras`, HDF5 full model `.h5` and weights-only `.weights.h5`, TF2 checkpoint `.ckpt`, TF1 checkpoint `.ckpt` + `.meta`, SavedModel, TFLite float32 / float16 / int8                                                                                      |
+| `coreml_format`      | mlprogram `.mlpackage` FP32 / FP16, neuralnetwork `.mlmodel`                                                                                                                                                                                                     |
+| `openvino_format`    | OpenVINO IR `.xml` + `.bin` (fp32, fp16-compressed)                                                                                                                                                                                                              |
+| `tensorrt_format`    | `.engine` from the ONNX file; needs an NVIDIA GPU + TensorRT, otherwise recorded as skipped with the `trtexec` command                                                                                                                                           |
 
 Output: `exports/<model>/<family>/...`, `manifest.json` (files, sizes, sha256, what graph each file carries, verification, tolerance, library versions) and an index `README.md`. Each exporter runs in its own process; a variant that fails or misses its tolerance is recorded as `failed` / `mismatch`, never dropped. `exports/distilgpt2/` (several GB) is git-ignored.
 
 ## Parameter accounting
 
-| Category | Logical references | Unique parameters |
-|---|---:|---:|
-| token embeddings | 38,597,376 | 38,597,376 |
-| position embeddings | 786,432 | 786,432 |
-| attention (6 blocks) | 14,174,208 | 14,174,208 |
-| MLP (6 blocks) | 28,334,592 | 28,334,592 |
-| LayerNorm (13) | 19,968 | 19,968 |
-| LM head | 38,597,376 | 0 (tied) |
-| **total** | **120,509,952** | **81,912,576** |
+| Category             | Logical references | Unique parameters |
+| -------------------- | -----------------: | ----------------: |
+| token embeddings     |         38,597,376 |        38,597,376 |
+| position embeddings  |            786,432 |           786,432 |
+| attention (6 blocks) |         14,174,208 |        14,174,208 |
+| MLP (6 blocks)       |         28,334,592 |        28,334,592 |
+| LayerNorm (13)       |             19,968 |            19,968 |
+| LM head              |         38,597,376 |          0 (tied) |
+| **total**            |    **120,509,952** |    **81,912,576** |
 
 The 6 × 1024² `attn.bias` buffers add 6,291,456 elements; (81,912,576 + 6,291,456) × 4 bytes = 352,816,128 B = 336.47 MiB, the checkpoint size, counted once per storage.
 
@@ -202,15 +202,15 @@ Safetensors cannot store aliased storage, so `tools.convert_to_safetensors` **om
 
 Parameters (persistent state) and activations (runtime tensors) are separate everywhere.
 
-| What | Name pattern |
-|---|---|
-| input | `input.input_ids` |
-| embeddings | `embedding.token.output`, `embedding.position.output`, `embedding.output` |
-| block | `block.N.input`, `block.N.ln_1.output`, `block.N.attention_residual.output`, `block.N.ln_2.output`, `block.N.output` |
-| attention | `block.N.attention.{qkv,q,k,v,scores,mask,probs,context,output}` |
-| MLP | `block.N.mlp.fc.output`, `block.N.mlp.activation.output`, `block.N.mlp.output` |
-| head | `model.final_hidden`, `model.logits` |
-| loss (with labels) | `loss.shift_logits`, `loss.shift_labels`, `loss.value` |
+| What               | Name pattern                                                                                                         |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| input              | `input.input_ids`                                                                                                    |
+| embeddings         | `embedding.token.output`, `embedding.position.output`, `embedding.output`                                            |
+| block              | `block.N.input`, `block.N.ln_1.output`, `block.N.attention_residual.output`, `block.N.ln_2.output`, `block.N.output` |
+| attention          | `block.N.attention.{qkv,q,k,v,scores,mask,probs,context,output}`                                                     |
+| MLP                | `block.N.mlp.fc.output`, `block.N.mlp.activation.output`, `block.N.mlp.output`                                       |
+| head               | `model.final_hidden`, `model.logits`                                                                                 |
+| loss (with labels) | `loss.shift_logits`, `loss.shift_labels`, `loss.value`                                                               |
 
 Three levels:
 
