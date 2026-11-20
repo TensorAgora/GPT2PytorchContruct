@@ -42,6 +42,8 @@ class Builder:
         if t is None:
             return None, None
         kw.setdefault("what", "weight")
+        if isinstance(t, dict) and "view" not in t:  # per-field names, e.g. TF-converted LayerNorm gamma / beta
+            t = t[kw["what"]]
         if isinstance(t, dict):
             return None, t["view"].format(**self.fmt, **kw)
         return t.format(**self.fmt, **kw), None
@@ -110,6 +112,59 @@ def gelu_tanh(b: Builder, out, x):
     b.E("add", f"{out}.one_plus", f"{out}.tanh", one)
     b.E("mul", f"{out}.half_x", x, half)
     return b.E("mul", out, f"{out}.half_x", f"{out}.one_plus")
+
+
+def layernorm(b: Builder, out, x, g, beta, eps_axis="D"):
+    """(x - mean) / sqrt(var + eps) * g + b in the op order of tensorprog/lower.py lower_layernorm (TEL composite)"""
+    with b.p.composite("layernorm", x, axis=eps_axis):
+        mean = b.R("mean", f"{out}.mean", x, eps_axis)
+        centered = b.E("sub", f"{out}.centered", x, mean)
+        var = b.R("mean", f"{out}.var", b.E("mul", f"{out}.squared", centered, centered), eps_axis)
+        rstd = b.E("rsqrt", f"{out}.rstd", b.E("add", f"{out}.var_eps", var, "c_eps"))
+        normalized = b.E("mul", f"{out}.normalized", centered, rstd)
+    return b.E("add", out, b.E("mul", f"{out}.scaled", normalized, g), beta)
+
+
+def gelu_erf(b: Builder, out, x):
+    """0.5 x (1 + erf(x / sqrt 2)): BERT's exact GELU"""
+    half, one, r2 = b.constant("c_half", 0.5), b.constant("c_one", 1.0), b.constant("c_sqrt2", math.sqrt(2.0))
+    e = b.E("erf", f"{out}.erf", b.E("div", f"{out}.scaled", x, r2))
+    return b.E("mul", out, b.E("mul", f"{out}.half_x", x, half), b.E("add", f"{out}.one_plus", e, one))
+
+
+def linear(b: Builder, out, x, w_name, axes, role, i, over, bias=True):
+    y = b.C(f"{out}.mm" if bias else out, x, b.param(w_name, axes, role, i=i, what="weight"), over)
+    return b.E("add", out, y, b.param("b" + w_name[1:], axes[:1], role, i=i, what="bias")) if bias else y
+
+
+def encoder_layer(b: Builder, h: dict, i: int, at: str, x: str, out: str):
+    """BERT-family post-norm layer: bidirectional MHA, residual + LayerNorm, GELU FFN, residual + LayerNorm"""
+    with b.within(f"{at}.attention", "SelfAttention"):
+        q = linear(b, f"Q_{i}.lin", x, f"Wq_{i}", ["Dq", "D"], "q", i, "D")
+        k = linear(b, f"K_{i}.lin", x, f"Wk_{i}", ["Dq", "D"], "k", i, "D")
+        v = linear(b, f"V_{i}.lin", x, f"Wv_{i}", ["Dq", "D"], "v", i, "D")
+        b.permute(f"Q_{i}.perm", b.reshape(f"Q_{i}.heads", q, ["B", "T", "H", "Dh"]), [0, 2, 1, 3])
+        b.rename(f"Q_{i}", f"Q_{i}.perm", "T", "q")
+        b.permute(f"K_{i}.perm", b.reshape(f"K_{i}.heads", k, ["B", "T", "H", "Dh"]), [0, 2, 1, 3])
+        b.rename(f"K_{i}", f"K_{i}.perm", "T", "k")
+        b.permute(f"V_{i}.perm", b.reshape(f"V_{i}.heads", v, ["B", "T", "H", "Dh"]), [0, 2, 1, 3])
+        b.rename(f"V_{i}", f"V_{i}.perm", "T", "k")
+        s = b.E("div", f"S_{i}", b.C(f"S_{i}.qk", f"Q_{i}", f"K_{i}", "Dh"), "c_sqrt_dh")  # no mask: bidirectional
+        softmax(b, f"A_{i}", s)
+        b.C(f"C_{i}", f"A_{i}", f"V_{i}", "k")
+        b.permute(f"C_{i}.perm", b.rename(f"C_{i}.rename", f"C_{i}", "q", "T"), [0, 2, 1, 3])
+        b.reshape(f"C_{i}.merged", f"C_{i}.perm", ["B", "T", "Dq"])
+        o = linear(b, f"O_{i}", f"C_{i}.merged", f"Wo_{i}", ["D", "Dq"], "o", i, "Dq")
+    with b.within(f"{at}.attention.output.LayerNorm", "LayerNorm"):
+        xa = layernorm(b, f"Xa_{i}", b.E("add", f"Xa_{i}.res", x, o), b.param(f"gan_{i}", ["D"], "attn_ln", i=i, what="weight"),
+                       b.param(f"ban_{i}", ["D"], "attn_ln", i=i, what="bias"))
+    with b.within(f"{at}.intermediate", "Intermediate"):
+        g = gelu_erf(b, f"G_{i}", linear(b, f"G_{i}.lin", xa, f"Wi_{i}", ["F", "D"], "inter", i, "D"))
+    with b.within(f"{at}.output", "Output"):
+        m = linear(b, f"M_{i}", g, f"Wm_{i}", ["D", "F"], "out", i, "F")
+    with b.within(f"{at}.output.LayerNorm", "LayerNorm"):
+        return layernorm(b, out, b.E("add", f"{out}.res", xa, m), b.param(f"gon_{i}", ["D"], "out_ln", i=i, what="weight"),
+                         b.param(f"bon_{i}", ["D"], "out_ln", i=i, what="bias"))
 
 
 def softcap(b: Builder, out, x, cap):

@@ -84,6 +84,7 @@ def load(id_: str) -> dict:
             elif isinstance(v, dict) and isinstance(d[k], dict) and k not in ("provenance",):
                 d[k] = {**v, **d[k]}
         d["id"], d["version"] = _raw(id_)["id"], _raw(id_)["version"]
+    d["schemes"] = {s: {r: v for r, v in roles.items() if v is not None} for s, roles in d["schemes"].items()}  # null drops a role
     validate(d)
     return d
 

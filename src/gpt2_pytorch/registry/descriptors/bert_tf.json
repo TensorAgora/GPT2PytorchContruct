@@ -1,0 +1,42 @@
+{
+ "id": "bert_tf",
+ "version": "1",
+ "extends": "bert",
+ "match": {
+  "model_type": [
+   "bert"
+  ],
+  "architectures": [
+   "BertForMaskedLM",
+   "BertForSequenceClassification",
+   "BertForTokenClassification",
+   "BertForQuestionAnswering",
+   "BertForPreTraining",
+   "BertLMHeadModel"
+  ],
+  "gguf_architecture": [
+   "bert"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "emb_ln": {
+    "weight": "bert.embeddings.LayerNorm.gamma",
+    "bias": "bert.embeddings.LayerNorm.beta"
+   },
+   "attn_ln": {
+    "weight": "bert.encoder.layer.{i}.attention.output.LayerNorm.gamma",
+    "bias": "bert.encoder.layer.{i}.attention.output.LayerNorm.beta"
+   },
+   "out_ln": {
+    "weight": "bert.encoder.layer.{i}.output.LayerNorm.gamma",
+    "bias": "bert.encoder.layer.{i}.output.LayerNorm.beta"
+   }
+  }
+ },
+ "provenance": {
+  "ported_from": "bert with TF-converted LayerNorm names (gamma / beta)",
+  "fixture": "google-bert/bert-base-uncased",
+  "certainty": "template"
+ }
+}

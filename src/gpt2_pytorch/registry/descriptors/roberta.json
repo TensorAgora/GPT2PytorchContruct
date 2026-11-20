@@ -1,0 +1,60 @@
+{
+ "id": "roberta",
+ "version": "1",
+ "assembly": {
+  "text": "bert",
+  "prefix": {
+   "bert.": "roberta."
+  }
+ },
+ "match": {
+  "model_type": [
+   "roberta",
+   "xlm-roberta",
+   "camembert"
+  ],
+  "architectures": [
+   "RobertaForMaskedLM",
+   "RobertaForSequenceClassification",
+   "RobertaForTokenClassification",
+   "RobertaForQuestionAnswering",
+   "XLMRobertaForMaskedLM",
+   "XLMRobertaForSequenceClassification",
+   "XLMRobertaForTokenClassification",
+   "CamembertForMaskedLM"
+  ],
+  "gguf_architecture": []
+ },
+ "components": [
+  {
+   "name": "pooler",
+   "prefix": "roberta.pooler.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "mlm_head",
+   "prefix": "cls.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "lm_head",
+   "prefix": "lm_head.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "classifier",
+   "prefix": "classifier.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "qa_head",
+   "prefix": "qa_outputs.",
+   "state": "declared_without_graph"
+  }
+ ],
+ "provenance": {
+  "fixture": "FacebookAI/roberta-base",
+  "certainty": "template",
+  "note": "BERT layers under roberta.; positions start at padding_idx + 1 (an index value, not a graph change)"
+ }
+}

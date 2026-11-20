@@ -1,0 +1,84 @@
+{
+ "id": "distilbert",
+ "version": "1",
+ "extends": "bert",
+ "match": {
+  "model_type": [
+   "distilbert"
+  ],
+  "architectures": [
+   "DistilBertForMaskedLM",
+   "DistilBertForSequenceClassification",
+   "DistilBertModel",
+   "DistilBertForTokenClassification",
+   "DistilBertForQuestionAnswering"
+  ],
+  "gguf_architecture": []
+ },
+ "hyperparameters": {
+  "L": [
+   "n_layers"
+  ],
+  "D": [
+   "dim"
+  ],
+  "Hq": [
+   "n_heads"
+  ],
+  "F": [
+   "hidden_dim"
+  ],
+  "Tv": [
+   "=2"
+  ],
+  "eps": [
+   "=1e-12"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "embed": "distilbert.embeddings.word_embeddings.weight",
+   "pos_embed": "distilbert.embeddings.position_embeddings.weight",
+   "emb_ln": "distilbert.embeddings.LayerNorm.{what}",
+   "q": "distilbert.transformer.layer.{i}.attention.q_lin.{what}",
+   "k": "distilbert.transformer.layer.{i}.attention.k_lin.{what}",
+   "v": "distilbert.transformer.layer.{i}.attention.v_lin.{what}",
+   "o": "distilbert.transformer.layer.{i}.attention.out_lin.{what}",
+   "attn_ln": "distilbert.transformer.layer.{i}.sa_layer_norm.{what}",
+   "inter": "distilbert.transformer.layer.{i}.ffn.lin1.{what}",
+   "out": "distilbert.transformer.layer.{i}.ffn.lin2.{what}",
+   "out_ln": "distilbert.transformer.layer.{i}.output_layer_norm.{what}",
+   "type_embed": null
+  }
+ },
+ "recipe": {
+  "root": "distilbert"
+ },
+ "components": [
+  {
+   "name": "mlm_head",
+   "prefix": "vocab_",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "pre_classifier",
+   "prefix": "pre_classifier.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "classifier",
+   "prefix": "classifier.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "qa_head",
+   "prefix": "qa_outputs.",
+   "state": "declared_without_graph"
+  }
+ ],
+ "provenance": {
+  "fixture": "distilbert/distilbert-base-uncased",
+  "certainty": "template",
+  "note": "no token types"
+ }
+}

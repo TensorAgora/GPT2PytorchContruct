@@ -1,0 +1,35 @@
+{
+ "id": "bert_bare",
+ "version": "1",
+ "assembly": {
+  "text": "bert",
+  "prefix": {
+   "bert.": ""
+  }
+ },
+ "match": {
+  "model_type": [
+   "bert",
+   "roberta",
+   "xlm-roberta"
+  ],
+  "architectures": [
+   "BertModel",
+   "RobertaModel",
+   "XLMRobertaModel"
+  ],
+  "gguf_architecture": []
+ },
+ "components": [
+  {
+   "name": "pooler",
+   "prefix": "pooler.",
+   "state": "declared_without_graph"
+  }
+ ],
+ "provenance": {
+  "fixture": "sentence-transformers/all-MiniLM-L6-v2",
+  "certainty": "template",
+  "note": "bare encoders (no bert./roberta. prefix): sentence embedders"
+ }
+}

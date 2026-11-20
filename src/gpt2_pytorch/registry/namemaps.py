@@ -47,7 +47,11 @@ def hf_tensor(hf_key: str, arch: str | None = None) -> list[str]:
     """MODEL_TENSOR names gguf-py maps an HF name template to (suffix .weight/.bias/.{what} stripped)."""
     k = re.sub(r"\.(weight|bias|\{what\})$", "", hf_key)
     t = table()
-    return (t["arch_hf_to_tensor"].get(arch or "", {}).get(k) or []) + t["hf_to_tensor"].get(k, [])
+    for key in (k, k.split(".", 1)[-1]):  # converters strip a task wrapper (bert., roberta.) before mapping
+        hits = (t["arch_hf_to_tensor"].get(arch or "", {}).get(key) or []) + t["hf_to_tensor"].get(key, [])
+        if hits:
+            return hits
+    return []
 
 
 def split_roles(descriptor_id: str) -> set:

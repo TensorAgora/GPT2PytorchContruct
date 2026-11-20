@@ -169,7 +169,33 @@ def annotate_scan(g: dict) -> None:
             mm["execution"] = marks[mm["op"]]
 
 
-TEMPLATES = {"decoder": decoder, "gpt2_lowering": gpt2_lowering, "qwen3_5": qwen3_5}
+def encoder(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
+    """BERT-family encoder: word + position (+ token type) embeddings and LayerNorm, post-norm layers; the last hidden
+    state is L. Task heads (pooler, MLM, classifiers) are components declared without a graph."""
+    from .blocks import encoder_layer, layernorm
+    r = d["recipe"]
+    dims = {a: int(evaluate(str(e), {**EXAMPLE, **h})) for a, e in r["dims"].items()}
+    b = Builder(dims, r["root"], d["schemes"][scheme], {**h, **dims})
+    root, L = r["root"], int(h["L"])
+    b.p.declare("ids", "input", ("B", "T"), "int64")
+    b.p.declare("pos", "input", ("T",), "int64")
+    if "type_embed" in b.scheme:
+        b.p.declare("type_ids", "input", ("B", "T"), "int64")
+    b.constant("c_eps", h["eps"])
+    b.constant("c_sqrt_dh", math.sqrt(dims["Dh"]))
+    with b.within(f"{root}.embeddings", "Embeddings"):
+        x = b.E("add", "X_0.wp", b.gather("X_0.w", b.param("E", ["V", "D"], "embed"), "ids", "V"),
+                b.gather("X_0.p", b.param("Ep", ["P", "D"], "pos_embed"), "pos", "P"))
+        if "type_embed" in b.scheme:
+            x = b.E("add", "X_0.sum", x, b.gather("X_0.t", b.param("Et", ["Tv", "D"], "type_embed"), "type_ids", "Tv"))
+    with b.within(f"{root}.embeddings.LayerNorm", "LayerNorm"):
+        layernorm(b, "X_0", x, b.param("ge", ["D"], "emb_ln", what="weight"), b.param("be", ["D"], "emb_ln", what="bias"))
+    for i in range(L):
+        encoder_layer(b, h, i, f"{root}.encoder.layer.{i}", f"X_{i}", "L" if i == L - 1 else f"X_{i + 1}")
+    return _finish(b.p, d, name, EXAMPLE)
+
+
+TEMPLATES = {"decoder": decoder, "encoder": encoder, "gpt2_lowering": gpt2_lowering, "qwen3_5": qwen3_5}
 
 
 def build(d: dict, hyper: dict, scheme: str = "hf", name: str = "model", cfg: dict | None = None, names=()):

@@ -1,0 +1,122 @@
+{
+ "id": "bert",
+ "version": "1",
+ "match": {
+  "model_type": [
+   "bert"
+  ],
+  "architectures": [
+   "BertForMaskedLM",
+   "BertForSequenceClassification",
+   "BertForTokenClassification",
+   "BertForQuestionAnswering",
+   "BertForPreTraining",
+   "BertLMHeadModel"
+  ],
+  "gguf_architecture": [
+   "bert"
+  ]
+ },
+ "hyperparameters": {
+  "L": [
+   "num_hidden_layers"
+  ],
+  "D": [
+   "hidden_size"
+  ],
+  "Hq": [
+   "num_attention_heads"
+  ],
+  "Dh": [
+   "=D // Hq"
+  ],
+  "F": [
+   "intermediate_size"
+  ],
+  "V": [
+   "vocab_size"
+  ],
+  "P": [
+   "max_position_embeddings"
+  ],
+  "Tv": [
+   "type_vocab_size",
+   "=2"
+  ],
+  "eps": [
+   "layer_norm_eps",
+   "=1e-12"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "embed": "bert.embeddings.word_embeddings.weight",
+   "pos_embed": "bert.embeddings.position_embeddings.weight",
+   "type_embed": "bert.embeddings.token_type_embeddings.weight",
+   "emb_ln": "bert.embeddings.LayerNorm.{what}",
+   "q": "bert.encoder.layer.{i}.attention.self.query.{what}",
+   "k": "bert.encoder.layer.{i}.attention.self.key.{what}",
+   "v": "bert.encoder.layer.{i}.attention.self.value.{what}",
+   "o": "bert.encoder.layer.{i}.attention.output.dense.{what}",
+   "attn_ln": "bert.encoder.layer.{i}.attention.output.LayerNorm.{what}",
+   "inter": "bert.encoder.layer.{i}.intermediate.dense.{what}",
+   "out": "bert.encoder.layer.{i}.output.dense.{what}",
+   "out_ln": "bert.encoder.layer.{i}.output.LayerNorm.{what}"
+  }
+ },
+ "recipe": {
+  "template": "encoder",
+  "root": "bert",
+  "dims": {
+   "B": "B",
+   "T": "T",
+   "q": "T",
+   "k": "T",
+   "D": "D",
+   "Dq": "D",
+   "Dh": "Dh",
+   "H": "Hq",
+   "F": "F",
+   "V": "V",
+   "P": "P",
+   "Tv": "Tv"
+  }
+ },
+ "ties": {},
+ "ignored": [
+  "*embeddings.position_ids",
+  "*embeddings.token_type_ids"
+ ],
+ "components": [
+  {
+   "name": "pooler",
+   "prefix": "bert.pooler.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "mlm_head",
+   "prefix": "cls.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "lm_head",
+   "prefix": "lm_head.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "classifier",
+   "prefix": "classifier.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "qa_head",
+   "prefix": "qa_outputs.",
+   "state": "declared_without_graph"
+  }
+ ],
+ "provenance": {
+  "ported_from": "HF BertModel: post-norm encoder, exact GELU, learned positions and token types; task heads are components",
+  "fixture": "dslim/bert-base-NER",
+  "certainty": "template"
+ }
+}

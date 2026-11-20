@@ -103,8 +103,12 @@ def check(did: str) -> dict:
         out["C1"] = "PASS" if r.binding and r.binding.ok else f"FAIL {r.near_misses[:1]}"
     # C3
     text = d["provenance"].get("text", "").split("@")[0]  # an assembly is judged by its text model's own names
-    bad3 = c3((load(text) if text else d)["schemes"].get("hf", {}), skip=split_roles(text or did))
-    out["C3"] = "PASS" if not bad3 else f"FAIL {bad3[:2]}"
+    base = load(text) if text else d
+    if not base["match"].get("gguf_architecture"):
+        out["C3"] = "n/a"  # no GGUF form of its own (mistral converts to llama; distilbert has none)
+    else:
+        bad3 = c3(base["schemes"].get("hf", {}), skip=split_roles(text or did))
+        out["C3"] = "PASS" if not bad3 else f"FAIL {bad3[:2]}"
     # C4
     golden = d["provenance"].get("golden")
     if golden and (SPELLED / f"{Path(golden).stem}.config.json").exists():
@@ -119,6 +123,14 @@ def check(did: str) -> dict:
             closed = decoder_counts(g["dims"], list(zip(slots["attention"], slots["mlp"])))
             if any(want[k] != v for k, v in closed.items()):
                 out["C4"] = f"FAIL closed form {closed} vs golden"
+    elif m is not None and d["recipe"]["template"] == "encoder":
+        h = resolve_hyper(d, m, job.row)
+        g, _ = build(d, h, scheme, cfg=m["config"].get("config.json") or {})
+        dd, L = g["dims"], int(h["L"][0])
+        BT = dd["B"] * dd["T"]
+        layer = BT * 4 * dd["D"] * dd["Dq"] + 2 * dd["B"] * dd["H"] * dd["T"] * dd["T"] * dd["Dh"] + 2 * BT * dd["D"] * dd["F"]
+        want = {"contractions": 8 * L, "contraction_flops": 2 * L * layer}  # q, k, v, o, scores, context, intermediate, output
+        out["C4"] = "PASS" if all(g["totals"][k] == v for k, v in want.items()) else f"FAIL {want} vs {g['totals']}"
     elif m is not None and d["recipe"]["template"] == "decoder":
         h = resolve_hyper(d, m, job.row)
         cfg = m["config"].get("config.json") or {}
