@@ -4,13 +4,13 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.2).
 
-Tasks closed: 0 of 109. Modules: NOT_STARTED 19, DESIGNED 1.
+Tasks closed: 3 of 109. Modules: DESIGNED 2, NOT_STARTED 18.
 
 ## Per module
 
 | module | title | wave | state | active stage | tasks | waiting on |
 |---|---|---|---|---|---|---|
-| [00a](00a-foundation/TASKS.md) | Confirm inputs, extras, gitignore, viz-graph schema, checker and comparator | 0 | NOT_STARTED | A | 0/7 | - |
+| [00a](00a-foundation/TASKS.md) | Confirm inputs, extras, gitignore, viz-graph schema, checker and comparator | 0 | DESIGNED | B | 3/7 | - |
 | [05a](05a-catalog-and-discovery/TASKS.md) | Catalog jobs, HTTP client, repo discovery and small-file cache | 0 | NOT_STARTED | A | 0/8 | 00a |
 | [05b](05b-headers-and-manifest/TASKS.md) | Safetensors and GGUF header readers, fixtures, tensor manifest v1 | 0 | NOT_STARTED | A | 0/7 | 05a, 00a |
 | [06a](06a-block-library/TASKS.md) | Descriptor format, selectors, blocks from arch.mjs, GPT-2 and llama-family descriptors | 0 | NOT_STARTED | A | 0/8 | 00a |
@@ -33,7 +33,7 @@ Tasks closed: 0 of 109. Modules: NOT_STARTED 19, DESIGNED 1.
 
 ## Next actions
 
-- 00a stage A: `00a.A.P1.T1` Open every §2 input (catalog files, metadata_spec.json, split_model_catalog.py, json/*.json, open-weight-model-graphs.md, the tensorprog/checkpoint modules, the four CLI tools, arch.mjs, activity_bar/shared/mock.js, TEL OPS/ADR/PKG dirs, docs/TEL_NEXT_STEPS.md); write the confirmed path table into 00a DESIGN.md 'Inputs' and add a HARNESS row for each missing or moved path
+- 00a stage B: `00a.B.P2.T1` Write src/gpt2_pytorch/schemas/viz-graph-v1.schema.json from the 8 goldens: required top-level keys of json/*.json, item shapes of tensors/ops/edges/multiplications, the §5.3 additive fields optional
 - 05a stage A: `05a.A.P1.T1` Write 05a DESIGN.md: Job fields, the §5.4 status vocabulary, the HTTP client contract (range GET with byte counting, small-file GET via hf_hub_url, on-disk cache keyed (repo, sha, path), backoff and Retry-After, token redaction, built on the client huggingface_hub already uses, no new HTTP dependency) and the §5.1/D2/D7 file-selection rules
 - 05b stage A: `05b.A.P1.T1` Write 05b DESIGN.md: own 2-range reader vs huggingface_hub `parse_safetensors_file_metadata`/`get_safetensors_metadata` (both exist in 2.4.0 but expose no byte count and no component subfolders), GGUF window growth and the large-array summary threshold, the failed:<code> list, and every §5.2 manifest field with its source
 - 06a stage A: `06a.A.P1.T1` Read arch.mjs (llamaGraph, mixtralGraph, deepseekGraph, the six blocks), activity_bar/shared/mock.js, tensorprog/lower.py, qwen3_5.py and program.py; write 06a DESIGN.md: block signatures on Program with the arch.mjs line each ports, descriptor JSON (§7.2 keys), selector semantics, and `build(descriptor, hyper, scheme) -> (viz_graph, expected_params)`

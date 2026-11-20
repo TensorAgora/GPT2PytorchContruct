@@ -14,3 +14,10 @@ exports/
 netron/
 
 *.safetensors
+# hf-graph-pipeline: outputs and weights are never stored (D6, owner storage rule)
+output/
+*.gguf
+*.bin
+*.pt
+*.pth
+*.ckpt

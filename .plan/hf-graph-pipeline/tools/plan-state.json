@@ -1,10 +1,13 @@
 {
   "modules": {
     "00a": {
-      "state": "NOT_STARTED",
+      "state": "DESIGNED",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "inputs confirmed",
+          "evidence": "",
+          "at": "2026-11-20T18:10:10+00:00"
         },
         "B": {
           "status": "pending"
@@ -13,8 +16,41 @@
           "status": "pending"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "00a.A.P1.T1": {
+          "status": "done",
+          "reason": "Inputs table in DESIGN.md, all 26 paths exist; mock.js move logged in HARNESS",
+          "evidence": "",
+          "at": "2026-11-20T18:10:10+00:00"
+        },
+        "00a.B.P1.T1": {
+          "status": "done",
+          "reason": "output/ and weight patterns ignored; check-ignore ok",
+          "evidence": "",
+          "at": "2026-11-20T18:10:45+00:00"
+        },
+        "00a.B.P1.T2": {
+          "status": "done",
+          "reason": "hub/trace extras; hub synced inexact; imports ok, 91 passed",
+          "evidence": "",
+          "at": "2026-11-20T18:10:45+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T18:10:10+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T18:10:10+00:00",
+          "reason": "Stage A Design complete: inputs confirmed",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "05a": {

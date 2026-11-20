@@ -15,6 +15,16 @@ dev = ["pytest"]
 reference = ["transformers"]  # only reference/compare_huggingface.py uses it
 # only tools/export_formats/ uses these; install into a separate Python 3.12 env (.venv-export), see README
 export = ["numpy", "onnx", "onnxscript", "onnxruntime", "gguf", "tensorflow", "coremltools", "openvino"]
+hub = [
+    "gguf>=0.19.0",
+    "huggingface-hub>=2.3.0",
+    "jsonschema>=4.26.0",
+]
+trace = [
+    "diffusers>=0.43.0",
+    "timm>=1.0.31",
+    "transformers>=5.20.2",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/gpt2_pytorch"]

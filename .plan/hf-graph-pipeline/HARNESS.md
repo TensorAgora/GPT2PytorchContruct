@@ -34,3 +34,4 @@ Never delete a row. When a problem is fixed, add a new row for the same id sayin
 
 | date | id | what failed / not to do | instead |
 |---|---|---|---|
+| 2026-11-20 | 00a | master §2 path TensormorphDesignUI/.../activity_bar/viewport/shared/mock.js does not exist | use .../activity_bar/shared/mock.js |
