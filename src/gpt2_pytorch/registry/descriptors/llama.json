@@ -108,6 +108,7 @@
  ],
  "provenance": {
   "ported_from": "TensormorphDesignUI viewport/graphs/arch.mjs llamaGraph (199-219)",
-  "certainty": "template"
+  "certainty": "template",
+  "fixture": "HuggingFaceTB/SmolLM2-135M"
  }
 }

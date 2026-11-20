@@ -13,7 +13,9 @@ from pathlib import Path
 
 from ..tensorprog.viz import viz_graph
 from .blocks import ATTENTION, EXAMPLE, MLP, ROLES, Builder, rms
-from .descriptor import evaluate, hyper_from_config, layer_blocks, load
+from .descriptor import DescriptorError, evaluate, hyper_from_config, layer_blocks, load
+
+MAX_LAYERS, MAX_DIM = 1024, 1 << 31
 
 
 def _values(hyper: dict) -> dict:
@@ -40,6 +42,8 @@ def decoder(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
     r = d["recipe"]
     h = {**r.get("flags", {}), **h}
     dims = {a: int(evaluate(str(e), {**EXAMPLE, **h})) for a, e in r["dims"].items()}
+    if not 0 < int(h["L"]) <= MAX_LAYERS or any(not 0 < n < MAX_DIM for n in dims.values()):  # hostile configs (C5)
+        raise DescriptorError(f"{d['id']}: implausible sizes L={h['L']} {dims}")
     fmt = {**h, **dims}
     fmt |= {k: evaluate(str(e), fmt) for k, e in r.get("format_values", {}).items()}
     b = Builder(dims, r["root"], d["schemes"][scheme], fmt)
@@ -115,7 +119,10 @@ TEMPLATES = {"decoder": decoder, "gpt2_lowering": gpt2_lowering, "qwen3_5": qwen
 
 def build(d: dict, hyper: dict, scheme: str = "hf", name: str = "model", cfg: dict | None = None, names=()):
     """(graph, expected params) for descriptor `d` with resolved `hyper` ({name: value or (value, source)})."""
-    return TEMPLATES[d["recipe"]["template"]](d, _values(hyper), scheme, name, cfg or {}, names)
+    h = _values(hyper)
+    if "L" in h and not 0 < int(h["L"]) <= MAX_LAYERS:  # hostile configs fail before any template runs (C5)
+        raise DescriptorError(f"{d['id']}: implausible layer count {h['L']}")
+    return TEMPLATES[d["recipe"]["template"]](d, h, scheme, name, cfg or {}, names)
 
 
 # ---- JSON the way JSON.stringify writes it -------------------------------------------------------------------------

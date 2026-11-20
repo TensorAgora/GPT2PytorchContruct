@@ -23,6 +23,7 @@
  "provenance": {
   "ported_from": "arch.mjs llamaGraph, family llama",
   "golden": "json/mistral-7b-instruct-v0.3.json",
-  "certainty": "template"
+  "certainty": "template",
+  "fixture": "mistralai/Mistral-7B-Instruct-v0.3"
  }
 }

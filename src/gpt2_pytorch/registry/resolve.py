@@ -105,9 +105,10 @@ def candidates(manifest: dict, row: dict | None = None) -> tuple[list[Candidate]
     return ranked, None
 
 
-def resolve_and_bind(manifest: dict, row: dict | None = None, name: str | None = None) -> Resolution:
+def resolve_and_bind(manifest: dict, row: dict | None = None, name: str | None = None, only: str | None = None) -> Resolution:
+    """`only` binds that one descriptor, skipping the ladder (conformance C1)."""
     row = row or {}
-    cands, status = candidates(manifest, row)
+    cands, status = ([Candidate(only, "R2", "forced (conformance)", 1.0)], None) if only else candidates(manifest, row)
     res = Resolution(status or "no_graph", candidates=cands)
     if status:
         return res

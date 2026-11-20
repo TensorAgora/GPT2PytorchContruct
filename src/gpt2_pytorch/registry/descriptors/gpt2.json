@@ -131,6 +131,7 @@
     "argmax_identical": true,
     "ok": true
    }
-  ]
+  ],
+  "fixture": "distilbert/distilgpt2"
  }
 }

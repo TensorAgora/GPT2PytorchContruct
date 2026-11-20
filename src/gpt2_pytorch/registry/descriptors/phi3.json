@@ -26,6 +26,7 @@
   "ported_from": "arch.mjs llamaGraph, family llama (separate q/k/v and gate/up keys)",
   "golden": "json/phi-3.5-mini-instruct.json",
   "certainty": "template",
-  "note": "real Phi-3 checkpoints store fused qkv_proj and gate_up_proj: bound through the 06d overlay split"
+  "note": "real Phi-3 checkpoints store fused qkv_proj and gate_up_proj: bound through the 06d overlay split",
+  "fixture": "microsoft/Phi-3.5-mini-instruct"
  }
 }

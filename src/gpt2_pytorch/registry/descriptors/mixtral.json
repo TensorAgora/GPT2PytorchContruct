@@ -81,6 +81,8 @@
   "ported_from": "arch.mjs mixtralGraph (222-249)",
   "golden": "json/mixtral-8x7b-instruct-q4km.json",
   "certainty": "template",
-  "note": "the gguf scheme is generated from gguf-py (06d); the hf scheme reads per-expert tensors as stacked views"
+  "note": "the gguf scheme is generated from gguf-py (06d); the hf scheme reads per-expert tensors as stacked views",
+  "fixture": "mradermacher/Mixtral-8x7B-Instruct-v0.1-GGUF",
+  "golden_scheme": "gguf"
  }
 }

@@ -22,6 +22,7 @@
  "provenance": {
   "ported_from": "arch.mjs llamaGraph, family qwen2 (q/k/v bias)",
   "golden": "json/qwen2.5-7b-instruct.json",
-  "certainty": "template"
+  "certainty": "template",
+  "fixture": "Qwen/Qwen2.5-7B-Instruct"
  }
 }

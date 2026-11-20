@@ -54,7 +54,8 @@
  "provenance": {
   "ported_from": "tensorprog/qwen3_5.py via tools/model_graph.py",
   "golden": "json/qwen3.8-27b-fp8.json",
-  "certainty": "template"
+  "certainty": "template",
+  "fixture": "Qwen/Qwen3.8-27B-FP8"
  },
  "components": [
   {
