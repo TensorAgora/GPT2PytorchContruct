@@ -53,6 +53,7 @@ def main(argv=None) -> int:
     ap.add_argument("--refresh", action="store_true", help="with --all: re-run repos whose sha changed")
     ap.add_argument("--coverage", action="store_true")
     ap.add_argument("--readme", action="store_true", help="with --coverage: also write <out>/<category>/README.md")
+    ap.add_argument("--no-prune", action="store_true", help="with --all: keep unreferenced shared graphs (another run is writing)")
     a = ap.parse_args(argv)
     if a.all or a.coverage:
         jobs = load_jobs()
@@ -63,7 +64,7 @@ def main(argv=None) -> int:
             t0 = time.monotonic()
             new = run_all(todo, a.out, lambda j: run_one(j, a.out, client), a.concurrency, a.limit, a.refresh,
                           lambda j: client.model_info(j.repo_id, refresh=True)["sha"])
-            print(json.dumps(throughput(new, time.monotonic() - t0) | {"pruned_graphs": prune_graphs(a.out)}))
+            print(json.dumps(throughput(new, time.monotonic() - t0) | {"pruned_graphs": 0 if a.no_prune else prune_graphs(a.out)}))
         if a.coverage:
             print(json.dumps(coverage(a.out, jobs, a.readme)))
         return 0

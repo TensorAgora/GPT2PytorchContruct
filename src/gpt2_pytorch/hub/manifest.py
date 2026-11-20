@@ -3,6 +3,7 @@ depends on a chosen architecture. Canonical JSON; `provenance.fetched_at` is the
 import datetime
 import gzip
 import os
+import threading
 import json
 import math
 from concurrent.futures import ThreadPoolExecutor
@@ -27,7 +28,7 @@ def write_json(path, obj, gz: bool = False) -> Path:
     if gz:
         path = path.with_name(path.name + ".gz")
         raw = gzip.compress(raw, 6, mtime=0)
-    tmp = path.with_name(path.name + ".tmp")
+    tmp = path.with_name(f"{path.name}.{os.getpid()}-{threading.get_ident()}.tmp")  # threads may write one shared graph
     tmp.write_bytes(raw)
     os.replace(tmp, path)  # atomic: a killed run never leaves a truncated graph that exists() would keep
     return path

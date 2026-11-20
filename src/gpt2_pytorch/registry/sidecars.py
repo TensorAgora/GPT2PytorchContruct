@@ -76,14 +76,18 @@ def apply(manifest: dict, cfg: dict | None = None) -> Sidecars:
             if f"{base}.bias" in st:  # auto-gptq stores a (zero) bias for every linear; a descriptor bias still binds first
                 s.attach(f"{base}.bias", f"{base}.weight", scheme)
             s.views[f"{base}.weight"] = f"{scheme} int{bits}: {' / '.join('.' + p.rsplit('.', 1)[1] for p in parts)} (group {group})"
-        # MLX: P.weight U32 packed + P.scales + P.biases
-        elif key.endswith(".scales") and (bi := st.get(key.removesuffix(".scales") + ".biases")) \
-                and (w := st.get(key.removesuffix(".scales") + ".weight")) and w["dtype"] == "U32":
-            if t["shape"] == bi["shape"] and t["shape"][0] == w["shape"][0]:
-                w.update(shape=w["shape"][:-1] + [w["shape"][-1] * per], dtype=f"INT{bits}", packed=True)
-                s.attach(key, w["key"], "mlx")
-                s.attach(bi["key"], w["key"], "mlx")
-                s.views[w["key"]] = f"mlx int{bits}: {w['key']} + .scales / .biases (group {group})"
+        # MLX: P.weight U32 packed + P.scales (+ P.biases; the mxfp modes have none). 6-bit packs 16 values per 3 words
+        elif key.endswith(".scales") and (w := st.get(key.removesuffix(".scales") + ".weight")) and w["dtype"] == "U32":
+            bi = st.get(key.removesuffix(".scales") + ".biases")
+            if t["shape"][0] == w["shape"][0] and (bi is None or t["shape"] == bi["shape"]) and w["shape"][-1] * 32 % bits == 0:
+                w.update(shape=w["shape"][:-1] + [w["shape"][-1] * 32 // bits], dtype=f"INT{bits}", packed=True)
+                for k in [key] + ([bi["key"]] if bi else []):
+                    s.attach(k, w["key"], "mlx")
+                s.views[w["key"]] = f"mlx {q.get('mode', 'affine')} {bits}-bit: {w['key']} + .scales{' / .biases' if bi else ''} (group {group})"
+        # bitsandbytes LLM.int8: P.weight I8 + P.SCB (+ P.weight_format)
+        elif key.endswith((".SCB", ".weight_format")) and (p := st.get(key.rsplit(".", 1)[0] + ".weight")) and p["dtype"] == "I8":
+            s.attach(key, p["key"], "bitsandbytes_int8")
+            s.views[p["key"]] = "bitsandbytes int8: .SCB row scales"
         # compressed-tensors / ModelOpt: P.weight_scale beside P.weight (FP8, INT8, NVFP4) or P.weight_packed (NVFP4, INT4)
         elif key.endswith(".weight_scale"):
             base = key.removesuffix(".weight_scale")
