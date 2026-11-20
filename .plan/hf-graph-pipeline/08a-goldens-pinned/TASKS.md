@@ -4,8 +4,6 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/5. Depends on: 05c, 05b. Blocks: 06d, 06e.
 
-Waiting on: 05c (must be DONE before stages that need dependencies).
-
 Next: `08a.A.P1.T1` Write 08a DESIGN.md: per golden its repo (confirm the mixtral GGUF repo holds mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf), format, spelled-config path and gated rule (gemma-2: skip with a message when its fixture is absent)
 
 `[x]` done, `[~]` awaiting verification, `[-]` skipped, `[ ]` open. Boxes change only through the plan tool.

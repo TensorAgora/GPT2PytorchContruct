@@ -4,8 +4,6 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/5. Depends on: 05c. Blocks: 07a, 07f.
 
-Waiting on: 05c (must be DONE before stages that need dependencies).
-
 Next: `05d.A.P1.T1` Write 05d DESIGN.md: ledger.jsonl record (repo, sha, stage, status, code, duration), resume rule (skip a repo whose latest terminal row has the same sha), concurrency model, coverage and near-miss columns, unlockable-rows ranking, backlog key choice (model_type, gguf arch, backbone class)
 
 `[x]` done, `[~]` awaiting verification, `[-]` skipped, `[ ]` open. Boxes change only through the plan tool.

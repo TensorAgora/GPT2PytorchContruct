@@ -577,20 +577,94 @@
       "blocked": null
     },
     "05c": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T18:45:23+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T18:45:23+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "slice works end to end",
+          "evidence": "",
+          "at": "2026-11-20T18:45:35+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "05c.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN maps S1-S12 to functions and side exits to statuses; content key = sha256 of shared graph bytes",
+          "evidence": "",
+          "at": "2026-11-20T18:45:23+00:00"
+        },
+        "05c.B.P1.T1": {
+          "status": "done",
+          "reason": "pipeline.run_one; distilgpt2 ok, unknown model_type no_graph with prefix tree",
+          "evidence": "",
+          "at": "2026-11-20T18:45:23+00:00"
+        },
+        "05c.B.P1.T2": {
+          "status": "done",
+          "reason": "shared graphs/<key>.json + graph.ref; two copies share one graph",
+          "evidence": "",
+          "at": "2026-11-20T18:45:23+00:00"
+        },
+        "05c.B.P1.T3": {
+          "status": "done",
+          "reason": "canonical JSON; two runs byte-identical",
+          "evidence": "",
+          "at": "2026-11-20T18:45:23+00:00"
+        },
+        "05c.B.P1.T4": {
+          "status": "done",
+          "reason": "tools/hf_graph.py URL, --fixture, --materialize; --fixture prints ok + 3 paths",
+          "evidence": "",
+          "at": "2026-11-20T18:45:23+00:00"
+        },
+        "05c.C.P1.T1": {
+          "status": "done",
+          "reason": "[network] Qwen2.5-7B URL: manifest+report+graph.ref; graph_check --manifest PASS, 0 diffs vs golden",
+          "evidence": "",
+          "at": "2026-11-20T18:45:35+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T18:45:23+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T18:45:23+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T18:45:23+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T18:45:35+00:00",
+          "reason": "Stage C Integrate complete: slice works end to end",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "05d": {
