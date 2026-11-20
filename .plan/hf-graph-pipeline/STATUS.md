@@ -4,7 +4,7 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.3).
 
-Tasks closed: 47 of 109. Modules: DONE 7, NOT_STARTED 12, DESIGNED 1.
+Tasks closed: 52 of 109. Modules: DONE 8, NOT_STARTED 11, DESIGNED 1.
 
 ## Per module
 
@@ -17,23 +17,22 @@ Tasks closed: 47 of 109. Modules: DONE 7, NOT_STARTED 12, DESIGNED 1.
 | [06b](06b-golden-ports/TASKS.md) | mixtral, deepseek_v3 and qwen3_5 descriptors | 0 | DONE | - | 5/5 | - |
 | [06c](06c-resolve-and-bind/TASKS.md) | Resolution ladder, hyperparameter sources, binding verifier | 0 | DONE | - | 6/6 | - |
 | [05c](05c-graph-writer-cli/TASKS.md) | run_one, graph and report writers, content store, single-URL CLI | 0 | DONE | - | 6/6 | - |
-| [05d](05d-batch-and-coverage/TASKS.md) | Batch ledger, resume, coverage reports, backlog, 100-row smoke | 0 | NOT_STARTED | A | 0/5 | - |
+| [05d](05d-batch-and-coverage/TASKS.md) | Batch ledger, resume, coverage reports, backlog, 100-row smoke | 0 | DONE | - | 5/5 | - |
 | [08a](08a-goldens-pinned/TASKS.md) | Pin the 8 goldens, diff their configs, rebuild them from headers | 0 | NOT_STARTED | A | 0/5 | - |
 | [09a](09a-tel-proof/TASKS.md) | Graph⇔TEL design doc, round trip over goldens, TEL coverage analyzer | 0 | NOT_STARTED | A | 0/5 | - |
 | [06d](06d-namemaps/TASKS.md) | Generated HF↔GGUF name maps with a storage-transform overlay | 1 | NOT_STARTED | A | 0/5 | 08a |
 | [06e](06e-sidecars/TASKS.md) | Quantization sidecar binding | 1 | NOT_STARTED | A | 0/4 | 08a |
-| [07a](07a-dense-descriptors/TASKS.md) | Conformance runner and top dense-decoder descriptors | 1 | NOT_STARTED | A | 0/5 | 05d, 06d, 06e |
+| [07a](07a-dense-descriptors/TASKS.md) | Conformance runner and top dense-decoder descriptors | 1 | NOT_STARTED | A | 0/5 | 06d, 06e |
 | [09b](09b-tel-python-port/TASKS.md) | Python T♭ printer and decoder (T-2) | 1 | NOT_STARTED | A | 0/4 | 09a |
 | [07b](07b-moe/TASKS.md) | Routed MoE annotations, expert storage forms, MoE descriptors | 2 | NOT_STARTED | A | 0/6 | 07a |
 | [07c](07c-hybrid-state/TASKS.md) | Delta rule, Mamba, layer selectors, scan annotation, hybrid descriptors | 3 | NOT_STARTED | A | 0/5 | 07a, 07b |
 | [07d](07d-assemblies/TASKS.md) | VLM assemblies, MTP and draft heads | 4 | NOT_STARTED | A | 0/4 | 07c, 07b |
 | [07e](07e-encoders/TASKS.md) | BERT family and T5/BART descriptors | 5 | NOT_STARTED | A | 0/4 | 07a |
 | [06f](06f-library-trace/TASKS.md) | Path B library trace and the C2 signature check | 6 | NOT_STARTED | A | 0/6 | 07b, 07c, 07d, 07e |
-| [07f](07f-full-run/TASKS.md) | Full catalog run, category READMEs, TEL round trip over all graphs | 7 | DESIGNED | B | 0/4 | 06f, 05d, 09a |
+| [07f](07f-full-run/TASKS.md) | Full catalog run, category READMEs, TEL round trip over all graphs | 7 | DESIGNED | B | 0/4 | 06f, 09a |
 
 ## Next actions
 
-- 05d stage A: `05d.A.P1.T1` Write 05d DESIGN.md: ledger.jsonl record (repo, sha, stage, status, code, duration), resume rule (skip a repo whose latest terminal row has the same sha), concurrency model, coverage and near-miss columns, unlockable-rows ranking, backlog key choice (model_type, gguf arch, backbone class)
 - 08a stage A: `08a.A.P1.T1` Write 08a DESIGN.md: per golden its repo (confirm the mixtral GGUF repo holds mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf), format, spelled-config path and gated rule (gemma-2: skip with a message when its fixture is absent)
 - 09a stage A: `09a.A.P1.T1` Write docs/GRAPH_TEL.md from §9: mapping (§9.2), rule T-1, bindings (tensor:// URI; the store name for an HF repo and the sharded-repo → store mapping checked against ADR-0027 and PKG/tel/src/storage/bind.ts), dtype rule, counted exclusions (§9.4) and the round-trip claim (§9.5)
 - 06d stage A: `06d.A.P1.T1` Read gguf-py tensor_mapping.py and constants.py at the pinned version (gguf 0.19.0; record its commit) and convert_hf_to_gguf.py's llama Q/K permute at that commit; write 06d DESIGN.md: generated table format and overlay transforms (stack, split, fuse, transpose, offset, rope_permute)

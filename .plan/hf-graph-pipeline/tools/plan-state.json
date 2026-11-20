@@ -668,20 +668,88 @@
       "blocked": null
     },
     "05d": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T18:47:48+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T18:47:49+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "smoke measured, D3 set",
+          "evidence": "",
+          "at": "2026-11-20T19:02:09+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "05d.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: Ledger, Resume, Coverage, Backlog with columns",
+          "evidence": "",
+          "at": "2026-11-20T18:47:48+00:00"
+        },
+        "05d.B.P1.T1": {
+          "status": "done",
+          "reason": "--all batch with append-only ledger + resume; test_batch restart runs only remaining 2, token absent",
+          "evidence": "",
+          "at": "2026-11-20T18:47:48+00:00"
+        },
+        "05d.B.P1.T2": {
+          "status": "done",
+          "reason": "--coverage: coverage.csv, coverage_model_type.csv, near_misses.csv; totals == ledger rows",
+          "evidence": "",
+          "at": "2026-11-20T18:47:48+00:00"
+        },
+        "05d.B.P1.T3": {
+          "status": "done",
+          "reason": "descriptor_backlog.csv + category_keys.csv (recomputed §2 table); rows_unlocked == no_graph rows",
+          "evidence": "",
+          "at": "2026-11-20T18:47:48+00:00"
+        },
+        "05d.C.P1.T1": {
+          "status": "done",
+          "reason": "[network] 100-row smoke: 100 terminal rows, coverage sums 100, D3 64 MiB/file 256 MiB/model from p95 14.8 MB (D-18); 111 rows/min",
+          "evidence": "",
+          "at": "2026-11-20T19:02:09+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T18:47:48+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T18:47:48+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T18:47:49+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T19:02:09+00:00",
+          "reason": "Stage C Integrate complete: smoke measured, D3 set",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "08a": {

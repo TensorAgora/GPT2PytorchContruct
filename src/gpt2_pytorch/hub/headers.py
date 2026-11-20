@@ -14,7 +14,7 @@ GGUF_MAGIC = b"GGUF"
 ARRAY_HEAD, ARRAY_SUMMARY_OVER = 8, 64
 MIN_KV = 8 + 1 + 4 + 1  # key length, >= 1 key byte, value type, >= 1 value byte
 MIN_TENSOR_INFO = 8 + 1 + 4 + 8 + 4 + 8  # name length, >= 1 name byte, n_dims, >= 1 dim, ggml type, offset
-DEFAULT_BUDGET = 64 << 20  # D-12 provisional; 05d sets D3
+DEFAULT_BUDGET = 64 << 20  # D3 per GGUF file: 4x the 100-row smoke maximum (15.8 MB); per model see manifest.MODEL_HEADER_BUDGET
 
 
 class HeaderError(Exception):
@@ -149,7 +149,7 @@ def read_gguf_header(get_range, budget: int = DEFAULT_BUDGET) -> dict:
         try:
             type_name = Q(ggml).name
         except ValueError:
-            raise HeaderError("corrupt", f"tensor {name!r} has ggml type {ggml}") from None
+            raise HeaderError("unsupported_type", f"tensor {name!r} has ggml type {ggml}, unknown to gguf.constants") from None
         tensors.append({"name": name, "ne": ne, "type": type_name, "offset": offset})
     alignment = kv.get("general.alignment", 32)
     return {"kind": "gguf", "version": version, "kv": kv, "alignment": alignment, "tensor_count": tensor_count,

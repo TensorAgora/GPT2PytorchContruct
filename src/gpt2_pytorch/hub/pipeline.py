@@ -64,6 +64,19 @@ def _components(d: dict, manifest: dict) -> list[dict]:
     return out
 
 
+def keys_of(manifest: dict) -> dict:
+    """The architecture keys the fetched files state (master §2: they correct the catalog's)."""
+    from ..registry.hyper import NESTED
+    small = manifest.get("config") or {}
+    cfg = small.get("config.json") or {}
+    nested = [cfg[n] for n in NESTED if isinstance(cfg.get(n), dict)]
+    classes = sorted({c["_class_name"] for c in small.values() if isinstance(c, dict) and c.get("_class_name")})
+    return {"model_type": cfg.get("model_type") or next((c.get("model_type") for c in nested if c.get("model_type")), None),
+            "architectures": cfg.get("architectures") or next((c.get("architectures") for c in nested if c.get("architectures")), None),
+            "gguf_architecture": ((manifest.get("gguf") or {}).get("kv") or {}).get("general.architecture"),
+            "library_class": classes or ([f"timm:{cfg['architecture']}"] if cfg.get("architecture") and "pretrained_cfg" in cfg else None)}
+
+
 def load_graph(folder) -> dict:
     """The full graph of a repo folder: graph.json, or graph.ref over its shared graph."""
     folder = Path(folder)
@@ -89,6 +102,7 @@ def run_one(job: Job, out, client=None, revision: str | None = None, fetched_at:
     from ..registry.resolve import resolve_and_bind
 
     client = client or Client()
+    client = client.scoped() if hasattr(client, "scoped") else client  # per-job counters (FixtureClient has none)
     out, folder = Path(out), repo_dir(out, job)
     report = {"format": REPORT_FORMAT, "version": 1, "repo": job.repo_id, "category": job.category, "weights_format": job.format}
     requests0 = client.requests
@@ -104,6 +118,7 @@ def run_one(job: Job, out, client=None, revision: str | None = None, fetched_at:
     paths = [_write(folder / "manifest.json", manifest)]
     report["bytes"] = {"header_bytes_read": manifest["stats"]["header_bytes_read"], "payload_bytes_read": 0,
                        "requests": client.requests - requests0}
+    report["keys"] = keys_of(manifest)
     r = resolve_and_bind(manifest, job.row, job.repo_id.split("/")[-1].lower())
     report["candidates"] = [{"descriptor": c.descriptor, "library_class": c.library_class, "rung": c.rung,
                              "evidence": c.evidence, "score": c.score} for c in r.candidates]

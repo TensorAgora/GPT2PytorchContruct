@@ -1,6 +1,8 @@
 """python -m tools.hf_graph <huggingface_url> [--revision R] [--out output/categories]
 python -m tools.hf_graph --fixture tests/fixtures/headers/<org>__<repo>@<sha> [--out DIR]     (offline)
 python -m tools.hf_graph --materialize <repo output dir> [--to graph.json]
+python -m tools.hf_graph --all [--limit N] [--category C] [--concurrency K] [--refresh]   (resumable batch, ledger.jsonl)
+python -m tools.hf_graph --coverage                                               (coverage, near-miss and backlog CSVs)
 
 Hugging Face URL -> tensor manifest -> computation graph (master R-00): reads only headers and the §3 small files, never
 weights, never repository code. Writes manifest.json, report.json and graph.ref (over output/categories/graphs/<key>.json)
@@ -10,9 +12,12 @@ import argparse
 import json
 import re
 import sys
+import time
 from pathlib import Path
 
-from gpt2_pytorch.hub.catalog import Job
+from gpt2_pytorch.hub.batch import coverage, run_all, throughput
+from gpt2_pytorch.hub.catalog import Job, load_jobs, stratified
+from gpt2_pytorch.hub.http import Client
 from gpt2_pytorch.hub.fixtures import FixtureClient, job_for
 from gpt2_pytorch.hub.manifest import dump
 from gpt2_pytorch.hub.pipeline import load_graph, run_one
@@ -41,7 +46,26 @@ def main(argv=None) -> int:
     ap.add_argument("--fixture", type=Path)
     ap.add_argument("--materialize", type=Path)
     ap.add_argument("--to", type=Path)
+    ap.add_argument("--all", action="store_true")
+    ap.add_argument("--limit", type=int, help="with --all: the first N jobs of a category x format round-robin")
+    ap.add_argument("--category")
+    ap.add_argument("--concurrency", type=int, default=4)
+    ap.add_argument("--refresh", action="store_true", help="with --all: re-run repos whose sha changed")
+    ap.add_argument("--coverage", action="store_true")
     a = ap.parse_args(argv)
+    if a.all or a.coverage:
+        jobs = load_jobs()
+        if a.all:
+            todo = [j for j in jobs if not a.category or j.category == a.category]
+            todo = stratified(todo) if a.limit else todo
+            client = Client(concurrency=2 * a.concurrency)  # requests in flight; workers = --concurrency
+            t0 = time.monotonic()
+            new = run_all(todo, a.out, lambda j: run_one(j, a.out, client), a.concurrency, a.limit, a.refresh,
+                          lambda j: client.model_info(j.repo_id, refresh=True)["sha"])
+            print(json.dumps(throughput(new, time.monotonic() - t0)))
+        if a.coverage:
+            print(json.dumps(coverage(a.out, jobs)))
+        return 0
     if a.materialize:
         g = load_graph(a.materialize)
         to = a.to or a.materialize / "graph.full.json"

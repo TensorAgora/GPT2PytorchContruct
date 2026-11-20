@@ -4,6 +4,7 @@
 HF_TOKEN is read from the environment only (never from a stored login), sent as the Authorization header and replaced by
 *** in every message this module produces. Do not set HF_DEBUG: huggingface_hub then logs full requests.
 """
+import copy
 import email.utils
 import json
 import logging
@@ -92,6 +93,12 @@ class Client:
         self._lock = threading.Lock()
         self.requests = 0
         self.bytes_read = 0
+
+    def scoped(self) -> "Client":
+        """A view with its own request/byte counters that shares the semaphore, cache and transport (one per job)."""
+        view = copy.copy(self)
+        view.requests = view.bytes_read = 0
+        return view
 
     def _headers(self, extra=None) -> dict:
         h = {"user-agent": USER_AGENT}

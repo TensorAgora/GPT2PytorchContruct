@@ -22,6 +22,7 @@ Superseded and open items are kept, never deleted.
 | D-15 | Fixtures store header JSON (safetensors header dict; GGUF KV with arrays summarized plus tensor infos), not raw header bytes; the GGUF byte reader is tested on a synthetic header written to tmp_path | owner storage rule: keep only config, metadata and JSON |
 | D-16 | The §8.1 comparator takes `--ignore view` for header-derived views (qwen3.8 FP8) when building from a spelled config; 08a checks full equality from headers | spelled configs cannot name `*_scale_inv` tensors |
 | D-17 | distilgpt2 byte identity is checked on the builder path (06a); the pipeline path is structural like the other goldens | the pipeline adds §5.3 fields |
+| D-18 | **D3 header byte budget: 64 MiB per GGUF file, 256 MiB per model** (supersedes D-12). Measured on the 100-row smoke (05d.C, 2026-11-21): header bytes per model p50 137,592, p95 14,770,403, max 47,100,000 (a 281-shard safetensors repo); max single GGUF header 15.8 MB. Throughput: 9.5 rows/min at 4 workers with serial shard reads and cold discovery; 111 rows/min at 8 workers (16 requests in flight) with shard headers read in parallel and discovery cached. Full catalog estimate: about 3.5-5 h at 8 workers | 4-5x headroom over the measured maxima; budget exits are `failed:over_budget`, never truncation |
 | D-14 | Stage A/B verifies are offline; network checks are marked `[network]` and sit in stage C (or capture fixtures) | sessions can work without the Hub |
 
 ## Open questions

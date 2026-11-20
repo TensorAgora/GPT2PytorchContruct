@@ -36,3 +36,5 @@ Never delete a row. When a problem is fixed, add a new row for the same id sayin
 |---|---|---|---|
 | 2026-11-20 | 00a | master §2 path TensormorphDesignUI/.../activity_bar/viewport/shared/mock.js does not exist | use .../activity_bar/shared/mock.js |
 | 2026-11-20 | 05a.C.P1.T1 | repos with component folders (vae/config.json + safetensors) but no model_index.json and no root safetensors were skipped:no_weights | discover falls back to one-level component folders that have config.json (fixed, test_component_folders_without_model_index) |
+| 2026-11-20 | 05d.C.P1.T1 | first smoke: 9.5 rows/min, 497 s for one 281-shard repo; shard headers were read serially and per-row request counts were inflated by a shared client counter | read shard headers in parallel (read_manifest pool of 8) and give each job Client.scoped() counters: 111 rows/min |
+| 2026-11-20 | 05d.C.P1.T1 | GGUF pick took an mtp draft file as smallest quant; unknown ggml types reported as corrupt | mtp*/-mtp files are components like mmproj; unknown ggml type -> failed:unsupported_type |

@@ -33,3 +33,15 @@ def load_jobs(root=ROOT / "csv/categories", goldens=ROOT / "csv/goldens.csv") ->
         with open(goldens, newline="") as f:
             jobs += [Job(r["repo"], r["category"], r["format"], r, "golden") for r in csv.DictReader(f) if r["repo"] not in seen]
     return jobs
+
+
+def stratified(jobs: list[Job]) -> list[Job]:
+    """Round-robin over (category, format) in sorted order, so any prefix samples every group."""
+    groups = {}
+    for j in jobs:
+        groups.setdefault((j.category, j.format), []).append(j)
+    keys, out, i = sorted(groups), [], 0
+    while any(i < len(groups[k]) for k in keys):
+        out += [groups[k][i] for k in keys if i < len(groups[k])]
+        i += 1
+    return out

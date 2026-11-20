@@ -9,7 +9,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
-from .catalog import Job, load_jobs
+from .catalog import Job, load_jobs, stratified
 from .http import Client, HttpError, allowed, token
 
 DEFERRED_FORMATS = ("pytorch", "onnx", "other")
@@ -81,7 +81,8 @@ def _gguf(files: dict):
     for p in sorted(files):
         if not p.endswith(".gguf"):
             continue
-        if "mmproj" in p.lower():
+        name = p.rsplit("/", 1)[-1].lower()
+        if "mmproj" in name or name.startswith("mtp") or "-mtp" in name:  # vision projector / draft head: a component
             components.append(p)
             continue
         m = PART.match(p)
@@ -151,14 +152,7 @@ def small_files(d: Discovery, client: Client) -> dict:
 
 
 def smoke_jobs(n: int) -> list[Job]:
-    groups = {}
-    for j in load_jobs():
-        groups.setdefault((j.category, j.format), []).append(j)
-    keys, picked, i = sorted(groups), [], 0
-    while len(picked) < n and any(i < len(groups[k]) for k in keys):
-        picked += [groups[k][i] for k in keys if i < len(groups[k])]
-        i += 1
-    return picked[:n]
+    return stratified(load_jobs())[:n]
 
 
 def main(argv=None):

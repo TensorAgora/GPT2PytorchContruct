@@ -3,12 +3,14 @@ depends on a chosen architecture. Canonical JSON; `provenance.fetched_at` is the
 import datetime
 import json
 import math
+from concurrent.futures import ThreadPoolExecutor
 from functools import cache
 from pathlib import Path
 
 TOOL_VERSION = "hf-graph 0.1"
 SCHEMA = Path(__file__).resolve().parents[1] / "schemas/tensor-manifest-v1.schema.json"
 ENDPOINT = "https://huggingface.co"
+MODEL_HEADER_BUDGET = 256 << 20  # D3: per model, all files (set from the 100-row smoke run)
 
 
 def dump(obj) -> bytes:
@@ -136,5 +138,11 @@ def read_manifest(job, client, revision=None, fetched_at=None):
     if d.status:
         return d, None
     small = small_files(d, client)
-    headers = {p: read_header(client, d.repo, d.sha, p) for w in d.weights for p in w.parts}
+    parts = [p for w in d.weights for p in w.parts]
+    with ThreadPoolExecutor(min(8, len(parts))) as pool:  # shards in parallel; the client's semaphore bounds requests
+        headers = dict(zip(parts, pool.map(lambda p: read_header(client, d.repo, d.sha, p), parts)))
+    total = sum(h["bytes_read"] for h in headers.values())
+    if total > MODEL_HEADER_BUDGET:
+        from .headers import HeaderError
+        raise HeaderError("over_budget", f"{total} header bytes over the {MODEL_HEADER_BUDGET} per-model budget (D3)")
     return d, build_manifest(job, d, small, headers, fetched_at)
