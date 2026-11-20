@@ -1008,20 +1008,82 @@
       "blocked": null
     },
     "06e": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T19:27:50+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T19:27:50+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "sidecars bind",
+          "evidence": "",
+          "at": "2026-11-20T19:27:50+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "06e.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN table: 8 schemes with pattern, principal, shape relation, view text",
+          "evidence": "",
+          "at": "2026-11-20T19:27:50+00:00"
+        },
+        "06e.B.P1.T1": {
+          "status": "done",
+          "reason": "sidecars.py (fp8_block, fp8_mistral, mxfp4, gptq, awq, mlx, bitsandbytes) called by bind; test_sidecars 13 passed",
+          "evidence": "",
+          "at": "2026-11-20T19:27:50+00:00"
+        },
+        "06e.B.P1.T2": {
+          "status": "done",
+          "reason": "report.sidecars from binding records; qwen3_5 FP8 views now from sidecars.py; goldens unchanged",
+          "evidence": "",
+          "at": "2026-11-20T19:27:50+00:00"
+        },
+        "06e.C.P1.T1": {
+          "status": "done",
+          "reason": "Qwen3.8 FP8: 400/400 text-model weight_scale_inv attached, 0 unclaimed",
+          "evidence": "",
+          "at": "2026-11-20T19:27:50+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T19:27:50+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T19:27:50+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T19:27:50+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T19:27:50+00:00",
+          "reason": "Stage C Integrate complete: sidecars bind",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "07a": {

@@ -17,7 +17,8 @@ class Binding:
     missing: list = field(default_factory=list)  # [param, key]
     misshaped: list = field(default_factory=list)  # [param, key, graph shape, header shape]
     unclaimed: list = field(default_factory=list)  # keys
-    views: dict = field(default_factory=dict)  # param name -> view text the binding adds (FP8 scales)
+    views: dict = field(default_factory=dict)  # param name -> view text the binding adds (quantized storage)
+    sidecars: list = field(default_factory=list)  # [{tensor, principal, scheme}] attached (06e)
 
     def near_miss(self, limit=20) -> dict:
         return {"missing": self.missing[:limit], "misshaped": self.misshaped[:limit], "unclaimed": self.unclaimed[:limit],
@@ -39,7 +40,10 @@ def stack_members(view: str) -> list[str]:
 
 def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None = None, fmt: dict | None = None) -> Binding:
     """`fmt` (resolved hyperparameter values) fills templated component prefixes such as `model.layers.{L}.`."""
-    stored = {t["key"]: t for t in manifest["tensors"]}
+    from .sidecars import apply as sidecar_rules
+
+    sc = sidecar_rules(manifest, (manifest.get("config") or {}).get("config.json") or {})
+    stored = sc.stored  # logical principals in place of packed or missing ones
     claim, owner, b = {}, {}, Binding(False)
     for e in expected:
         key, view = e["checkpoint_key"], e["view"] or ""
@@ -48,7 +52,7 @@ def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None =
             if t is None:
                 b.missing.append([e["name"], key])
                 continue
-            if not view.startswith("[") and list(t["shape"]) != list(e["shape"]):
+            if not view.startswith("[") and key not in sc.unchecked and list(t["shape"]) != list(e["shape"]):
                 b.misshaped.append([e["name"], key, e["shape"], t["shape"]])
             claim[key], owner[key] = "bound", e["name"]
         elif members := stack_members(view):
@@ -67,19 +71,24 @@ def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None =
     for key, t in stored.items():
         if key in claim:
             continue
-        principal = key.removesuffix("_scale_inv")
+        if t.get("virtual"):  # a logical principal synthesized from sidecars; its parts are what is stored
+            continue
+        if key in sc.aux and claim.get(sc.aux[key]) == "bound":
+            claim[key] = "aux"
+            continue
         if any(fnmatchcase(key, pat) for pat in d.get("ignored", [])):
             claim[key] = "ignored"
         elif any(fnmatchcase(key, pat) for pat in d.get("aux", [])):  # descriptor-declared aux (e.g. router biases)
             claim[key] = "aux"
-        elif principal != key and claim.get(principal) == "bound" and stored[principal]["dtype"].startswith("F8"):
-            claim[key] = "aux"
-            if principal in owner:  # model_graph.py's FP8 view text
-                b.views[owner[principal]] = f"dequantized: {stored[principal]['dtype']} x {key} {t['shape']} (block-wise)"
         elif any(key.startswith(pre) for pre in prefixes):
             claim[key] = "component"
         else:
             b.unclaimed.append(key)
+    for principal, text in sc.views.items():
+        if principal in owner and claim.get(principal) == "bound":
+            b.views[owner[principal]] = text
+    b.sidecars = [r for r in sc.records if claim.get(r["tensor"]) == "aux"]
+    claim = {k: v for k, v in claim.items() if not stored.get(k, {}).get("virtual")}
     b.partition = {c: sorted(k for k, v in claim.items() if v == c) for c in CLASSES}
     b.ok = not (b.missing or b.misshaped or b.unclaimed)
     return b

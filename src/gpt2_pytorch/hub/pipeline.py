@@ -165,7 +165,7 @@ def run_one(job: Job, out, client=None, revision: str | None = None, fetched_at:
                "binding": {c: len(v) for c, v in b.partition.items()} | {"unclaimed": len(b.unclaimed)},
                "components": components,
                "storage_transforms": r.transforms,
-               "sidecars": [{"tensor": t, "principal": t.removesuffix("_scale_inv"), "scheme": "fp8_block"} for t in b.partition.get("aux", [])],
+               "sidecars": b.sidecars,
                "totals": {"ops": g["totals"]["ops"], "contraction_flops": g["totals"]["contraction_flops"],
                           "params": sum(math.prod(e["shape"]) for e in r.expected if e["role"] == "parameter")}}
     return _finish(folder, report, paths, key)
