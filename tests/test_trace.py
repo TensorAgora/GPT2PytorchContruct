@@ -33,3 +33,19 @@ def test_tiny_timm_and_unet_bind(repo, status, bound, tmp_path):
 def test_c2_path_a_equals_path_b(descriptor):
     from tools.conformance import c2
     assert c2(descriptor) == "PASS"
+
+
+@pytest.mark.parametrize("repo", ["FacebookAI/roberta-base", "google-t5/t5-small", "distilbert/distilgpt2", "facebook/bart-base", "Qwen/Qwen3-0.6B"])
+def test_path_b_binds_transformers_checkpoints_without_descriptors(repo, tmp_path, monkeypatch):
+    """saved class first, wrapper prefix aligned, ties and the class's ignore-on-load keys classed (descriptors hidden)"""
+    from gpt2_pytorch.registry import resolve
+    fx = find(repo)
+    if fx is None:
+        pytest.skip(f"{repo} fixture missing")
+    orig = resolve.candidates
+    monkeypatch.setattr(resolve, "candidates", lambda m, r: ([c for c in orig(m, r)[0] if c.descriptor is None], orig(m, r)[1]))
+    c = FixtureClient(fx)
+    r = run_one(c.job(), tmp_path, c, fetched_at="t")
+    rep = json.loads((r.dir / "report.json").read_text())
+    assert r.status == "ok" and rep["winner"]["path"] == "B", rep.get("near_misses")
+    assert check(load_graph(r.dir), load_json(r.dir / "manifest.json")) == []

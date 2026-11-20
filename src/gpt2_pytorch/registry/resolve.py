@@ -158,7 +158,7 @@ def _trace_descriptor(lib: str, cls: str) -> dict:
 
 def _path_b(manifest, row, name, cfg, cands, res):
     """Path B (06f): when no descriptor binds, trace a library class the files name; the denoiser first for diffusers."""
-    from .trace import TraceError, trace_graph, transformers_has
+    from .trace import TraceError, trace, transformers_has
     libs = [c for c in cands if c.library_class and c.library_class.split(":", 1)[0] in ("timm", "diffusers")]
     libs.sort(key=lambda c: (not any(w in c.library_class for w in ("UNet", "Transformer")), c.library_class))
     mt = cfg.get("model_type")
@@ -181,19 +181,63 @@ def _path_b(manifest, row, name, cfg, cands, res):
                 comps.append({"name": f, "state": "declared_without_graph", "tensors": len(ts), "params": sum(t["numel"] for t in ts)})
         d = _trace_descriptor(lib, cls)
         miss = {"descriptor": f"{d['id']}@{d['version']}", "rung": c.rung, "evidence": c.evidence}
-        try:
-            graph, expected = trace_graph(lib, cls, ccfg, name)
-        except (TraceError, Exception) as e:  # noqa: BLE001 - a class that cannot be built or exported is a near-miss
-            res.near_misses.append(miss | {"reason": f"path B: {type(e).__name__}: {e}"[:300]})
-            continue
-        binding = verify(expected, sub, d, graph.get("aliases"))
-        if not binding.ok:
-            res.near_misses.append(miss | {"reason": "path B binding failed", **binding.near_miss()})
-            continue
-        res.status, res.candidate, res.descriptor, res.graph, res.expected, res.binding = "ok", c, d, graph, expected, binding
-        res.components = comps
-        return res
+        stored = {t["key"] for t in sub["tensors"]}
+        # transformers: the saved class first, then a causal LM, then the bare model (a head the checkpoint lacks)
+        for kind in (("arch", "auto", "base") if lib == "transformers" else ("auto",)):
+            try:
+                graph, expected, info = trace(lib, cls, ccfg, name, kind)
+            except (TraceError, Exception) as e:  # noqa: BLE001 - a class that cannot be built or exported is a near-miss
+                res.near_misses.append(miss | {"reason": f"path B: {type(e).__name__}: {e}"[:300]})
+                continue
+            expected, fix = _align_prefix(graph, expected, stored)
+            aliases = _ties(graph, expected, info["ties"], fix, stored)
+            dropped = [k for k in stored if any(re.search(rx, k) for rx in info["ignore_re"])]
+            d = {**d, "ignored": d["ignored"] + dropped + [k for u in info["unused"] if (k := fix(u)) in stored and k not in aliases]}
+            binding = verify(expected, sub, d, {**(graph.get("aliases") or {}), **aliases})
+            if not binding.ok:
+                res.near_misses.append(miss | {"reason": f"path B ({kind}) binding failed", **binding.near_miss()})
+                continue
+            res.status, res.candidate, res.descriptor, res.graph, res.expected, res.binding = "ok", c, d, graph, expected, binding
+            res.components = comps
+            return res
     return res
+
+
+def _ties(graph: dict, expected: list, ties: dict, fix, stored: set) -> dict:
+    """A tied parameter binds to whichever of its names is stored; its other stored names are `tied` copies.
+    Edits expected (and the graph's checkpoint keys) in place; returns {stored copy: parameter name}."""
+    aliases, keyed = {}, {t["name"]: t for t in graph["tensors"]}
+    for e in expected:
+        names = [fix(n) for n in ties.get(e["state_dict_key"], [])] if "state_dict_key" in e else []
+        here = [n for n in names if n in stored]
+        if not here:
+            continue
+        if e["checkpoint_key"] not in stored:
+            e["checkpoint_key"] = keyed[e["name"]]["checkpoint_key"] = here[0]
+        aliases.update({n: e["name"] for n in here if n != e["checkpoint_key"]})
+    return aliases
+
+
+def _align_prefix(graph: dict, expected: list, stored: set) -> list:
+    """Checkpoints saved from a task wrapper store `bert.embeddings...` where the bare class says `embeddings...` (and
+    the other way round): one prefix, added or stripped, that makes the most expected keys stored. (expected, fix)"""
+    keys = [e["checkpoint_key"] for e in expected]
+    hit = sum(k in stored for k in keys)
+    best, fix = hit, None
+    for k in keys[:20]:
+        if k not in stored:
+            pre = next((s[: -len(k)] for s in stored if s.endswith("." + k)), None)
+            for f in ((lambda x, pre=pre: pre + x) if pre else None, lambda x: x.split(".", 1)[-1]):
+                if f and (n := sum(f(x) in stored for x in keys)) > best:
+                    best, fix = n, f
+            break
+    if fix is None:
+        return expected, lambda k: k
+    by = {k: fix(k) if fix(k) in stored else k for k in keys}
+    for t in graph["tensors"]:
+        if t.get("checkpoint_key") in by:
+            t["checkpoint_key"] = by[t["checkpoint_key"]]
+    return [e | {"checkpoint_key": by[e["checkpoint_key"]]} for e in expected], fix
 
 
 def main(argv=None):

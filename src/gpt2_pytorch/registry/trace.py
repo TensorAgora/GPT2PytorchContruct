@@ -52,6 +52,14 @@ def make_model(library: str, cls: str, cfg: dict, kind: str = "causal"):
             import transformers as tr
             mt = cfg.get("model_type")
             config = tr.AutoConfig.for_model(mt, **{k: v for k, v in cfg.items() if k not in ("model_type", "auto_map")})
+            arch = (cfg.get("architectures") or [None])[0]
+            if kind == "arch":  # the class the checkpoint was saved from (task head included), when transformers ships it
+                klass = getattr(tr, arch, None) if isinstance(arch, str) else None
+                if klass is None or not hasattr(klass, "config_class"):
+                    raise TraceError(f"transformers has no class {arch}")
+                return klass(config).eval()
+            if kind == "auto":  # the pipeline's fallback: a causal LM when there is one, else the bare model
+                kind = "seq2seq" if config.is_encoder_decoder else "causal" if type(config) in tr.MODEL_FOR_CAUSAL_LM_MAPPING else "base"
             auto = {"causal": tr.AutoModelForCausalLM, "base": tr.AutoModel, "seq2seq": tr.AutoModelForSeq2SeqLM}[kind]
             m = auto.from_config(config, trust_remote_code=False)
         else:
@@ -66,10 +74,20 @@ def example_inputs(library: str, cls: str, cfg: dict, model, kind: str = "causal
         size = (cfg.get("pretrained_cfg") or {}).get("input_size") or [3, 224, 224]
         return (torch.empty(1, *size, **meta),), {}
     if library == "transformers":
-        ids = torch.zeros(1, 8, dtype=torch.long, **meta)
-        if kind == "seq2seq":
-            return (ids,), {"decoder_input_ids": ids, "use_cache": False}
-        return (ids,), ({"use_cache": False} if kind == "causal" else {})
+        import inspect
+        c = model.config
+        if model.main_input_name == "pixel_values":  # ViT, ConvNeXt, Swin, ...: one image at the config's size
+            size = c.image_size if isinstance(c.image_size, int) else c.image_size[0]
+            x = torch.empty(1, getattr(c, "num_channels", 3), size, size, **meta)
+        elif model.main_input_name == "input_ids":
+            x = torch.zeros(1, 8, dtype=torch.long, **meta)
+        else:
+            raise TraceError(f"no example inputs for {type(model).__name__} ({model.main_input_name})")
+        params = inspect.signature(model.forward).parameters
+        kw = {"use_cache": False} if "use_cache" in params else {}
+        if c.is_encoder_decoder and "decoder_input_ids" in params:
+            kw["decoder_input_ids"] = torch.zeros(1, 8, dtype=torch.long, **meta)
+        return (x,), kw
     if cls.startswith("UNet2D"):
         c = model.config
         s = 8 if c.get("sample_size") is None else min(int(c["sample_size"] if not isinstance(c["sample_size"], (list, tuple)) else c["sample_size"][0]), 16)
@@ -252,6 +270,14 @@ def prune(doc: dict) -> dict:
 
 def trace_graph(library: str, cls: str, cfg: dict, name: str = "model", kind: str = "causal"):
     """(viz-graph, expected params) for a library class, path B."""
+    g, expected, _ = trace(library, cls, cfg, name, kind)
+    return g, expected
+
+
+def trace(library: str, cls: str, cfg: dict, name: str = "model", kind: str = "causal"):
+    """(viz-graph, expected params, info): info["unused"] are state_dict keys the class declares that L never reads (a
+    pooler beside a token classifier, a second head), classed `ignored` when stored; info["ties"] maps each key to every
+    name of the same parameter object (lm_head.weight and embed_tokens.weight when tied)."""
     import json as _json
 
     import torch
@@ -265,5 +291,19 @@ def trace_graph(library: str, cls: str, cfg: dict, name: str = "model", kind: st
         p, _ = to_program(ep, name)
     doc = prune(p.to_dict(name, {"B": 1, "T": 8}) | {"verification": []})
     g = viz_graph(_json.loads(_json.dumps(doc)), f"gpt2_pytorch.registry.trace {library}:{cls} (torch.export on meta)")
-    expected = [{k: t[k] for k in ("name", "role", "shape", "checkpoint_key", "view")} for t in g["tensors"] if t["role"] in ("parameter", "buffer")]
-    return g, expected
+    transient = set(ep.graph_signature.non_persistent_buffers)  # never saved: HF position_ids and the like
+    for t in g["tensors"]:
+        if t["checkpoint_key"] in transient:
+            t["checkpoint_key"], t["view"] = None, "non-persistent buffer"
+    expected = [{k: t[k] for k in ("name", "role", "shape", "checkpoint_key", "view", "state_dict_key")} for t in g["tensors"]
+                if t["role"] in ("parameter", "buffer") and t["checkpoint_key"]]
+    sig = ep.graph_signature
+    used = {e["checkpoint_key"] for e in expected}
+    unused = sorted(set(sig.inputs_to_parameters.values()) | set(sig.inputs_to_buffers.values()) - transient - used)
+    groups = {}
+    for n, t in model.named_parameters(remove_duplicate=False):
+        groups.setdefault(id(t), []).append(n)
+    ties = {n: names for names in groups.values() if len(names) > 1 for n in names}
+    # stored keys the class itself tells transformers to drop on load (GPT-2's old attn.bias masks, T5's spare bias)
+    ignore_re = list(getattr(model, "_keys_to_ignore_on_load_unexpected", None) or [])
+    return g, expected, {"unused": unused, "ties": ties, "ignore_re": ignore_re}
