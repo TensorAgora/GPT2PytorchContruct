@@ -1,0 +1,71 @@
+{
+  "category": "ssm_rnn",
+  "row_counts_by_format": {
+    "pytorch": 2,
+    "safetensors": 8
+  },
+  "graph": "recurrent / state-space stack (Mamba, RWKV, xLSTM) without attention",
+  "dims": {
+    "D": [
+      "hidden_size | n_embd (GPT-2)",
+      "<arch>.embedding_length"
+    ],
+    "V": [
+      "vocab_size",
+      "<arch>.vocab_size | len(tokenizer.ggml.tokens)"
+    ]
+  },
+  "attrs": {
+    "L": [
+      "num_hidden_layers | n_layer (GPT-2)",
+      "<arch>.block_count"
+    ],
+    "layer_types": [
+      "layer_types | full_attention_interval | attn_layer_indices",
+      "<arch>.full_attention_interval"
+    ],
+    "mamba": [
+      "state_size | d_state, expand, n_groups, chunk_size",
+      "<arch>.ssm.state_size, <arch>.ssm.inner_size, <arch>.ssm.group_count"
+    ],
+    "rwkv": [
+      "attention_hidden_size, head_size",
+      "<arch>.wkv.head_size, <arch>.time_mix_extra_dim"
+    ]
+  },
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "safetensors": {
+    "files": [
+      "config.json",
+      "model.safetensors.index.json (sharded: weight_map tensor->file)",
+      "*.safetensors header: 8-byte LE length + JSON {name: {dtype, shape, data_offsets}, __metadata__}"
+    ],
+    "tensor_fields": [
+      "name -> tensors[].checkpoint_key",
+      "shape -> tensors[].shape",
+      "dtype -> tensors[].dtype"
+    ],
+    "quantization": "config.json quantization_config {quant_method, weight_block_size, fmt}; scale tensors *_scale_inv / *.scales"
+  },
+  "gguf": {
+    "files": [
+      "*.gguf header: magic, version, tensor_count, kv_count, KV metadata, tensor infos"
+    ],
+    "kv": [
+      "general.architecture",
+      "general.name",
+      "general.file_type",
+      "general.quantization_version",
+      "general.alignment",
+      "tokenizer.ggml.model",
+      "tokenizer.ggml.tokens"
+    ],
+    "tensor_fields": [
+      "name (llama.cpp scheme: token_embd, blk.N.attn_q, blk.N.ffn_gate_exps, output, output_norm) -> tensors[].checkpoint_key, kept as-is (see json/mixtral-8x7b-instruct-q4km.json)",
+      "dims (reversed vs PyTorch order) -> shape",
+      "ggml type (Q4_K, Q8_0, F16, ...) -> dtype"
+    ],
+    "split_files": "multi-part *-00001-of-0000N.gguf: tensors spread across parts; KV in part 1"
+  },
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}

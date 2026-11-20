@@ -1,0 +1,49 @@
+{
+  "category": "diffusion_dit",
+  "row_counts_by_format": {
+    "gguf": 72,
+    "onnx": 9,
+    "pytorch": 55,
+    "safetensors": 2468
+  },
+  "graph": "patchify -> N x transformer blocks (adaLN; MMDiT: joint text/image streams) -> unpatchify",
+  "attrs": {
+    "L": [
+      "num_layers (+ num_single_layers for Flux)",
+      "count block tensors"
+    ],
+    "H": [
+      "num_attention_heads",
+      "tensor shapes"
+    ],
+    "Dh": [
+      "attention_head_dim",
+      "tensor shapes"
+    ],
+    "D": [
+      "H*Dh | hidden_size | inner_dim",
+      "tensor shapes"
+    ],
+    "C_in": [
+      "in_channels",
+      "-"
+    ],
+    "patch": [
+      "patch_size (+ patch_size_t for video)",
+      "-"
+    ],
+    "text": [
+      "joint_attention_dim | caption_channels | text_dim, pooled_projection_dim",
+      "-"
+    ]
+  },
+  "files": [
+    "model_index.json (pipeline: component -> [library, class])",
+    "<component>/config.json",
+    "<component>/diffusion_pytorch_model.safetensors(.index.json)"
+  ],
+  "gguf_note": "diffusion GGUF (city96 style) carries general.architecture (flux, sd1, sdxl, sd3, wan, ...) and tensor infos only: derive dims from tensor shapes",
+  "single_file": "single-file checkpoints (original layout keys: model.diffusion_model.*): derive dims from tensor keys/shapes",
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}

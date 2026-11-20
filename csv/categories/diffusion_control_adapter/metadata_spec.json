@@ -1,0 +1,23 @@
+{
+  "category": "diffusion_control_adapter",
+  "row_counts_by_format": {
+    "pytorch": 18,
+    "safetensors": 192
+  },
+  "graph": "ControlNet (copy of UNet/DiT encoder + zero convs) or adapter (T2I / IP / Motion) feeding a base model",
+  "attrs": {
+    "base": [
+      "base_model, conditioning_channels, conditioning_embedding_out_channels",
+      "-"
+    ]
+  },
+  "files": [
+    "model_index.json (pipeline: component -> [library, class])",
+    "<component>/config.json",
+    "<component>/diffusion_pytorch_model.safetensors(.index.json)"
+  ],
+  "gguf_note": "diffusion GGUF (city96 style) carries general.architecture (flux, sd1, sdxl, sd3, wan, ...) and tensor infos only: derive dims from tensor shapes",
+  "single_file": "single-file checkpoints (original layout keys: model.diffusion_model.*): derive dims from tensor keys/shapes",
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}

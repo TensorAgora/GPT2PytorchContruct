@@ -1,0 +1,124 @@
+{
+  "category": "decoder_dense",
+  "row_counts_by_format": {
+    "gguf": 1739,
+    "onnx": 47,
+    "pytorch": 579,
+    "safetensors": 4286
+  },
+  "graph": "decoder-only transformer: embed -> L x (norm, attention, norm, MLP) -> norm -> lm_head",
+  "dims": {
+    "D": [
+      "hidden_size | n_embd (GPT-2)",
+      "<arch>.embedding_length"
+    ],
+    "V": [
+      "vocab_size",
+      "<arch>.vocab_size | len(tokenizer.ggml.tokens)"
+    ],
+    "F": [
+      "intermediate_size | n_inner (GPT-2; null = 4*D)",
+      "<arch>.feed_forward_length"
+    ],
+    "H": [
+      "GQA (Hkv present): (num_attention_heads | n_head) / (num_key_value_heads (default = Hq)) = query heads per KV group; MHA/GPT-2: num_attention_heads | n_head",
+      "<arch>.attention.head_count / <arch>.attention.head_count_kv (GQA); <arch>.attention.head_count (MHA)"
+    ],
+    "Hkv": [
+      "num_key_value_heads (default = Hq)",
+      "<arch>.attention.head_count_kv"
+    ],
+    "Dh": [
+      "head_dim (default hidden_size/num_attention_heads)",
+      "<arch>.attention.key_length (else embedding_length / attention.head_count)"
+    ],
+    "Dh2": [
+      "= Dh (second label of the same size, for q.k^T score axes)",
+      "= Dh"
+    ],
+    "Dq": [
+      "Hq * Dh",
+      "<arch>.attention.head_count * Dh"
+    ],
+    "Dkv": [
+      "Hkv * Dh",
+      "<arch>.attention.head_count_kv * Dh"
+    ],
+    "P": [
+      "max_position_embeddings | n_positions (GPT-2; learned position table)",
+      "<arch>.context_length"
+    ],
+    "Dc": [
+      "= D (GPT-2 Conv1D projection width)",
+      "= D"
+    ],
+    "QKV": [
+      "3 * D (GPT-2 fused c_attn)",
+      "attn_qkv tensor shape"
+    ]
+  },
+  "attrs": {
+    "L": [
+      "num_hidden_layers | n_layer (GPT-2)",
+      "<arch>.block_count"
+    ],
+    "eps": [
+      "rms_norm_eps | layer_norm_eps | layer_norm_epsilon",
+      "<arch>.attention.layer_norm_rms_epsilon | <arch>.attention.layer_norm_epsilon"
+    ],
+    "rope": [
+      "rope_theta, rope_scaling, partial_rotary_factor",
+      "<arch>.rope.freq_base, <arch>.rope.scaling.type, <arch>.rope.dimension_count"
+    ],
+    "window": [
+      "sliding_window, layer_types (sliding/full)",
+      "<arch>.attention.sliding_window, <arch>.attention.sliding_window_pattern"
+    ],
+    "tied": [
+      "tie_word_embeddings -> aliases {lm_head.weight: E}",
+      "no output.weight tensor -> alias to token_embd.weight"
+    ]
+  },
+  "examples": [
+    "json/distilgpt2.json",
+    "json/mistral-7b-instruct-v0.3.json",
+    "json/qwen2.5-7b-instruct.json",
+    "json/gemma-2-2b-it.json",
+    "json/phi-3.5-mini-instruct.json"
+  ],
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "safetensors": {
+    "files": [
+      "config.json",
+      "model.safetensors.index.json (sharded: weight_map tensor->file)",
+      "*.safetensors header: 8-byte LE length + JSON {name: {dtype, shape, data_offsets}, __metadata__}"
+    ],
+    "tensor_fields": [
+      "name -> tensors[].checkpoint_key",
+      "shape -> tensors[].shape",
+      "dtype -> tensors[].dtype"
+    ],
+    "quantization": "config.json quantization_config {quant_method, weight_block_size, fmt}; scale tensors *_scale_inv / *.scales"
+  },
+  "gguf": {
+    "files": [
+      "*.gguf header: magic, version, tensor_count, kv_count, KV metadata, tensor infos"
+    ],
+    "kv": [
+      "general.architecture",
+      "general.name",
+      "general.file_type",
+      "general.quantization_version",
+      "general.alignment",
+      "tokenizer.ggml.model",
+      "tokenizer.ggml.tokens"
+    ],
+    "tensor_fields": [
+      "name (llama.cpp scheme: token_embd, blk.N.attn_q, blk.N.ffn_gate_exps, output, output_norm) -> tensors[].checkpoint_key, kept as-is (see json/mixtral-8x7b-instruct-q4km.json)",
+      "dims (reversed vs PyTorch order) -> shape",
+      "ggml type (Q4_K, Q8_0, F16, ...) -> dtype"
+    ],
+    "split_files": "multi-part *-00001-of-0000N.gguf: tensors spread across parts; KV in part 1"
+  },
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}

@@ -1,0 +1,94 @@
+{
+  "category": "encoder",
+  "row_counts_by_format": {
+    "gguf": 149,
+    "onnx": 301,
+    "other": 38,
+    "pytorch": 2266,
+    "safetensors": 3973
+  },
+  "graph": "bidirectional encoder (BERT / RoBERTa / DeBERTa / ModernBERT ...) + task head",
+  "dims": {
+    "D": [
+      "hidden_size",
+      "<arch>.embedding_length"
+    ],
+    "H": [
+      "num_attention_heads",
+      "<arch>.attention.head_count"
+    ],
+    "Dh": [
+      "hidden_size / num_attention_heads",
+      "<arch>.embedding_length / <arch>.attention.head_count"
+    ],
+    "F": [
+      "intermediate_size",
+      "<arch>.feed_forward_length"
+    ],
+    "V": [
+      "vocab_size",
+      "len(tokenizer.ggml.tokens)"
+    ],
+    "P": [
+      "max_position_embeddings",
+      "<arch>.context_length"
+    ],
+    "Tt": [
+      "type_vocab_size",
+      "tokenizer.ggml.token_type_count"
+    ]
+  },
+  "attrs": {
+    "L": [
+      "num_hidden_layers",
+      "<arch>.block_count"
+    ],
+    "eps": [
+      "layer_norm_eps",
+      "<arch>.attention.layer_norm_epsilon"
+    ],
+    "head": [
+      "architectures[0] suffix (MaskedLM / TokenClassification / SequenceClassification), num_labels, id2label",
+      "<arch>.pooling_type"
+    ],
+    "pos": [
+      "position_embedding_type; rotary (ModernBERT: global_rope_theta, local_attention)",
+      "<arch>.rope.freq_base"
+    ]
+  },
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "safetensors": {
+    "files": [
+      "config.json",
+      "model.safetensors.index.json (sharded: weight_map tensor->file)",
+      "*.safetensors header: 8-byte LE length + JSON {name: {dtype, shape, data_offsets}, __metadata__}"
+    ],
+    "tensor_fields": [
+      "name -> tensors[].checkpoint_key",
+      "shape -> tensors[].shape",
+      "dtype -> tensors[].dtype"
+    ],
+    "quantization": "config.json quantization_config {quant_method, weight_block_size, fmt}; scale tensors *_scale_inv / *.scales"
+  },
+  "gguf": {
+    "files": [
+      "*.gguf header: magic, version, tensor_count, kv_count, KV metadata, tensor infos"
+    ],
+    "kv": [
+      "general.architecture",
+      "general.name",
+      "general.file_type",
+      "general.quantization_version",
+      "general.alignment",
+      "tokenizer.ggml.model",
+      "tokenizer.ggml.tokens"
+    ],
+    "tensor_fields": [
+      "name (llama.cpp scheme: token_embd, blk.N.attn_q, blk.N.ffn_gate_exps, output, output_norm) -> tensors[].checkpoint_key, kept as-is (see json/mixtral-8x7b-instruct-q4km.json)",
+      "dims (reversed vs PyTorch order) -> shape",
+      "ggml type (Q4_K, Q8_0, F16, ...) -> dtype"
+    ],
+    "split_files": "multi-part *-00001-of-0000N.gguf: tensors spread across parts; KV in part 1"
+  },
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}

@@ -1,0 +1,13 @@
+{
+  "category": "unknown",
+  "row_counts_by_format": {
+    "gguf": 30,
+    "onnx": 20,
+    "other": 1,
+    "pytorch": 341,
+    "safetensors": 345
+  },
+  "graph": "family not readable from configs: derive from safetensors/GGUF tensor names and shapes, then move the row to a real category",
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}

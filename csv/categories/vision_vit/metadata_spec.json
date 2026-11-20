@@ -1,0 +1,49 @@
+{
+  "category": "vision_vit",
+  "row_counts_by_format": {
+    "safetensors": 612
+  },
+  "graph": "patch embed -> [cls/pos] -> L x transformer (or MLP-mixer) blocks -> pool -> head",
+  "builder": "timm.create_model(arch, pretrained=False) + torch.fx / torch.export; dims from safetensors header shapes",
+  "attrs": {
+    "patch": [
+      "model_args patch_size",
+      "patch_embed.proj.weight shape"
+    ],
+    "D": [
+      "embed_dim",
+      "cls_token / pos_embed shape"
+    ],
+    "L": [
+      "depth",
+      "count blocks.N"
+    ],
+    "H": [
+      "num_heads",
+      "-"
+    ],
+    "input": [
+      "pretrained_cfg.input_size",
+      "-"
+    ],
+    "classes": [
+      "num_classes",
+      "head.weight shape"
+    ]
+  },
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "safetensors": {
+    "files": [
+      "config.json",
+      "model.safetensors.index.json (sharded: weight_map tensor->file)",
+      "*.safetensors header: 8-byte LE length + JSON {name: {dtype, shape, data_offsets}, __metadata__}"
+    ],
+    "tensor_fields": [
+      "name -> tensors[].checkpoint_key",
+      "shape -> tensors[].shape",
+      "dtype -> tensors[].dtype"
+    ],
+    "quantization": "config.json quantization_config {quant_method, weight_block_size, fmt}; scale tensors *_scale_inv / *.scales"
+  },
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}

@@ -1,0 +1,31 @@
+{
+  "category": "diffusion_vae",
+  "row_counts_by_format": {
+    "pytorch": 13,
+    "safetensors": 138
+  },
+  "graph": "conv encoder -> latent (mean, logvar) -> conv decoder",
+  "attrs": {
+    "C_lat": [
+      "latent_channels",
+      "tensor shape"
+    ],
+    "blocks": [
+      "block_out_channels, layers_per_block",
+      "-"
+    ],
+    "scale": [
+      "scaling_factor, shift_factor",
+      "-"
+    ]
+  },
+  "files": [
+    "model_index.json (pipeline: component -> [library, class])",
+    "<component>/config.json",
+    "<component>/diffusion_pytorch_model.safetensors(.index.json)"
+  ],
+  "gguf_note": "diffusion GGUF (city96 style) carries general.architecture (flux, sd1, sdxl, sd3, wan, ...) and tensor infos only: derive dims from tensor shapes",
+  "single_file": "single-file checkpoints (original layout keys: model.diffusion_model.*): derive dims from tensor keys/shapes",
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}

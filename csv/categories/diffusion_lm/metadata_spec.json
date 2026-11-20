@@ -1,0 +1,110 @@
+{
+  "category": "diffusion_lm",
+  "row_counts_by_format": {
+    "gguf": 1,
+    "safetensors": 22
+  },
+  "graph": "bidirectional (non-causal) transformer denoiser over tokens; dense or MoE",
+  "dims": {
+    "D": [
+      "hidden_size | n_embd (GPT-2)",
+      "<arch>.embedding_length"
+    ],
+    "V": [
+      "vocab_size",
+      "<arch>.vocab_size | len(tokenizer.ggml.tokens)"
+    ],
+    "F": [
+      "intermediate_size | n_inner (GPT-2; null = 4*D)",
+      "<arch>.feed_forward_length"
+    ],
+    "H": [
+      "GQA (Hkv present): (num_attention_heads | n_head) / (num_key_value_heads (default = Hq)) = query heads per KV group; MHA/GPT-2: num_attention_heads | n_head",
+      "<arch>.attention.head_count / <arch>.attention.head_count_kv (GQA); <arch>.attention.head_count (MHA)"
+    ],
+    "Hkv": [
+      "num_key_value_heads (default = Hq)",
+      "<arch>.attention.head_count_kv"
+    ],
+    "Dh": [
+      "head_dim (default hidden_size/num_attention_heads)",
+      "<arch>.attention.key_length (else embedding_length / attention.head_count)"
+    ],
+    "Dh2": [
+      "= Dh (second label of the same size, for q.k^T score axes)",
+      "= Dh"
+    ],
+    "Dq": [
+      "Hq * Dh",
+      "<arch>.attention.head_count * Dh"
+    ],
+    "Dkv": [
+      "Hkv * Dh",
+      "<arch>.attention.head_count_kv * Dh"
+    ],
+    "P": [
+      "max_position_embeddings | n_positions (GPT-2; learned position table)",
+      "<arch>.context_length"
+    ],
+    "Dc": [
+      "= D (GPT-2 Conv1D projection width)",
+      "= D"
+    ],
+    "QKV": [
+      "3 * D (GPT-2 fused c_attn)",
+      "attn_qkv tensor shape"
+    ],
+    "E": [
+      "num_local_experts | n_routed_experts | num_experts",
+      "<arch>.expert_count"
+    ],
+    "Fe": [
+      "moe_intermediate_size (Mixtral: intermediate_size)",
+      "<arch>.expert_feed_forward_length (else <arch>.feed_forward_length)"
+    ]
+  },
+  "attrs": {
+    "L": [
+      "num_hidden_layers | n_layer (GPT-2)",
+      "<arch>.block_count"
+    ],
+    "eps": [
+      "rms_norm_eps | layer_norm_eps | layer_norm_epsilon",
+      "<arch>.attention.layer_norm_rms_epsilon | <arch>.attention.layer_norm_epsilon"
+    ],
+    "rope": [
+      "rope_theta, rope_scaling, partial_rotary_factor",
+      "<arch>.rope.freq_base, <arch>.rope.scaling.type, <arch>.rope.dimension_count"
+    ],
+    "window": [
+      "sliding_window, layer_types (sliding/full)",
+      "<arch>.attention.sliding_window, <arch>.attention.sliding_window_pattern"
+    ],
+    "tied": [
+      "tie_word_embeddings -> aliases {lm_head.weight: E}",
+      "no output.weight tensor -> alias to token_embd.weight"
+    ],
+    "topk": [
+      "num_experts_per_tok",
+      "<arch>.expert_used_count"
+    ],
+    "shared": [
+      "n_shared_experts, shared_expert_intermediate_size",
+      "<arch>.expert_shared_count, <arch>.expert_shared_feed_forward_length"
+    ],
+    "dense_layers": [
+      "first_k_dense_replace | mlp_only_layers | decoder_sparse_step",
+      "<arch>.leading_dense_block_count"
+    ],
+    "router": [
+      "scoring_func, topk_method, n_group, topk_group, routed_scaling_factor, norm_topk_prob",
+      "<arch>.expert_gating_func, <arch>.expert_group_count, <arch>.expert_group_used_count, <arch>.expert_weights_scale, <arch>.expert_weights_norm"
+    ],
+    "mask": [
+      "mask_token_id",
+      "tokenizer.ggml.mask_token_id"
+    ]
+  },
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}

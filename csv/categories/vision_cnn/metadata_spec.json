@@ -1,0 +1,41 @@
+{
+  "category": "vision_cnn",
+  "row_counts_by_format": {
+    "safetensors": 892
+  },
+  "graph": "timm CNN: stem -> stages of conv blocks -> pool -> classifier",
+  "builder": "timm.create_model(arch, pretrained=False) + torch.fx / torch.export; dims from safetensors header shapes",
+  "attrs": {
+    "arch": [
+      "config.json architecture + model_args",
+      "-"
+    ],
+    "classes": [
+      "num_classes",
+      "-"
+    ],
+    "features": [
+      "num_features",
+      "-"
+    ],
+    "input": [
+      "pretrained_cfg.input_size, mean, std",
+      "-"
+    ]
+  },
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "safetensors": {
+    "files": [
+      "config.json",
+      "model.safetensors.index.json (sharded: weight_map tensor->file)",
+      "*.safetensors header: 8-byte LE length + JSON {name: {dtype, shape, data_offsets}, __metadata__}"
+    ],
+    "tensor_fields": [
+      "name -> tensors[].checkpoint_key",
+      "shape -> tensors[].shape",
+      "dtype -> tensors[].dtype"
+    ],
+    "quantization": "config.json quantization_config {quant_method, weight_block_size, fmt}; scale tensors *_scale_inv / *.scales"
+  },
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}

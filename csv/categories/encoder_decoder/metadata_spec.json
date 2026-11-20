@@ -1,0 +1,114 @@
+{
+  "category": "encoder_decoder",
+  "row_counts_by_format": {
+    "gguf": 71,
+    "onnx": 153,
+    "other": 2,
+    "pytorch": 873,
+    "safetensors": 686
+  },
+  "graph": "encoder stack + decoder stack with cross-attention (T5, BART, Marian, ...)",
+  "dims": {
+    "D": [
+      "d_model",
+      "<arch>.embedding_length"
+    ],
+    "F": [
+      "d_ff | encoder_ffn_dim",
+      "<arch>.feed_forward_length"
+    ],
+    "H": [
+      "num_heads | encoder_attention_heads",
+      "<arch>.attention.head_count"
+    ],
+    "Dh": [
+      "d_kv (T5) else d_model/H",
+      "<arch>.attention.key_length"
+    ],
+    "V": [
+      "vocab_size",
+      "len(tokenizer.ggml.tokens)"
+    ],
+    "E": [
+      "num_local_experts | n_routed_experts | num_experts",
+      "<arch>.expert_count"
+    ],
+    "Fe": [
+      "moe_intermediate_size (Mixtral: intermediate_size)",
+      "<arch>.expert_feed_forward_length (else <arch>.feed_forward_length)"
+    ]
+  },
+  "attrs": {
+    "L_enc": [
+      "num_layers | encoder_layers",
+      "<arch>.block_count"
+    ],
+    "L_dec": [
+      "num_decoder_layers | decoder_layers",
+      "<arch>.decoder_block_count (else block_count)"
+    ],
+    "relpos": [
+      "relative_attention_num_buckets, relative_attention_max_distance",
+      "<arch>.attention.relative_buckets_count"
+    ],
+    "act": [
+      "feed_forward_proj (gated-gelu / relu)",
+      "infer from ffn_gate tensor presence"
+    ],
+    "start": [
+      "decoder_start_token_id",
+      "<arch>.decoder_start_token_id"
+    ],
+    "topk": [
+      "num_experts_per_tok",
+      "<arch>.expert_used_count"
+    ],
+    "shared": [
+      "n_shared_experts, shared_expert_intermediate_size",
+      "<arch>.expert_shared_count, <arch>.expert_shared_feed_forward_length"
+    ],
+    "dense_layers": [
+      "first_k_dense_replace | mlp_only_layers | decoder_sparse_step",
+      "<arch>.leading_dense_block_count"
+    ],
+    "router": [
+      "scoring_func, topk_method, n_group, topk_group, routed_scaling_factor, norm_topk_prob",
+      "<arch>.expert_gating_func, <arch>.expert_group_count, <arch>.expert_group_used_count, <arch>.expert_weights_scale, <arch>.expert_weights_norm"
+    ]
+  },
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "safetensors": {
+    "files": [
+      "config.json",
+      "model.safetensors.index.json (sharded: weight_map tensor->file)",
+      "*.safetensors header: 8-byte LE length + JSON {name: {dtype, shape, data_offsets}, __metadata__}"
+    ],
+    "tensor_fields": [
+      "name -> tensors[].checkpoint_key",
+      "shape -> tensors[].shape",
+      "dtype -> tensors[].dtype"
+    ],
+    "quantization": "config.json quantization_config {quant_method, weight_block_size, fmt}; scale tensors *_scale_inv / *.scales"
+  },
+  "gguf": {
+    "files": [
+      "*.gguf header: magic, version, tensor_count, kv_count, KV metadata, tensor infos"
+    ],
+    "kv": [
+      "general.architecture",
+      "general.name",
+      "general.file_type",
+      "general.quantization_version",
+      "general.alignment",
+      "tokenizer.ggml.model",
+      "tokenizer.ggml.tokens"
+    ],
+    "tensor_fields": [
+      "name (llama.cpp scheme: token_embd, blk.N.attn_q, blk.N.ffn_gate_exps, output, output_norm) -> tensors[].checkpoint_key, kept as-is (see json/mixtral-8x7b-instruct-q4km.json)",
+      "dims (reversed vs PyTorch order) -> shape",
+      "ggml type (Q4_K, Q8_0, F16, ...) -> dtype"
+    ],
+    "split_files": "multi-part *-00001-of-0000N.gguf: tensors spread across parts; KV in part 1"
+  },
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}

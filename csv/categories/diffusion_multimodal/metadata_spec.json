@@ -1,0 +1,39 @@
+{
+  "category": "diffusion_multimodal",
+  "row_counts_by_format": {
+    "pytorch": 2,
+    "safetensors": 79
+  },
+  "graph": "LLM/VLM backbone + diffusion head (unified generation, VLA action diffusion)",
+  "attrs": {
+    "text": [
+      "text_config.* (decoder keys; checkpoint prefix model.language_model.)",
+      "main .gguf holds the LM"
+    ],
+    "vision": [
+      "vision_config: hidden_size, num_hidden_layers, num_attention_heads, intermediate_size, patch_size, image_size, spatial_merge_size, temporal_patch_size",
+      "mmproj-*.gguf: clip.vision.embedding_length, clip.vision.block_count, clip.vision.attention.head_count, clip.vision.feed_forward_length, clip.vision.patch_size, clip.vision.image_size, clip.vision.spatial_merge_size, clip.projector_type"
+    ],
+    "projector": [
+      "projector_hidden_act, image_token_id | image_token_index, mm_projector_type",
+      "clip.vision.projector_type, clip.vision.projection_dim, mm.* tensors"
+    ],
+    "audio": [
+      "audio_config (if present)",
+      "clip.audio.embedding_length, clip.audio.block_count, clip.audio.projector_type"
+    ],
+    "head": [
+      "diffusion head config in components",
+      "-"
+    ]
+  },
+  "files": [
+    "model_index.json (pipeline: component -> [library, class])",
+    "<component>/config.json",
+    "<component>/diffusion_pytorch_model.safetensors(.index.json)"
+  ],
+  "gguf_note": "diffusion GGUF (city96 style) carries general.architecture (flux, sd1, sdxl, sd3, wan, ...) and tensor infos only: derive dims from tensor shapes",
+  "single_file": "single-file checkpoints (original layout keys: model.diffusion_model.*): derive dims from tensor keys/shapes",
+  "dims_format": "symbol -> [safetensors config.json expression, GGUF KV expression]; <arch> = general.architecture; B, T, q, k are example sizes picked by the builder",
+  "graph_json": "tensormorph-viz-graph v1 (json/*.json): model.name, dims, axes, aliases, tensors[] (checkpoint_key, shape, dtype), ops[], edges[], groups, multiplications, totals"
+}
