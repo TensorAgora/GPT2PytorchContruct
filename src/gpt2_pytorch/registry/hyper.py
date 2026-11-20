@@ -75,6 +75,9 @@ def _lookup(src: str, cfg: dict, kv: dict, tensors: dict, fmt: str, row: dict):
         v = kv.get(m.group(1) if m else key)
         if m and v is not None:
             v = v["count"] if isinstance(v, dict) else len(v)
+        elif isinstance(v, list) and v and all(isinstance(x, (int, float)) for x in v):
+            # a per-layer array (LFM2 head_count_kv is 0 on conv layers): the value of the layers that have the part
+            return max(v), f"gguf:{key} (max of per-layer array)"
         return (v, f"gguf:{key}") if v is not None else (None, None)
     if src.startswith("shape:"):
         m = re.fullmatch(r"shape:(.+)\[(-?\d+)\]", src)

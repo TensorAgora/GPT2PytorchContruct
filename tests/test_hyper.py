@@ -35,3 +35,9 @@ def test_mixtral_gguf_sources():
     h = resolve_hyper(load("mixtral"), fixture("mradermacher/Mixtral-8x7B-Instruct-v0.1-GGUF"))
     assert h["D"] == (4096, "gguf:llama.embedding_length") and h["E"] == (8, "gguf:llama.expert_count")
     assert h["K"] == (2, "gguf:llama.expert_used_count") and h["tie"] == (False, "missing:gguf:output.weight")
+
+
+def test_gguf_per_layer_array_takes_the_max():
+    from gpt2_pytorch.registry.hyper import _lookup
+    v, label = _lookup("gguf:lfm2.attention.head_count_kv", {}, {"lfm2.attention.head_count_kv": [0, 0, 8, 0, 8]}, {}, "gguf", {})
+    assert v == 8 and "max of per-layer" in label

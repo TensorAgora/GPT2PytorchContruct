@@ -52,6 +52,7 @@ def main(argv=None) -> int:
     ap.add_argument("--concurrency", type=int, default=4)
     ap.add_argument("--refresh", action="store_true", help="with --all: re-run repos whose sha changed")
     ap.add_argument("--coverage", action="store_true")
+    ap.add_argument("--readme", action="store_true", help="with --coverage: also write <out>/<category>/README.md")
     a = ap.parse_args(argv)
     if a.all or a.coverage:
         jobs = load_jobs()
@@ -64,7 +65,7 @@ def main(argv=None) -> int:
                           lambda j: client.model_info(j.repo_id, refresh=True)["sha"])
             print(json.dumps(throughput(new, time.monotonic() - t0) | {"pruned_graphs": prune_graphs(a.out)}))
         if a.coverage:
-            print(json.dumps(coverage(a.out, jobs)))
+            print(json.dumps(coverage(a.out, jobs, a.readme)))
         return 0
     if a.materialize:
         g = load_graph(a.materialize)

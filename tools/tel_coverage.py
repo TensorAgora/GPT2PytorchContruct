@@ -9,6 +9,8 @@ count as bound buffers and stop excluding ops.
 import argparse
 import csv
 import json
+
+from gpt2_pytorch.hub.manifest import load_json
 import sys
 from pathlib import Path
 
@@ -46,8 +48,8 @@ def main(argv=None) -> int:
     ap.add_argument("--const-as-buffer", action="store_true")
     ap.add_argument("--csv", type=Path)
     a = ap.parse_args(argv)
-    paths = [p for g in a.graphs for p in (sorted(g.glob("*.json")) if g.is_dir() else [g])]
-    rows = [coverage(json.loads(p.read_text()), a.const_as_buffer) for p in paths]
+    paths = [p for g in a.graphs for p in (sorted([*g.glob("*.json"), *g.glob("*.json.gz")]) if g.is_dir() else [g])]
+    rows = [coverage(load_json(p), a.const_as_buffer) for p in paths]
     w = csv.DictWriter(open(a.csv, "w", newline="") if a.csv else sys.stdout, FIELDS)
     w.writeheader()
     w.writerows(rows)

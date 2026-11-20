@@ -1,5 +1,5 @@
 // node tools/tel_roundtrip.cjs <viz-graph.json | dir>... [--const-as-buffer] [--fix-contract]
-// One JSON line per graph (a directory means every *.json in it), then a {summary} line.
+// One JSON line per graph (a directory means every *.json and *.json.gz in it), then a {summary} line.
 // viz-graph -> T♭ (flat TEL, TensorNodes nodes/tel.js printFlat) -> graph (build/decodeExpr), every field TEL rebuilds
 // compared with the original and grouped by kind; then TEL compiles T♭ and D3 compares tm.core counts with the graph's.
 //   --const-as-buffer  tensor-valued constants (masks, rope tables) become declared buffers, as if bound by tensor:// URI
@@ -16,7 +16,7 @@ require(NODES + '/core.js'); require(NODES + '/registry.js'); require(NODES + '/
 require(NODES + '/../vendor/tm-interface.js'); require(NODES + '/tel.js');
 const N = globalThis.TM.nodes, tel = globalThis.TMI.tel;
 function one(path) {
-const J = JSON.parse(fs.readFileSync(path, 'utf8'));
+const raw = fs.readFileSync(path), J = JSON.parse((path.endsWith('.gz') ? require('node:zlib').gunzipSync(raw) : raw).toString('utf8'));
 const listConsts = J.tensors.filter((t) => t.role === 'constant' && Array.isArray(t.value)).map((t) => t.name);
 if (flag('--const-as-buffer')) for (const t of J.tensors) if (listConsts.includes(t.name)) { t.role = 'buffer'; t.value = null; }
 const doc = N.doc.raise(J, { glyphs: (ids) => new Map(ids.map((x) => [x, x])) });
@@ -86,7 +86,7 @@ return ({ name: path.split('/').pop(), mode: args.filter((a) => a.startsWith('--
 
 const emitAt = args.indexOf('--emit-flat'), emitDir = emitAt >= 0 ? args[emitAt + 1] : null;
 const paths = args.filter((a, i) => !a.startsWith('--') && !(emitAt >= 0 && i === emitAt + 1)).flatMap((p) => fs.statSync(p).isDirectory()
-  ? fs.readdirSync(p).filter((f) => f.endsWith('.json')).sort().map((f) => np.join(p, f)) : [p]);
+  ? fs.readdirSync(p).filter((f) => /\.json(\.gz)?$/.test(f)).sort().map((f) => np.join(p, f)) : [p]);
 if (emitDir) { fs.mkdirSync(emitDir, { recursive: true }); fs.writeFileSync(np.join(emitDir, 'vocabulary.json'), JSON.stringify([...new Set([].concat(tel.TEL_VOCABULARY || [], tel.KEYWORDS || ['axis', 'indices', 'where', 'new']))].sort())); }
 const rows = [];
 for (const p of paths) {
