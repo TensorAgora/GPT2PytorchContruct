@@ -3,7 +3,7 @@
 python -m gpt2_pytorch.hub.fixtures REPO [--revision SHA] [--format safetensors|gguf] [--category C]
 
 writes tests/fixtures/headers/<org>__<repo>@<sha>/: model_info.json, the §3 small files at their repo paths,
-headers/<part>.json (the header record; .json.gz when over 256 KiB) and provenance.json. FixtureClient(dir) answers
+headers/<part>.json (the header record; .json.gz when over 32 KiB) and provenance.json. FixtureClient(dir) answers
 model_info, get_small and header from that folder, so discovery and the pipeline run offline.
 """
 import argparse
@@ -19,7 +19,7 @@ from .headers import read_header
 from .http import Client, NotAllowed, allowed
 
 FIXTURES = ROOT / "tests/fixtures/headers"
-GZIP_OVER = 256 << 10
+GZIP_OVER = 32 << 10  # storage rule: big header records are gzipped JSON
 INFO_KEYS = ("sha", "gated", "siblings", "library_name", "pipeline_tag", "tags")
 
 
@@ -62,8 +62,10 @@ def capture(job: Job, client: Client | None = None, revision: str | None = None,
     info = client.model_info(job.repo_id, revision)
     _dump(out / "model_info.json", {k: info.get(k) for k in INFO_KEYS})
     for path in small_files(d, client):
-        (out / path).parent.mkdir(parents=True, exist_ok=True)
-        (out / path).write_bytes(client.get_small(job.repo_id, d.sha, path))
+        raw = client.get_small(job.repo_id, d.sha, path)
+        target = out / path if len(raw) <= GZIP_OVER else out / f"{path}.gz"  # big indexes (DeepSeek-V3: 8.9 MB) are gzipped
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(raw if target.suffix != ".gz" else gzip.compress(raw, mtime=0))
     for w in d.weights:
         for part in w.parts:
             _dump(out / "headers" / f"{part}.json", read_header(client, job.repo_id, d.sha, part))
@@ -90,7 +92,8 @@ class FixtureClient:
     def get_small(self, repo, sha, path):
         if not allowed(path):
             raise NotAllowed(path)
-        return (self.dir / path).read_bytes()
+        gz = self.dir / f"{path}.gz"
+        return gzip.decompress(gz.read_bytes()) if gz.exists() else (self.dir / path).read_bytes()
 
     def file_url(self, repo, sha, path):
         return f"https://huggingface.co/{repo}/resolve/{sha}/{path}"

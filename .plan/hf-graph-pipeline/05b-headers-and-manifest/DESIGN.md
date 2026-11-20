@@ -55,5 +55,5 @@ Provisional budget: 64 MiB per file (D-12) until 05d sets D3.
 
 `tests/fixtures/headers/<org>__<repo>@<sha>/` (D-15, JSON only, never weight bytes): `model_info.json` (sha, gated,
 siblings, library_name, pipeline_tag, tags), the small files at their repo paths, `headers/<part>.json` (the header record;
-`.json.gz` when over 256 KiB) and `provenance.json`. `FixtureClient(dir)` serves `model_info`, `get_small` and `header`,
+`.json.gz` when over 32 KiB) and `provenance.json`. `FixtureClient(dir)` serves `model_info`, `get_small` and `header`,
 so the whole pipeline runs offline; `fixture_reader(dir)` rebuilds safetensors header bytes for range tests.

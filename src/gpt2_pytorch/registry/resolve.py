@@ -126,7 +126,7 @@ def resolve_and_bind(manifest: dict, row: dict | None = None, name: str | None =
         except (HyperError, DescriptorError, KeyError, ValueError, AssertionError, ZeroDivisionError) as e:
             res.near_misses.append(miss | {"reason": f"{type(e).__name__}: {e}"[:300]})
             continue
-        binding = verify(expected, manifest, d, graph.get("aliases"))
+        binding = verify(expected, manifest, d, graph.get("aliases"), {k: v for k, (v, _) in hyper.items()})
         if not binding.ok:
             res.near_misses.append(miss | {"reason": "binding failed", **binding.near_miss()})
             continue

@@ -4,8 +4,6 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/5. Depends on: 06a, 08a. Blocks: 07a.
 
-Waiting on: 08a (must be DONE before stages that need dependencies).
-
 Next: `06d.A.P1.T1` Read gguf-py tensor_mapping.py and constants.py at the pinned version (gguf 0.19.0; record its commit) and convert_hf_to_gguf.py's llama Q/K permute at that commit; write 06d DESIGN.md: generated table format and overlay transforms (stack, split, fuse, transpose, offset, rope_permute)
 
 `[x]` done, `[~]` awaiting verification, `[-]` skipped, `[ ]` open. Boxes change only through the plan tool.

@@ -4,7 +4,7 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.3).
 
-Tasks closed: 57 of 109. Modules: DONE 9, NOT_STARTED 10, DESIGNED 1.
+Tasks closed: 62 of 109. Modules: DONE 10, NOT_STARTED 9, DESIGNED 1.
 
 ## Per module
 
@@ -18,10 +18,10 @@ Tasks closed: 57 of 109. Modules: DONE 9, NOT_STARTED 10, DESIGNED 1.
 | [06c](06c-resolve-and-bind/TASKS.md) | Resolution ladder, hyperparameter sources, binding verifier | 0 | DONE | - | 6/6 | - |
 | [05c](05c-graph-writer-cli/TASKS.md) | run_one, graph and report writers, content store, single-URL CLI | 0 | DONE | - | 6/6 | - |
 | [05d](05d-batch-and-coverage/TASKS.md) | Batch ledger, resume, coverage reports, backlog, 100-row smoke | 0 | DONE | - | 5/5 | - |
-| [08a](08a-goldens-pinned/TASKS.md) | Pin the 8 goldens, diff their configs, rebuild them from headers | 0 | NOT_STARTED | A | 0/5 | - |
+| [08a](08a-goldens-pinned/TASKS.md) | Pin the 8 goldens, diff their configs, rebuild them from headers | 0 | DONE | - | 5/5 | - |
 | [09a](09a-tel-proof/TASKS.md) | Graph⇔TEL design doc, round trip over goldens, TEL coverage analyzer | 0 | DONE | - | 5/5 | - |
-| [06d](06d-namemaps/TASKS.md) | Generated HF↔GGUF name maps with a storage-transform overlay | 1 | NOT_STARTED | A | 0/5 | 08a |
-| [06e](06e-sidecars/TASKS.md) | Quantization sidecar binding | 1 | NOT_STARTED | A | 0/4 | 08a |
+| [06d](06d-namemaps/TASKS.md) | Generated HF↔GGUF name maps with a storage-transform overlay | 1 | NOT_STARTED | A | 0/5 | - |
+| [06e](06e-sidecars/TASKS.md) | Quantization sidecar binding | 1 | NOT_STARTED | A | 0/4 | - |
 | [07a](07a-dense-descriptors/TASKS.md) | Conformance runner and top dense-decoder descriptors | 1 | NOT_STARTED | A | 0/5 | 06d, 06e |
 | [09b](09b-tel-python-port/TASKS.md) | Python T♭ printer and decoder (T-2) | 1 | NOT_STARTED | A | 0/4 | - |
 | [07b](07b-moe/TASKS.md) | Routed MoE annotations, expert storage forms, MoE descriptors | 2 | NOT_STARTED | A | 0/6 | 07a |
@@ -33,7 +33,6 @@ Tasks closed: 57 of 109. Modules: DONE 9, NOT_STARTED 10, DESIGNED 1.
 
 ## Next actions
 
-- 08a stage A: `08a.A.P1.T1` Write 08a DESIGN.md: per golden its repo (confirm the mixtral GGUF repo holds mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf), format, spelled-config path and gated rule (gemma-2: skip with a message when its fixture is absent)
 - 06d stage A: `06d.A.P1.T1` Read gguf-py tensor_mapping.py and constants.py at the pinned version (gguf 0.19.0; record its commit) and convert_hf_to_gguf.py's llama Q/K permute at that commit; write 06d DESIGN.md: generated table format and overlay transforms (stack, split, fuse, transpose, offset, rope_permute)
 - 06e stage A: `06e.A.P1.T1` Write 06e DESIGN.md: per scheme (FP8 weight_scale_inv, MXFP4 _blocks/_scales, GPTQ/AWQ qweight/qzeros/scales/g_idx, MLX scales/biases, bitsandbytes, GGUF ggml types) the tensor-name pattern and shape relation, from design doc §7.4
 - 07a stage A: `07a.A.P1.T1` Pick the decoder_dense keys from output/categories/descriptor_backlog.csv (expected: llama, qwen2, qwen3, mistral, hf_olmo, gemma2, gemma3_text, phi3) and write 07a DESIGN.md: per key the descriptor it extends, its differences (q/k norm, sliding-window pattern, bias) and predicted rows

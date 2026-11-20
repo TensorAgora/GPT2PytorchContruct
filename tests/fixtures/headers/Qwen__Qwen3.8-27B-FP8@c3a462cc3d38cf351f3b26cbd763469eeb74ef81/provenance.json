@@ -1,0 +1,1 @@
+{"captured_at":"2026-11-20T19:05:44+00:00","category":"multimodal_vlm","format":"safetensors","header_bytes_read":203664,"repo":"Qwen/Qwen3.8-27B-FP8","requests":133,"sha":"c3a462cc3d38cf351f3b26cbd763469eeb74ef81","tool":"gpt2_pytorch.hub.fixtures"}

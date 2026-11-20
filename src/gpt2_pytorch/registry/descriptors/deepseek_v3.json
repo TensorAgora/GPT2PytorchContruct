@@ -168,6 +168,16 @@
   "ported_from": "arch.mjs deepseekGraph (254-329)",
   "golden": "json/deepseek-v3.json",
   "certainty": "template",
-  "note": "routed experts are stored one tensor each: stacked keyless views until 07b binds the per-expert storage form"
- }
+  "note": "routed experts are stored one tensor each: stacked keyless views until 07b binds the per-expert storage form; e_score_correction_bias feeds the runtime top-k choice (Sel), so it is aux; layer L is the MTP module (component)"
+ },
+ "aux": [
+  "model.layers.*.mlp.gate.e_score_correction_bias"
+ ],
+ "components": [
+  {
+   "name": "mtp",
+   "prefix": "model.layers.{L}.",
+   "state": "declared_without_graph"
+  }
+ ]
 }

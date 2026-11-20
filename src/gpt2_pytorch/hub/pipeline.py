@@ -54,10 +54,11 @@ def prefix_tree(keys, depth=3) -> dict:
     return dict(sorted(out.items()))
 
 
-def _components(d: dict, manifest: dict) -> list[dict]:
+def _components(d: dict, manifest: dict, fmt: dict) -> list[dict]:
     out = []
     for c in d.get("components", []):
-        ts = [t for t in manifest["tensors"] if t["key"].startswith(c["prefix"])]
+        prefix = c["prefix"].format(**fmt)
+        ts = [t for t in manifest["tensors"] if t["key"].startswith(prefix)]
         if ts:
             out.append({"name": c["name"], "state": c.get("state", "declared_without_graph"), "tensors": len(ts),
                         "params": sum(t["numel"] for t in ts)})
@@ -131,7 +132,7 @@ def run_one(job: Job, out, client=None, revision: str | None = None, fetched_at:
 
     d_id = f"{r.descriptor['id']}@{r.descriptor['version']}"
     b, g = r.binding, r.graph
-    components = _components(r.descriptor, manifest)
+    components = _components(r.descriptor, manifest, {k: v for k, (v, _) in r.hyper.items()})
     status = "partial" if r.status == "ok" and any(c["state"] == "declared_without_graph" for c in components) else r.status
     shared = copy.deepcopy(g)
     shared["model"] = {"name": r.descriptor["id"]}

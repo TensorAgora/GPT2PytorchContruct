@@ -1,9 +1,9 @@
 repo,golden,category,format,revision
-distilbert/distilgpt2,json/distilgpt2.json,decoder_dense,safetensors,
-Qwen/Qwen2.5-7B-Instruct,json/qwen2.5-7b-instruct.json,decoder_dense,safetensors,
-mistralai/Mistral-7B-Instruct-v0.3,json/mistral-7b-instruct-v0.3.json,decoder_dense,safetensors,
-microsoft/Phi-3.5-mini-instruct,json/phi-3.5-mini-instruct.json,decoder_dense,safetensors,
-google/gemma-2-2b-it,json/gemma-2-2b-it.json,decoder_dense,safetensors,
-deepseek-ai/DeepSeek-V3,json/deepseek-v3.json,decoder_moe,safetensors,
-mradermacher/Mixtral-8x7B-Instruct-v0.1-GGUF,json/mixtral-8x7b-instruct-q4km.json,decoder_moe,gguf,
-Qwen/Qwen3.8-27B-FP8,json/qwen3.8-27b-fp8.json,multimodal_vlm,safetensors,
+distilbert/distilgpt2,json/distilgpt2.json,decoder_dense,safetensors,2290a62682d06624634c1f46a6ad5be0f47f38aa
+Qwen/Qwen2.5-7B-Instruct,json/qwen2.5-7b-instruct.json,decoder_dense,safetensors,a09a35458c702b33eeacc393d103063234e8bc28
+mistralai/Mistral-7B-Instruct-v0.3,json/mistral-7b-instruct-v0.3.json,decoder_dense,safetensors,c170c708c41dac9275d15a8fff4eca08d52bab71
+microsoft/Phi-3.5-mini-instruct,json/phi-3.5-mini-instruct.json,decoder_dense,safetensors,2fe192450127e6a83f7441aef6e3ca586c338b77
+google/gemma-2-2b-it,json/gemma-2-2b-it.json,decoder_dense,safetensors,299a8560bedf22ed1c72a8a11e7dce4a7f9f51f8
+deepseek-ai/DeepSeek-V3,json/deepseek-v3.json,decoder_moe,safetensors,e815299b0bcbac849fa540c768ef21845365c9eb
+mradermacher/Mixtral-8x7B-Instruct-v0.1-GGUF,json/mixtral-8x7b-instruct-q4km.json,decoder_moe,gguf,92bb790b153033f0594934ee23bb0e12ba897f4e
+Qwen/Qwen3.8-27B-FP8,json/qwen3.8-27b-fp8.json,multimodal_vlm,safetensors,c3a462cc3d38cf351f3b26cbd763469eeb74ef81

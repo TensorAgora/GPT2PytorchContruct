@@ -1,0 +1,1 @@
+{"captured_at":"2026-11-20T19:04:48+00:00","category":"decoder_dense","format":"safetensors","header_bytes_read":33824,"repo":"mistralai/Mistral-7B-Instruct-v0.3","requests":9,"sha":"c170c708c41dac9275d15a8fff4eca08d52bab71","tool":"gpt2_pytorch.hub.fixtures"}

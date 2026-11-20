@@ -37,7 +37,8 @@ def stack_members(view: str) -> list[str]:
     return [f"{m['pre']}{j}{m['post']}" for j in range(int(m["a"]), int(m["b"]) + 1)] if m else []
 
 
-def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None = None) -> Binding:
+def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None = None, fmt: dict | None = None) -> Binding:
+    """`fmt` (resolved hyperparameter values) fills templated component prefixes such as `model.layers.{L}.`."""
     stored = {t["key"]: t for t in manifest["tensors"]}
     claim, owner, b = {}, {}, Binding(False)
     for e in expected:
@@ -62,18 +63,20 @@ def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None =
     for key in (aliases or {}):
         if key in stored and key not in claim:
             claim[key] = "tied"
-    components = d.get("components", [])
+    prefixes = [c["prefix"].format(**(fmt or {})) for c in d.get("components", [])]
     for key, t in stored.items():
         if key in claim:
             continue
         principal = key.removesuffix("_scale_inv")
         if any(fnmatchcase(key, pat) for pat in d.get("ignored", [])):
             claim[key] = "ignored"
+        elif any(fnmatchcase(key, pat) for pat in d.get("aux", [])):  # descriptor-declared aux (e.g. router biases)
+            claim[key] = "aux"
         elif principal != key and claim.get(principal) == "bound" and stored[principal]["dtype"].startswith("F8"):
             claim[key] = "aux"
             if principal in owner:  # model_graph.py's FP8 view text
                 b.views[owner[principal]] = f"dequantized: {stored[principal]['dtype']} x {key} {t['shape']} (block-wise)"
-        elif any(key.startswith(c["prefix"]) for c in components):
+        elif any(key.startswith(pre) for pre in prefixes):
             claim[key] = "component"
         else:
             b.unclaimed.append(key)

@@ -753,20 +753,88 @@
       "blocked": null
     },
     "08a": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T19:12:39+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T19:12:39+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "goldens rebuild from pinned headers",
+          "evidence": "",
+          "at": "2026-11-20T19:13:12+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "08a.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN lists 8 goldens with repo, format, revision, spelled-config path; mixtral repo confirmed",
+          "evidence": "",
+          "at": "2026-11-20T19:12:39+00:00"
+        },
+        "08a.B.P1.T1": {
+          "status": "done",
+          "reason": "[network] 8 revisions pinned; fixtures for 7 non-gated goldens (2.4 MB JSON/gz)",
+          "evidence": "",
+          "at": "2026-11-20T19:12:39+00:00"
+        },
+        "08a.B.P1.T2": {
+          "status": "done",
+          "reason": "config deltas listed with causes (eps, rope_theta, implicit head_dim; none structural)",
+          "evidence": "",
+          "at": "2026-11-20T19:12:39+00:00"
+        },
+        "08a.B.P1.T3": {
+          "status": "done",
+          "reason": "test_goldens: 7 pass (deepseek view-only cause, phi no_graph fused-storage cause), gemma skips",
+          "evidence": "",
+          "at": "2026-11-20T19:12:39+00:00"
+        },
+        "08a.C.P1.T1": {
+          "status": "done",
+          "reason": "Wave 0 gate: pytest 165 passed, 22 skipped incl. test_goldens + test_path_a_goldens",
+          "evidence": "",
+          "at": "2026-11-20T19:13:12+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T19:12:39+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T19:12:39+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T19:12:39+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T19:13:12+00:00",
+          "reason": "Stage C Integrate complete: goldens rebuild from pinned headers",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "09a": {

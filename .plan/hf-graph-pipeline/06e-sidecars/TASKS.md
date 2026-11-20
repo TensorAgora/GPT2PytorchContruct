@@ -4,8 +4,6 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/4. Depends on: 06c, 08a. Blocks: 07a.
 
-Waiting on: 08a (must be DONE before stages that need dependencies).
-
 Next: `06e.A.P1.T1` Write 06e DESIGN.md: per scheme (FP8 weight_scale_inv, MXFP4 _blocks/_scales, GPTQ/AWQ qweight/qzeros/scales/g_idx, MLX scales/biases, bitsandbytes, GGUF ggml types) the tensor-name pattern and shape relation, from design doc §7.4
 
 `[x]` done, `[~]` awaiting verification, `[-]` skipped, `[ ]` open. Boxes change only through the plan tool.
