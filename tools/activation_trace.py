@@ -8,7 +8,7 @@ Parameters stay in the checkpoint and are not copied. Writes
   artifacts/trace/<sample>.json          the manifest: format tensormorph-activation-trace v1, dims, input ids, tokens,
                                           the safetensors file name and this sample's check against the PyTorch model
 
-The viewer wraps both into one classic script with tensormorph/ui/activity_bar/viewport/graphs/build.mjs.
+The viewer copies both to viewport/graphs/<model>.trace.{json,safetensors} with tensormorph/ui/activity_bar/viewport/graphs/build.mjs.
 """
 import json
 import struct
@@ -17,7 +17,7 @@ from pathlib import Path
 
 import torch
 
-from gpt2_pytorch.checkpoint import load_pretrained, load_state_dict_file
+from gpt2_pytorch.checkpoint import load_state_dict_file, pretrained_from_state
 from gpt2_pytorch.data import SAMPLES
 from gpt2_pytorch.tensorprog import lower, verify
 from gpt2_pytorch.tensorprog.interpret import run_program
@@ -47,8 +47,8 @@ parser.add_argument("--tokenizer", default="../tensormorph-model-export/distilgp
                     help="a byte-level BPE tokenizer.json, only to label the tokens; ids are kept when it is missing")
 args = parser.parse_args()
 
-model, _, _ = load_pretrained(args.checkpoint)
 state = load_state_dict_file(args.checkpoint)
+model, _, _ = pretrained_from_state(state)
 ids = SAMPLES[args.sample]
 batch, seq = ids.shape
 program, _ = lower(model, batch, seq)

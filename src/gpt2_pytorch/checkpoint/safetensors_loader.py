@@ -3,11 +3,7 @@ import struct
 from pathlib import Path
 
 import torch
-from safetensors.torch import load_file, save_file
-
-
-def load_safetensors_state_dict(path) -> dict[str, torch.Tensor]:
-    return load_file(str(path), device="cpu")
+from safetensors.torch import save_file
 
 
 def read_safetensors_header(path) -> dict:

@@ -5,7 +5,7 @@ from .program import Op, Program
 
 ELEMENTWISE = {
     "add": torch.add, "sub": torch.sub, "mul": torch.mul, "div": torch.div,
-    "exp": torch.exp, "tanh": torch.tanh, "rsqrt": torch.rsqrt, "log": torch.log,
+    "exp": torch.exp, "tanh": torch.tanh, "rsqrt": torch.rsqrt, "log": torch.log, "sigmoid": torch.sigmoid,
 }
 REDUCE = {"mean": torch.mean, "sum": torch.sum, "max": torch.amax}
 DTYPES = {"float32": torch.float32, "int64": torch.int64}

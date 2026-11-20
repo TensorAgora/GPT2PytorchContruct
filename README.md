@@ -25,6 +25,7 @@ python -m tools.print_model               # module tree + parameter counts + log
 python -m tools.tensor_inventory          # every parameter/buffer -> artifacts/tensor_inventory.{json,csv}
 python -m tools.tensor_program            # every layer as tensor operations (all operands tensors) -> artifacts/tensor_program.{md,json,txt}, tensor_multiplications.csv
 python -m tools.viz_graph                 # tensor program -> artifacts/viz_graph.json (ops, tensors, edges, group tree, multiplications) for a graph viewer
+python -m tools.model_graph MODEL_DIR    # a HF folder (config.json + *.safetensors headers; qwen3_5) -> artifacts/models/<slug>/viz_graph.json, then copy it to the viewer: node <TensormorphDesignUI>/tensormorph/ui/activity_bar/viewport/graphs/build.mjs <that file>  (-> viewport/graphs/<slug>.json)
 python -m tools.viz_to_tel                # viz_graph.json -> Quick TEL -> artifacts/tel/from_viz.tel (check: node tools/tel_compile.mjs artifacts/tel/from_viz.tel artifacts/tel/model.tel)
 python -m tools.matmul_graph              # any state_dict + model code -> matrix multiplications as a graph, in order -> artifacts/matmul_graph.{json,md}
 python -m examples.forward_fixed          # one deterministic forward, all intermediate shapes + logits stats

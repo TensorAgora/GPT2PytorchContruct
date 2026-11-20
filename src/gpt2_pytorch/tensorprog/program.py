@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass
 FORMAT = "tensormorph-tensor-program"
 VERSION = 1
 BINARY = {"add": "+", "sub": "-", "mul": "×", "div": "/"}
-UNARY = {"exp", "tanh", "rsqrt", "log"}
+UNARY = {"exp", "tanh", "rsqrt", "log", "sigmoid"}
 
 
 @dataclass
@@ -22,7 +22,7 @@ class TensorDecl:
     shape: tuple[int, ...]  # example shape for the program's (B, T)
     checkpoint_key: str | None = None  # parameter / buffer: key in pytorch_model.bin (original HF layout, no transposition)
     view: str | None = None  # buffer cut applied when binding, e.g. "[0,0,:T,:T]"
-    value: float | None = None  # constants
+    value: float | list | None = None  # constants: a number, or nested lists over the axes
     produced_by: int | None = None  # op index
     pytorch_name: str | None = None  # same tensor in model(ids, return_debug=True).debug
     state_dict_key: str | None = None  # parameter / buffer: name in the pure model's state_dict
@@ -62,6 +62,11 @@ def pytorch_name(symbol: str) -> str | None:
     return None
 
 
+def _subsequence(short, long) -> bool:
+    it = iter(long)
+    return all(a in it for a in short)
+
+
 class Program:
     def __init__(self, dims: dict[str, int], symbols: dict[str, str] | None = None):
         self.dims = dims
@@ -82,11 +87,11 @@ class Program:
         self.tensors[name] = TensorDecl(name, role, axes, dtype, tuple(self.dims[a] for a in axes), **extra)
         return name
 
-    def constant(self, name: str, value: float, dtype="float32") -> str:
+    def constant(self, name: str, value, dtype="float32", axes=()) -> str:
         if name in self.tensors:
             assert self.tensors[name].value == value
             return name
-        return self.declare(name, "constant", (), dtype, value=value)
+        return self.declare(name, "constant", axes, dtype, value=value)
 
     def axes(self, name: str) -> tuple[str, ...]:
         return self.tensors[name].axes
@@ -94,7 +99,7 @@ class Program:
     # ---- operations ----------------------------------------------------------------------------------------
     def _emit(self, primitive, fn, out, inputs, out_axes, attrs=None, dtype=None) -> str:
         assert all(i in self.tensors for i in inputs), f"{out}: unknown input in {inputs}"
-        dtype = dtype or next(self.tensors[i].dtype for i in inputs if self.tensors[i].role != "constant")
+        dtype = dtype or next((self.tensors[i].dtype for i in inputs if self.tensors[i].role != "constant"), self.tensors[inputs[0]].dtype)
         index = len(self.ops)
         self.declare(out, "activation", out_axes, dtype, produced_by=index, pytorch_name=pytorch_name(out))
         self.ops.append(Op(index, primitive, fn, out, list(inputs), attrs or {}, self.module, self.module_type, self.region))
@@ -120,11 +125,12 @@ class Program:
         return self._emit("Contraction", None, out, [a, b], axes, {"over": over})
 
     def elementwise(self, fn, out, *inputs):
+        """Operands align by axis name: the shorter one's axes are an ordered subsequence of the longer one's (TEL rule E)."""
         assert fn in BINARY or fn in UNARY, fn
-        axes: list[str] = []
-        for i in inputs:
-            axes += [x for x in self.axes(i) if x not in axes]
-        return self._emit("Elementwise", fn, out, list(inputs), axes)
+        ax = [self.axes(i) for i in inputs]
+        long = max(ax, key=len)
+        assert all(_subsequence(a, long) for a in ax), f"{out}: {ax} do not broadcast by name"
+        return self._emit("Elementwise", fn, out, list(inputs), long)
 
     def reduce(self, fn, out, x, axis):
         axes = [a for a in self.axes(x) if a != axis]

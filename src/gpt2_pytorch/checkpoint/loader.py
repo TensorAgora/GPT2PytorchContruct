@@ -2,13 +2,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import torch
+from safetensors.torch import load_file
 
 from ..config import GPT2Config
 from ..model import DistilGPT2LMHeadModel
 from .infer_config import infer_config
 from .mapping import map_key
 from .pytorch_loader import load_torch_state_dict
-from .safetensors_loader import load_safetensors_state_dict
 
 DEFAULT_CHECKPOINT = Path(__file__).resolve().parents[3] / "weights" / "pytorch_model.bin"
 
@@ -38,7 +38,7 @@ def load_state_dict_file(path) -> dict[str, torch.Tensor]:
     """Format from extension: .bin/.pt/.pth -> torch (weights_only), .safetensors -> safetensors."""
     suffix = Path(path).suffix.lower()
     if suffix == ".safetensors":
-        return load_safetensors_state_dict(path)
+        return load_file(str(path), device="cpu")
     if suffix in {".bin", ".pt", ".pth"}:
         return load_torch_state_dict(path)
     raise ValueError(f"unsupported checkpoint extension {suffix!r}: {path}")
@@ -116,7 +116,11 @@ def load_state_dict_into(model: DistilGPT2LMHeadModel, state: dict[str, torch.Te
 
 def load_pretrained(path=DEFAULT_CHECKPOINT, device="cpu", strict: bool = True):
     """Infer config from the checkpoint, build the model, load it, eval(). Returns (model, config, report)."""
-    state = load_state_dict_file(path)
+    return pretrained_from_state(load_state_dict_file(path), device, strict)
+
+
+def pretrained_from_state(state: dict[str, torch.Tensor], device="cpu", strict: bool = True):
+    """load_pretrained for a state_dict already in memory."""
     config: GPT2Config = infer_config(state)
     model = DistilGPT2LMHeadModel(config)
     report = load_state_dict_into(model, state, strict=strict)

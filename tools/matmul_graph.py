@@ -18,19 +18,15 @@ from pathlib import Path
 import torch
 from torch.utils._pytree import tree_map
 
-from gpt2_pytorch.checkpoint import infer_config, load_state_dict_file
-from gpt2_pytorch.checkpoint.loader import load_state_dict_into
+from gpt2_pytorch.checkpoint import load_state_dict_file, pretrained_from_state
 from gpt2_pytorch.data import FIXED_INPUT_IDS
-from gpt2_pytorch.model import DistilGPT2LMHeadModel
 from gpt2_pytorch.tracing import matmul_graph, to_markdown
 from gpt2_pytorch.utils.cli import common_parser
 from gpt2_pytorch.utils.seed import resolve_device
 
 
 def distilgpt2(state):
-    model = DistilGPT2LMHeadModel(infer_config(state))
-    load_state_dict_into(model, state)  # HF names -> ours, Conv1D transposed
-    return model.eval(), (FIXED_INPUT_IDS,)
+    return pretrained_from_state(state)[0], (FIXED_INPUT_IDS,)  # HF names -> ours, Conv1D transposed
 
 
 parser = common_parser(__doc__)
