@@ -1,0 +1,16 @@
+{
+ "model_type": "gemma2",
+ "architectures": [
+  "Gemma2ForCausalLM"
+ ],
+ "num_hidden_layers": 26,
+ "hidden_size": 2304,
+ "num_attention_heads": 8,
+ "num_key_value_heads": 4,
+ "head_dim": 256,
+ "intermediate_size": 9216,
+ "vocab_size": 256000,
+ "rms_norm_eps": 1e-05,
+ "rope_theta": 10000,
+ "tie_word_embeddings": true
+}

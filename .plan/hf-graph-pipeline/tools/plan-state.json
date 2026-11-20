@@ -298,20 +298,106 @@
       "blocked": null
     },
     "06a": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T18:30:06+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T18:34:11+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "5 goldens rebuild from blocks",
+          "evidence": "",
+          "at": "2026-11-20T18:34:26+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "06a.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: blocks with signatures + arch.mjs lines, full descriptor example, selectors, build; distilgpt2 byte-identical prototype",
+          "evidence": "",
+          "at": "2026-11-20T18:30:05+00:00"
+        },
+        "06a.B.P1.T1": {
+          "status": "done",
+          "reason": "descriptor.py with extends, safe =expr, 8 selectors; test_descriptor 5 passed",
+          "evidence": "",
+          "at": "2026-11-20T18:34:11+00:00"
+        },
+        "06a.B.P1.T2": {
+          "status": "done",
+          "reason": "7 spelled configs; hidden_size/n_embd == golden dims.D for all",
+          "evidence": "",
+          "at": "2026-11-20T18:34:11+00:00"
+        },
+        "06a.B.P2.T1": {
+          "status": "done",
+          "reason": "blocks.py rms/rope/softmax/silu/gqa/swiglu/experts on Program; test_blocks layer0 == golden, T symbol set",
+          "evidence": "",
+          "at": "2026-11-20T18:34:11+00:00"
+        },
+        "06a.B.P2.T2": {
+          "status": "done",
+          "reason": "build.py + CLI (--descriptor --config --out), dump_js",
+          "evidence": "",
+          "at": "2026-11-20T18:34:11+00:00"
+        },
+        "06a.B.P2.T3": {
+          "status": "done",
+          "reason": "gpt2 descriptor over lower.py: cmp json/distilgpt2.json identical",
+          "evidence": "",
+          "at": "2026-11-20T18:34:11+00:00"
+        },
+        "06a.B.P2.T4": {
+          "status": "done",
+          "reason": "llama/qwen2/mistral/phi3/gemma2: 0 differences vs 4 goldens (only axes symbols + source differ in full doc)",
+          "evidence": "",
+          "at": "2026-11-20T18:34:11+00:00"
+        },
+        "06a.C.P1.T1": {
+          "status": "done",
+          "reason": "test_path_a_goldens: distilgpt2 byte-identical + 4 llama-family 0 diffs (06b goldens skip)",
+          "evidence": "",
+          "at": "2026-11-20T18:34:26+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T18:30:05+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T18:30:06+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T18:34:11+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T18:34:26+00:00",
+          "reason": "Stage C Integrate complete: 5 goldens rebuild from blocks",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "06b": {

@@ -4,8 +4,6 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/5. Depends on: 06a. Blocks: 06c.
 
-Waiting on: 06a (must be DONE before stages that need dependencies).
-
 Next: `06b.A.P1.T1` Write 06b DESIGN.md: per golden its descriptor id, recipe blocks, the arch.mjs or qwen3_5.py lines it follows, new blocks needed (mla, shared experts), deepseek's 174 keyless per-expert views, and which qwen3_5.py functions the recipe calls instead of rewriting
 
 `[x]` done, `[~]` awaiting verification, `[-]` skipped, `[ ]` open. Boxes change only through the plan tool.

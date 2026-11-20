@@ -1,0 +1,13 @@
+{
+ "model_type": "gpt2",
+ "architectures": [
+  "GPT2LMHeadModel"
+ ],
+ "n_layer": 6,
+ "n_embd": 768,
+ "n_head": 12,
+ "n_inner": null,
+ "vocab_size": 50257,
+ "n_positions": 1024,
+ "layer_norm_epsilon": 1e-05
+}

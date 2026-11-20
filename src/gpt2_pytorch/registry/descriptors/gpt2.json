@@ -1,0 +1,136 @@
+{
+ "id": "gpt2",
+ "version": "1",
+ "match": {
+  "model_type": [
+   "gpt2"
+  ],
+  "architectures": [
+   "GPT2LMHeadModel"
+  ],
+  "gguf_architecture": [
+   "gpt2"
+  ]
+ },
+ "hyperparameters": {
+  "L": [
+   "n_layer",
+   "num_hidden_layers"
+  ],
+  "D": [
+   "n_embd",
+   "hidden_size"
+  ],
+  "H": [
+   "n_head",
+   "num_attention_heads"
+  ],
+  "F": [
+   "n_inner",
+   "=4 * D"
+  ],
+  "V": [
+   "vocab_size"
+  ],
+  "P": [
+   "n_positions",
+   "max_position_embeddings"
+  ],
+  "eps": [
+   "layer_norm_epsilon",
+   "=1e-5"
+  ]
+ },
+ "schemes": {
+  "hf": {}
+ },
+ "recipe": {
+  "template": "gpt2_lowering",
+  "note": "names and keys come from tensorprog/lower.py and checkpoint/mapping.py"
+ },
+ "ties": {
+  "lm_head.weight": "transformer.wte.weight"
+ },
+ "ignored": [],
+ "provenance": {
+  "ported_from": "tensorprog/lower.py (verified numerically by tools/tensor_program.py)",
+  "golden": "json/distilgpt2.json",
+  "certainty": "verified",
+  "source": "artifacts/tensor_program.json",
+  "verified_dims": {
+   "L": 6,
+   "D": 768,
+   "H": 12,
+   "F": 3072,
+   "V": 50257,
+   "P": 1024
+  },
+  "verification": [
+   {
+    "sample": "sample_single",
+    "shape": [
+     1,
+     8
+    ],
+    "compared": 93,
+    "worst_relative_error": 2.5339929211324004e-06,
+    "worst_tensor": "O_1",
+    "logits_max_abs_error": 6.866455078125e-05,
+    "argmax_identical": true,
+    "ok": true
+   },
+   {
+    "sample": "sample_batch",
+    "shape": [
+     2,
+     8
+    ],
+    "compared": 93,
+    "worst_relative_error": 3.543630725646091e-06,
+    "worst_tensor": "O_1",
+    "logits_max_abs_error": 0.0001068115234375,
+    "argmax_identical": true,
+    "ok": true
+   },
+   {
+    "sample": "sample_repeated_tokens",
+    "shape": [
+     2,
+     8
+    ],
+    "compared": 93,
+    "worst_relative_error": 3.7160756796861677e-06,
+    "worst_tensor": "C_3",
+    "logits_max_abs_error": 9.918212890625e-05,
+    "argmax_identical": true,
+    "ok": true
+   },
+   {
+    "sample": "sample_short_sequence",
+    "shape": [
+     2,
+     4
+    ],
+    "compared": 93,
+    "worst_relative_error": 4.695206600376971e-06,
+    "worst_tensor": "O_2",
+    "logits_max_abs_error": 6.866455078125e-05,
+    "argmax_identical": true,
+    "ok": true
+   },
+   {
+    "sample": "sample_attention_debug",
+    "shape": [
+     1,
+     8
+    ],
+    "compared": 93,
+    "worst_relative_error": 2.86102294921875e-06,
+    "worst_tensor": "A_2",
+    "logits_max_abs_error": 7.62939453125e-05,
+    "argmax_identical": true,
+    "ok": true
+   }
+  ]
+ }
+}

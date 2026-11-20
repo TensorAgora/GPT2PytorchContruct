@@ -1,0 +1,31 @@
+{
+ "id": "gemma2",
+ "version": "1",
+ "extends": "llama",
+ "match": {
+  "model_type": [
+   "gemma2"
+  ],
+  "architectures": [
+   "Gemma2ForCausalLM"
+  ],
+  "gguf_architecture": [
+   "gemma2"
+  ]
+ },
+ "hyperparameters": {
+  "tie": [
+   "tie_word_embeddings",
+   "=1"
+  ]
+ },
+ "recipe": {
+  "root": "gemma2"
+ },
+ "provenance": {
+  "ported_from": "arch.mjs llamaGraph, family gemma2 (llama layout)",
+  "golden": "json/gemma-2-2b-it.json",
+  "certainty": "template",
+  "note": "llama layout as arch.mjs spells it: no pre/post feed-forward norms, GeGLU, logit soft-capping or +1 norms (07a)"
+ }
+}

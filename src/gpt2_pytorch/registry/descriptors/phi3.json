@@ -1,0 +1,31 @@
+{
+ "id": "phi3",
+ "version": "1",
+ "extends": "llama",
+ "match": {
+  "model_type": [
+   "phi3"
+  ],
+  "architectures": [
+   "Phi3ForCausalLM"
+  ],
+  "gguf_architecture": [
+   "phi3"
+  ]
+ },
+ "hyperparameters": {
+  "eps": [
+   "rms_norm_eps",
+   "=1e-5"
+  ]
+ },
+ "recipe": {
+  "root": "phi3"
+ },
+ "provenance": {
+  "ported_from": "arch.mjs llamaGraph, family llama (separate q/k/v and gate/up keys)",
+  "golden": "json/phi-3.5-mini-instruct.json",
+  "certainty": "template",
+  "note": "real Phi-3 checkpoints store fused qkv_proj and gate_up_proj: bound through the 06d overlay split"
+ }
+}

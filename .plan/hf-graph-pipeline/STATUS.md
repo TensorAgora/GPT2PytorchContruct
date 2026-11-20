@@ -4,7 +4,7 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.3).
 
-Tasks closed: 22 of 109. Modules: DONE 3, NOT_STARTED 16, DESIGNED 1.
+Tasks closed: 30 of 109. Modules: DONE 4, NOT_STARTED 15, DESIGNED 1.
 
 ## Per module
 
@@ -13,14 +13,14 @@ Tasks closed: 22 of 109. Modules: DONE 3, NOT_STARTED 16, DESIGNED 1.
 | [00a](00a-foundation/TASKS.md) | Confirm inputs, extras, gitignore, viz-graph schema, checker and comparator | 0 | DONE | - | 7/7 | - |
 | [05a](05a-catalog-and-discovery/TASKS.md) | Catalog jobs, HTTP client, repo discovery and small-file cache | 0 | DONE | - | 8/8 | - |
 | [05b](05b-headers-and-manifest/TASKS.md) | Safetensors and GGUF header readers, fixtures, tensor manifest v1 | 0 | DONE | - | 7/7 | - |
-| [06a](06a-block-library/TASKS.md) | Descriptor format, selectors, blocks from arch.mjs, GPT-2 and llama-family descriptors | 0 | NOT_STARTED | A | 0/8 | - |
-| [06b](06b-golden-ports/TASKS.md) | mixtral, deepseek_v3 and qwen3_5 descriptors | 0 | NOT_STARTED | A | 0/5 | 06a |
+| [06a](06a-block-library/TASKS.md) | Descriptor format, selectors, blocks from arch.mjs, GPT-2 and llama-family descriptors | 0 | DONE | - | 8/8 | - |
+| [06b](06b-golden-ports/TASKS.md) | mixtral, deepseek_v3 and qwen3_5 descriptors | 0 | NOT_STARTED | A | 0/5 | - |
 | [06c](06c-resolve-and-bind/TASKS.md) | Resolution ladder, hyperparameter sources, binding verifier | 0 | NOT_STARTED | A | 0/6 | 06b |
-| [05c](05c-graph-writer-cli/TASKS.md) | run_one, graph and report writers, content store, single-URL CLI | 0 | NOT_STARTED | A | 0/6 | 06c, 06a |
+| [05c](05c-graph-writer-cli/TASKS.md) | run_one, graph and report writers, content store, single-URL CLI | 0 | NOT_STARTED | A | 0/6 | 06c |
 | [05d](05d-batch-and-coverage/TASKS.md) | Batch ledger, resume, coverage reports, backlog, 100-row smoke | 0 | NOT_STARTED | A | 0/5 | 05c |
 | [08a](08a-goldens-pinned/TASKS.md) | Pin the 8 goldens, diff their configs, rebuild them from headers | 0 | NOT_STARTED | A | 0/5 | 05c |
 | [09a](09a-tel-proof/TASKS.md) | Graph⇔TEL design doc, round trip over goldens, TEL coverage analyzer | 0 | NOT_STARTED | A | 0/5 | - |
-| [06d](06d-namemaps/TASKS.md) | Generated HF↔GGUF name maps with a storage-transform overlay | 1 | NOT_STARTED | A | 0/5 | 06a, 08a |
+| [06d](06d-namemaps/TASKS.md) | Generated HF↔GGUF name maps with a storage-transform overlay | 1 | NOT_STARTED | A | 0/5 | 08a |
 | [06e](06e-sidecars/TASKS.md) | Quantization sidecar binding | 1 | NOT_STARTED | A | 0/4 | 06c, 08a |
 | [07a](07a-dense-descriptors/TASKS.md) | Conformance runner and top dense-decoder descriptors | 1 | NOT_STARTED | A | 0/5 | 05d, 06d, 06e |
 | [09b](09b-tel-python-port/TASKS.md) | Python T♭ printer and decoder (T-2) | 1 | NOT_STARTED | A | 0/4 | 09a |
@@ -33,7 +33,6 @@ Tasks closed: 22 of 109. Modules: DONE 3, NOT_STARTED 16, DESIGNED 1.
 
 ## Next actions
 
-- 06a stage A: `06a.A.P1.T1` Read arch.mjs (llamaGraph, mixtralGraph, deepseekGraph, the six blocks), activity_bar/shared/mock.js, tensorprog/lower.py, qwen3_5.py and program.py; write 06a DESIGN.md: block signatures on Program with the arch.mjs line each ports, descriptor JSON (§7.2 keys), selector semantics, and `build(descriptor, hyper, scheme) -> (viz_graph, expected_params)`
 - 06b stage A: `06b.A.P1.T1` Write 06b DESIGN.md: per golden its descriptor id, recipe blocks, the arch.mjs or qwen3_5.py lines it follows, new blocks needed (mla, shared experts), deepseek's 174 keyless per-expert views, and which qwen3_5.py functions the recipe calls instead of rewriting
 - 06c stage A: `06c.A.P1.T1` Write 06c DESIGN.md: candidate record (descriptor, rung, evidence, score), the R1–R4 order with nested config keys, a small parser for the prose-like metadata_spec.json dims (`hidden_size | n_embd (GPT-2)`; never eval), the hyper source record, the five binding classes and the near-miss report format
 - 05c stage A: `05c.A.P1.T1` Write 05c DESIGN.md: run_one stage order S1–S12 with each side exit's status, report.json fields (status, candidates, near-misses, binding partition, hyper sources, bytes read), the §5.3 additive fields, content key = sha256(descriptor@version, resolved hyper, naming scheme), graph.ref format, §5.4 paths

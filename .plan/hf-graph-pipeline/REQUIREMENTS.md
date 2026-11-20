@@ -33,10 +33,10 @@ Every requirement extracted from the master document, the module that owns it, a
 | R-24 | HTTP access uses bounded concurrency, exponential backoff on 429 and 5xx, and honours Retry-After | must | §3 | 05a | 2/2 | 05a |
 | R-25 | Header fixtures live in tests/fixtures/headers/<org>__<repo>@<sha>/ as small JSON only (config.json, index, per-file header JSON, provenance), never weights, and tests run offline from them | must | §8.3 | 05b | 2/2 | 05b |
 | R-26 | No repository code executes: trust_remote_code is never set, and remote-code repos bind only through a descriptor matched by `architectures`, else skipped:remote_code | must | §3, D4 | 06c | 0/1 | 06c |
-| R-27 | Descriptors are JSON documents with match, hyperparameters (ordered sources plus a shape check), schemes (hf, gguf, mlx), recipe, ties, ignored and provenance, and support the layer selectors uniform, list(key), first_k(key), period, pattern, index_sets, per_layer_config and by_presence | must | §4 (§7.2), §6 | 06a | 0/3 | 06a |
-| R-28 | The arch.mjs blocks rms, rope, softmax, gqa, swiglu and experts are ported to Python functions on Program, reusing program.py and viz.py rather than re-implementing them | must | §2, §6 | 06a | 0/2 | 06a |
-| R-29 | The GPT-2 descriptor rebuilds json/distilgpt2.json byte-identically | must | §8.1 | 06a | 0/2 | 06a |
-| R-30 | Llama-family descriptors rebuild the qwen2.5-7b-instruct, mistral-7b-instruct-v0.3, phi-3.5-mini-instruct and gemma-2-2b-it goldens structurally equal from the configs they were spelled from | must | §7 (Wave 0) | 06a | 0/3 | 06a |
+| R-27 | Descriptors are JSON documents with match, hyperparameters (ordered sources plus a shape check), schemes (hf, gguf, mlx), recipe, ties, ignored and provenance, and support the layer selectors uniform, list(key), first_k(key), period, pattern, index_sets, per_layer_config and by_presence | must | §4 (§7.2), §6 | 06a | 3/3 | 06a |
+| R-28 | The arch.mjs blocks rms, rope, softmax, gqa, swiglu and experts are ported to Python functions on Program, reusing program.py and viz.py rather than re-implementing them | must | §2, §6 | 06a | 2/2 | 06a |
+| R-29 | The GPT-2 descriptor rebuilds json/distilgpt2.json byte-identically | must | §8.1 | 06a | 2/2 | 06a |
+| R-30 | Llama-family descriptors rebuild the qwen2.5-7b-instruct, mistral-7b-instruct-v0.3, phi-3.5-mini-instruct and gemma-2-2b-it goldens structurally equal from the configs they were spelled from | must | §7 (Wave 0) | 06a | 3/3 | 06a |
 | R-31 | The mixtral and deepseek_v3 descriptors (arch.mjs ports) and the qwen3_5 descriptor (over qwen3_5.py) rebuild their goldens structurally equal from their spelled configs, deepseek's 174 keyless views matched rather than given invented keys | must | §7 (Wave 0), §8.1 | 06b | 0/5 | 06b |
 | R-32 | The same (repo, sha, registry version) produces byte-identical manifest.json, report.json and graph.json, `fetched_at` excluded | must | §3, §8.3 (C6) | 05c | 0/1 | 05c |
 | R-33 | Each repo writes to output/categories/<category>/<format>/<org>__<repo>/ with a §5.4 status (ok, ok_assumed, partial, no_graph, skipped:*, failed:<code>); no_graph writes the tensor inventory and prefix tree | must | §5, §5.4 | 05c | 0/2 | 05c |
@@ -58,4 +58,4 @@ Every requirement extracted from the master document, the module that owns it, a
 | R-49 | A TEL coverage analyzer counts per graph the T♭-spellable ops and each §9.4 counted exclusion | must | §7 (Wave T), §9.4 | 09a | 0/1 | 09a |
 | R-50 | `tools/viz_to_tel.py` → `tools/tel_compile.mjs` on distilgpt2 still prints PASS | must | §9.6 | 09a | 0/1 | 09a |
 | R-51 | The T♭ printer and decoder are ported to Python next to viz_graph() with both §9.6 fixes, matching tel.js on the 8 goldens (T-2 default) | must | §9.6, §10 (T-2) | 09b | 0/4 | 09b |
-| R-52 | Pipeline graphs keep `axes[].symbol` for B and T | should | §9.4 | 06a | 0/1 | 06a |
+| R-52 | Pipeline graphs keep `axes[].symbol` for B and T | should | §9.4 | 06a | 1/1 | 06a |

@@ -1,0 +1,28 @@
+{
+ "id": "mistral",
+ "version": "1",
+ "extends": "llama",
+ "match": {
+  "model_type": [
+   "mistral"
+  ],
+  "architectures": [
+   "MistralForCausalLM"
+  ],
+  "gguf_architecture": []
+ },
+ "hyperparameters": {
+  "eps": [
+   "rms_norm_eps",
+   "=1e-5"
+  ]
+ },
+ "recipe": {
+  "root": "mistral"
+ },
+ "provenance": {
+  "ported_from": "arch.mjs llamaGraph, family llama",
+  "golden": "json/mistral-7b-instruct-v0.3.json",
+  "certainty": "template"
+ }
+}

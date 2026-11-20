@@ -1,0 +1,109 @@
+{
+ "id": "llama",
+ "version": "1",
+ "match": {
+  "model_type": [
+   "llama"
+  ],
+  "architectures": [
+   "LlamaForCausalLM"
+  ],
+  "gguf_architecture": [
+   "llama"
+  ]
+ },
+ "hyperparameters": {
+  "L": [
+   "num_hidden_layers"
+  ],
+  "D": [
+   "hidden_size"
+  ],
+  "Hq": [
+   "num_attention_heads"
+  ],
+  "Hkv": [
+   "num_key_value_heads",
+   "=Hq"
+  ],
+  "Dh": [
+   "head_dim",
+   "=D // Hq"
+  ],
+  "F": [
+   "intermediate_size"
+  ],
+  "V": [
+   "vocab_size"
+  ],
+  "eps": [
+   "rms_norm_eps",
+   "=1e-6"
+  ],
+  "theta": [
+   "rope_theta",
+   "=10000"
+  ],
+  "tie": [
+   "tie_word_embeddings",
+   "=0"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "embed": "model.embed_tokens.weight",
+   "attn_norm": "model.layers.{i}.input_layernorm.weight",
+   "q": "model.layers.{i}.self_attn.q_proj.{what}",
+   "k": "model.layers.{i}.self_attn.k_proj.{what}",
+   "v": "model.layers.{i}.self_attn.v_proj.{what}",
+   "o": "model.layers.{i}.self_attn.o_proj.{what}",
+   "ffn_norm": "model.layers.{i}.post_attention_layernorm.weight",
+   "gate": "model.layers.{i}.mlp.gate_proj.weight",
+   "up": "model.layers.{i}.mlp.up_proj.weight",
+   "down": "model.layers.{i}.mlp.down_proj.weight",
+   "norm": "model.norm.weight",
+   "head": "lm_head.weight"
+  }
+ },
+ "recipe": {
+  "template": "decoder",
+  "root": "llama",
+  "flags": {
+   "qkv_bias": false
+  },
+  "dims": {
+   "B": "B",
+   "T": "T",
+   "q": "T",
+   "k": "T",
+   "D": "D",
+   "Dq": "Hq * Dh",
+   "Dkv": "Hkv * Dh",
+   "Dh": "Dh",
+   "Dh2": "Dh",
+   "F": "F",
+   "V": "V",
+   "H": "Hq // Hkv",
+   "Hkv": "Hkv"
+  },
+  "layers": {
+   "attention": {
+    "uniform": "gqa"
+   },
+   "mlp": {
+    "uniform": "swiglu"
+   }
+  }
+ },
+ "ties": {
+  "head": "embed",
+  "when": "tie"
+ },
+ "ignored": [
+  "model.layers.*.self_attn.rotary_emb.inv_freq"
+ ],
+ "provenance": {
+  "ported_from": "TensormorphDesignUI viewport/graphs/arch.mjs llamaGraph (199-219)",
+  "certainty": "template"
+ }
+}

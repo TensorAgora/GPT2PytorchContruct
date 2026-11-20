@@ -1,0 +1,27 @@
+{
+ "id": "qwen2",
+ "version": "1",
+ "extends": "llama",
+ "match": {
+  "model_type": [
+   "qwen2"
+  ],
+  "architectures": [
+   "Qwen2ForCausalLM"
+  ],
+  "gguf_architecture": [
+   "qwen2"
+  ]
+ },
+ "recipe": {
+  "root": "qwen2",
+  "flags": {
+   "qkv_bias": true
+  }
+ },
+ "provenance": {
+  "ported_from": "arch.mjs llamaGraph, family qwen2 (q/k/v bias)",
+  "golden": "json/qwen2.5-7b-instruct.json",
+  "certainty": "template"
+ }
+}
