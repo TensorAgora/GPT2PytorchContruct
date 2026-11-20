@@ -131,7 +131,8 @@ def resolve_and_bind(manifest: dict, row: dict | None = None, name: str | None =
         try:
             hyper = resolve_hyper(d, manifest, row)
             graph, expected = build(d, hyper, scheme, name, cfg, names)
-        except (HyperError, DescriptorError, KeyError, ValueError, AssertionError, ZeroDivisionError) as e:
+        except (HyperError, DescriptorError, KeyError, ValueError, AssertionError, ZeroDivisionError, TypeError, IndexError) as e:
+            # TypeError / IndexError: a config value of a shape the descriptor cannot express (Step-5's per-layer rope_theta)
             res.near_misses.append(miss | {"reason": f"{type(e).__name__}: {e}"[:300]})
             continue
         fmt = {k: v for k, (v, _) in hyper.items()} | graph["dims"]
