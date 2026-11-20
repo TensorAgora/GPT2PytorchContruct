@@ -1,0 +1,4812 @@
+{
+ "A_0": {
+  "data_offsets": [
+   643396,
+   646468
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_0.exp": {
+  "data_offsets": [
+   639940,
+   643012
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_0.max": {
+  "data_offsets": [
+   636484,
+   636868
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "A_0.shifted": {
+  "data_offsets": [
+   636868,
+   639940
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_0.sum": {
+  "data_offsets": [
+   643012,
+   643396
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "A_1": {
+  "data_offsets": [
+   2678348,
+   2681420
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_1.exp": {
+  "data_offsets": [
+   2674892,
+   2677964
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_1.max": {
+  "data_offsets": [
+   2671436,
+   2671820
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "A_1.shifted": {
+  "data_offsets": [
+   2671820,
+   2674892
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_1.sum": {
+  "data_offsets": [
+   2677964,
+   2678348
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "A_2": {
+  "data_offsets": [
+   4713292,
+   4716364
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_2.exp": {
+  "data_offsets": [
+   4709836,
+   4712908
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_2.max": {
+  "data_offsets": [
+   4706380,
+   4706764
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "A_2.shifted": {
+  "data_offsets": [
+   4706764,
+   4709836
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_2.sum": {
+  "data_offsets": [
+   4712908,
+   4713292
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "A_3": {
+  "data_offsets": [
+   6748236,
+   6751308
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_3.exp": {
+  "data_offsets": [
+   6744780,
+   6747852
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_3.max": {
+  "data_offsets": [
+   6741324,
+   6741708
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "A_3.shifted": {
+  "data_offsets": [
+   6741708,
+   6744780
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_3.sum": {
+  "data_offsets": [
+   6747852,
+   6748236
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "A_4": {
+  "data_offsets": [
+   8783180,
+   8786252
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_4.exp": {
+  "data_offsets": [
+   8779724,
+   8782796
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_4.max": {
+  "data_offsets": [
+   8776268,
+   8776652
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "A_4.shifted": {
+  "data_offsets": [
+   8776652,
+   8779724
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_4.sum": {
+  "data_offsets": [
+   8782796,
+   8783180
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "A_5": {
+  "data_offsets": [
+   10818124,
+   10821196
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_5.exp": {
+  "data_offsets": [
+   10814668,
+   10817740
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_5.max": {
+  "data_offsets": [
+   10811212,
+   10811596
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "A_5.shifted": {
+  "data_offsets": [
+   10811596,
+   10814668
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "A_5.sum": {
+  "data_offsets": [
+   10817740,
+   10818124
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8
+  ]
+ },
+ "C_0": {
+  "data_offsets": [
+   646468,
+   671044
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "C_0.merged": {
+  "data_offsets": [
+   720196,
+   744772
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "C_0.perm": {
+  "data_offsets": [
+   695620,
+   720196
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "C_0.rename": {
+  "data_offsets": [
+   671044,
+   695620
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "C_1": {
+  "data_offsets": [
+   2681420,
+   2705996
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "C_1.merged": {
+  "data_offsets": [
+   2755148,
+   2779724
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "C_1.perm": {
+  "data_offsets": [
+   2730572,
+   2755148
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "C_1.rename": {
+  "data_offsets": [
+   2705996,
+   2730572
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "C_2": {
+  "data_offsets": [
+   4716364,
+   4740940
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "C_2.merged": {
+  "data_offsets": [
+   4790092,
+   4814668
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "C_2.perm": {
+  "data_offsets": [
+   4765516,
+   4790092
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "C_2.rename": {
+  "data_offsets": [
+   4740940,
+   4765516
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "C_3": {
+  "data_offsets": [
+   6751308,
+   6775884
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "C_3.merged": {
+  "data_offsets": [
+   6825036,
+   6849612
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "C_3.perm": {
+  "data_offsets": [
+   6800460,
+   6825036
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "C_3.rename": {
+  "data_offsets": [
+   6775884,
+   6800460
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "C_4": {
+  "data_offsets": [
+   8786252,
+   8810828
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "C_4.merged": {
+  "data_offsets": [
+   8859980,
+   8884556
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "C_4.perm": {
+  "data_offsets": [
+   8835404,
+   8859980
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "C_4.rename": {
+  "data_offsets": [
+   8810828,
+   8835404
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "C_5": {
+  "data_offsets": [
+   10821196,
+   10845772
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "C_5.merged": {
+  "data_offsets": [
+   10894924,
+   10919500
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "C_5.perm": {
+  "data_offsets": [
+   10870348,
+   10894924
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "C_5.rename": {
+  "data_offsets": [
+   10845772,
+   10870348
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "G_0": {
+  "data_offsets": [
+   1039812,
+   1138116
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "G_0.mm": {
+  "data_offsets": [
+   941508,
+   1039812
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "G_1": {
+  "data_offsets": [
+   3074764,
+   3173068
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "G_1.mm": {
+  "data_offsets": [
+   2976460,
+   3074764
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "G_2": {
+  "data_offsets": [
+   5109708,
+   5208012
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "G_2.mm": {
+  "data_offsets": [
+   5011404,
+   5109708
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "G_3": {
+  "data_offsets": [
+   7144652,
+   7242956
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "G_3.mm": {
+  "data_offsets": [
+   7046348,
+   7144652
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "G_4": {
+  "data_offsets": [
+   9179596,
+   9277900
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "G_4.mm": {
+  "data_offsets": [
+   9081292,
+   9179596
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "G_5": {
+  "data_offsets": [
+   11214540,
+   11312844
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "G_5.mm": {
+  "data_offsets": [
+   11116236,
+   11214540
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_0": {
+  "data_offsets": [
+   1924556,
+   2022860
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_0.cubic": {
+  "data_offsets": [
+   1236428,
+   1334732
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_0.cubic_a": {
+  "data_offsets": [
+   1334732,
+   1433036
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_0.half_x": {
+  "data_offsets": [
+   1826252,
+   1924556
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_0.inner": {
+  "data_offsets": [
+   1531340,
+   1629644
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_0.inner_sum": {
+  "data_offsets": [
+   1433036,
+   1531340
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_0.one_plus": {
+  "data_offsets": [
+   1727948,
+   1826252
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_0.squared": {
+  "data_offsets": [
+   1138124,
+   1236428
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_0.tanh": {
+  "data_offsets": [
+   1629644,
+   1727948
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_1": {
+  "data_offsets": [
+   3959500,
+   4057804
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_1.cubic": {
+  "data_offsets": [
+   3271372,
+   3369676
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_1.cubic_a": {
+  "data_offsets": [
+   3369676,
+   3467980
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_1.half_x": {
+  "data_offsets": [
+   3861196,
+   3959500
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_1.inner": {
+  "data_offsets": [
+   3566284,
+   3664588
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_1.inner_sum": {
+  "data_offsets": [
+   3467980,
+   3566284
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_1.one_plus": {
+  "data_offsets": [
+   3762892,
+   3861196
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_1.squared": {
+  "data_offsets": [
+   3173068,
+   3271372
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_1.tanh": {
+  "data_offsets": [
+   3664588,
+   3762892
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_2": {
+  "data_offsets": [
+   5994444,
+   6092748
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_2.cubic": {
+  "data_offsets": [
+   5306316,
+   5404620
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_2.cubic_a": {
+  "data_offsets": [
+   5404620,
+   5502924
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_2.half_x": {
+  "data_offsets": [
+   5896140,
+   5994444
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_2.inner": {
+  "data_offsets": [
+   5601228,
+   5699532
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_2.inner_sum": {
+  "data_offsets": [
+   5502924,
+   5601228
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_2.one_plus": {
+  "data_offsets": [
+   5797836,
+   5896140
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_2.squared": {
+  "data_offsets": [
+   5208012,
+   5306316
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_2.tanh": {
+  "data_offsets": [
+   5699532,
+   5797836
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_3": {
+  "data_offsets": [
+   8029388,
+   8127692
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_3.cubic": {
+  "data_offsets": [
+   7341260,
+   7439564
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_3.cubic_a": {
+  "data_offsets": [
+   7439564,
+   7537868
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_3.half_x": {
+  "data_offsets": [
+   7931084,
+   8029388
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_3.inner": {
+  "data_offsets": [
+   7636172,
+   7734476
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_3.inner_sum": {
+  "data_offsets": [
+   7537868,
+   7636172
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_3.one_plus": {
+  "data_offsets": [
+   7832780,
+   7931084
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_3.squared": {
+  "data_offsets": [
+   7242956,
+   7341260
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_3.tanh": {
+  "data_offsets": [
+   7734476,
+   7832780
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_4": {
+  "data_offsets": [
+   10064332,
+   10162636
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_4.cubic": {
+  "data_offsets": [
+   9376204,
+   9474508
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_4.cubic_a": {
+  "data_offsets": [
+   9474508,
+   9572812
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_4.half_x": {
+  "data_offsets": [
+   9966028,
+   10064332
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_4.inner": {
+  "data_offsets": [
+   9671116,
+   9769420
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_4.inner_sum": {
+  "data_offsets": [
+   9572812,
+   9671116
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_4.one_plus": {
+  "data_offsets": [
+   9867724,
+   9966028
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_4.squared": {
+  "data_offsets": [
+   9277900,
+   9376204
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_4.tanh": {
+  "data_offsets": [
+   9769420,
+   9867724
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_5": {
+  "data_offsets": [
+   12099276,
+   12197580
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_5.cubic": {
+  "data_offsets": [
+   11411148,
+   11509452
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_5.cubic_a": {
+  "data_offsets": [
+   11509452,
+   11607756
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_5.half_x": {
+  "data_offsets": [
+   12000972,
+   12099276
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_5.inner": {
+  "data_offsets": [
+   11706060,
+   11804364
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_5.inner_sum": {
+  "data_offsets": [
+   11607756,
+   11706060
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_5.one_plus": {
+  "data_offsets": [
+   11902668,
+   12000972
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_5.squared": {
+  "data_offsets": [
+   11312844,
+   11411148
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Ga_5.tanh": {
+  "data_offsets": [
+   11804364,
+   11902668
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   3072
+  ]
+ },
+ "Hq_0": {
+  "data_offsets": [
+   258370,
+   332098
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "Hq_0.mm": {
+  "data_offsets": [
+   184642,
+   258370
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "Hq_1": {
+  "data_offsets": [
+   2293324,
+   2367052
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "Hq_1.mm": {
+  "data_offsets": [
+   2219596,
+   2293324
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "Hq_2": {
+  "data_offsets": [
+   4328268,
+   4401996
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "Hq_2.mm": {
+  "data_offsets": [
+   4254540,
+   4328268
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "Hq_3": {
+  "data_offsets": [
+   6363212,
+   6436940
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "Hq_3.mm": {
+  "data_offsets": [
+   6289484,
+   6363212
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "Hq_4": {
+  "data_offsets": [
+   8398156,
+   8471884
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "Hq_4.mm": {
+  "data_offsets": [
+   8324428,
+   8398156
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "Hq_5": {
+  "data_offsets": [
+   10433100,
+   10506828
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "Hq_5.mm": {
+  "data_offsets": [
+   10359372,
+   10433100
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   2304
+  ]
+ },
+ "K_0": {
+  "data_offsets": [
+   504130,
+   528706
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_0.heads": {
+  "data_offsets": [
+   454978,
+   479554
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "K_0.perm": {
+  "data_offsets": [
+   479554,
+   504130
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_0.slice": {
+  "data_offsets": [
+   430402,
+   454978
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "K_1": {
+  "data_offsets": [
+   2539084,
+   2563660
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_1.heads": {
+  "data_offsets": [
+   2489932,
+   2514508
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "K_1.perm": {
+  "data_offsets": [
+   2514508,
+   2539084
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_1.slice": {
+  "data_offsets": [
+   2465356,
+   2489932
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "K_2": {
+  "data_offsets": [
+   4574028,
+   4598604
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_2.heads": {
+  "data_offsets": [
+   4524876,
+   4549452
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "K_2.perm": {
+  "data_offsets": [
+   4549452,
+   4574028
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_2.slice": {
+  "data_offsets": [
+   4500300,
+   4524876
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "K_3": {
+  "data_offsets": [
+   6608972,
+   6633548
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_3.heads": {
+  "data_offsets": [
+   6559820,
+   6584396
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "K_3.perm": {
+  "data_offsets": [
+   6584396,
+   6608972
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_3.slice": {
+  "data_offsets": [
+   6535244,
+   6559820
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "K_4": {
+  "data_offsets": [
+   8643916,
+   8668492
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_4.heads": {
+  "data_offsets": [
+   8594764,
+   8619340
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "K_4.perm": {
+  "data_offsets": [
+   8619340,
+   8643916
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_4.slice": {
+  "data_offsets": [
+   8570188,
+   8594764
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "K_5": {
+  "data_offsets": [
+   10678860,
+   10703436
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_5.heads": {
+  "data_offsets": [
+   10629708,
+   10654284
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "K_5.perm": {
+  "data_offsets": [
+   10654284,
+   10678860
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "K_5.slice": {
+  "data_offsets": [
+   10605132,
+   10629708
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "L": {
+  "data_offsets": [
+   12394316,
+   14002540
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   50257
+  ]
+ },
+ "M_0": {
+  "data_offsets": [
+   2047436,
+   2072012
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "M_0.mm": {
+  "data_offsets": [
+   2022860,
+   2047436
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "M_1": {
+  "data_offsets": [
+   4082380,
+   4106956
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "M_1.mm": {
+  "data_offsets": [
+   4057804,
+   4082380
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "M_2": {
+  "data_offsets": [
+   6117324,
+   6141900
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "M_2.mm": {
+  "data_offsets": [
+   6092748,
+   6117324
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "M_3": {
+  "data_offsets": [
+   8152268,
+   8176844
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "M_3.mm": {
+  "data_offsets": [
+   8127692,
+   8152268
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "M_4": {
+  "data_offsets": [
+   10187212,
+   10211788
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "M_4.mm": {
+  "data_offsets": [
+   10162636,
+   10187212
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "M_5": {
+  "data_offsets": [
+   12222156,
+   12246732
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "M_5.mm": {
+  "data_offsets": [
+   12197580,
+   12222156
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Mb_0": {
+  "data_offsets": [
+   633156,
+   633284
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "Mb_0.log": {
+  "data_offsets": [
+   633284,
+   633412
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "Mb_1": {
+  "data_offsets": [
+   2668108,
+   2668236
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "Mb_1.log": {
+  "data_offsets": [
+   2668236,
+   2668364
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "Mb_2": {
+  "data_offsets": [
+   4703052,
+   4703180
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "Mb_2.log": {
+  "data_offsets": [
+   4703180,
+   4703308
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "Mb_3": {
+  "data_offsets": [
+   6737996,
+   6738124
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "Mb_3.log": {
+  "data_offsets": [
+   6738124,
+   6738252
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "Mb_4": {
+  "data_offsets": [
+   8772940,
+   8773068
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "Mb_4.log": {
+  "data_offsets": [
+   8773068,
+   8773196
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "Mb_5": {
+  "data_offsets": [
+   10807884,
+   10808012
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "Mb_5.log": {
+  "data_offsets": [
+   10808012,
+   10808140
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   8
+  ]
+ },
+ "N1_0": {
+  "data_offsets": [
+   160066,
+   184642
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_0.centered": {
+  "data_offsets": [
+   61666,
+   86242
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_0.mean": {
+  "data_offsets": [
+   61634,
+   61666
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_0.normalized": {
+  "data_offsets": [
+   110914,
+   135490
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_0.rstd": {
+  "data_offsets": [
+   110882,
+   110914
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_0.scaled": {
+  "data_offsets": [
+   135490,
+   160066
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_0.squared": {
+  "data_offsets": [
+   86242,
+   110818
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_0.var": {
+  "data_offsets": [
+   110818,
+   110850
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_0.var_eps": {
+  "data_offsets": [
+   110850,
+   110882
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_1": {
+  "data_offsets": [
+   2195020,
+   2219596
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_1.centered": {
+  "data_offsets": [
+   2096620,
+   2121196
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_1.mean": {
+  "data_offsets": [
+   2096588,
+   2096620
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_1.normalized": {
+  "data_offsets": [
+   2145868,
+   2170444
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_1.rstd": {
+  "data_offsets": [
+   2145836,
+   2145868
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_1.scaled": {
+  "data_offsets": [
+   2170444,
+   2195020
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_1.squared": {
+  "data_offsets": [
+   2121196,
+   2145772
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_1.var": {
+  "data_offsets": [
+   2145772,
+   2145804
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_1.var_eps": {
+  "data_offsets": [
+   2145804,
+   2145836
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_2": {
+  "data_offsets": [
+   4229964,
+   4254540
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_2.centered": {
+  "data_offsets": [
+   4131564,
+   4156140
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_2.mean": {
+  "data_offsets": [
+   4131532,
+   4131564
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_2.normalized": {
+  "data_offsets": [
+   4180812,
+   4205388
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_2.rstd": {
+  "data_offsets": [
+   4180780,
+   4180812
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_2.scaled": {
+  "data_offsets": [
+   4205388,
+   4229964
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_2.squared": {
+  "data_offsets": [
+   4156140,
+   4180716
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_2.var": {
+  "data_offsets": [
+   4180716,
+   4180748
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_2.var_eps": {
+  "data_offsets": [
+   4180748,
+   4180780
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_3": {
+  "data_offsets": [
+   6264908,
+   6289484
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_3.centered": {
+  "data_offsets": [
+   6166508,
+   6191084
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_3.mean": {
+  "data_offsets": [
+   6166476,
+   6166508
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_3.normalized": {
+  "data_offsets": [
+   6215756,
+   6240332
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_3.rstd": {
+  "data_offsets": [
+   6215724,
+   6215756
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_3.scaled": {
+  "data_offsets": [
+   6240332,
+   6264908
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_3.squared": {
+  "data_offsets": [
+   6191084,
+   6215660
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_3.var": {
+  "data_offsets": [
+   6215660,
+   6215692
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_3.var_eps": {
+  "data_offsets": [
+   6215692,
+   6215724
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_4": {
+  "data_offsets": [
+   8299852,
+   8324428
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_4.centered": {
+  "data_offsets": [
+   8201452,
+   8226028
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_4.mean": {
+  "data_offsets": [
+   8201420,
+   8201452
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_4.normalized": {
+  "data_offsets": [
+   8250700,
+   8275276
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_4.rstd": {
+  "data_offsets": [
+   8250668,
+   8250700
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_4.scaled": {
+  "data_offsets": [
+   8275276,
+   8299852
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_4.squared": {
+  "data_offsets": [
+   8226028,
+   8250604
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_4.var": {
+  "data_offsets": [
+   8250604,
+   8250636
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_4.var_eps": {
+  "data_offsets": [
+   8250636,
+   8250668
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_5": {
+  "data_offsets": [
+   10334796,
+   10359372
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_5.centered": {
+  "data_offsets": [
+   10236396,
+   10260972
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_5.mean": {
+  "data_offsets": [
+   10236364,
+   10236396
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_5.normalized": {
+  "data_offsets": [
+   10285644,
+   10310220
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_5.rstd": {
+  "data_offsets": [
+   10285612,
+   10285644
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_5.scaled": {
+  "data_offsets": [
+   10310220,
+   10334796
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_5.squared": {
+  "data_offsets": [
+   10260972,
+   10285548
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N1_5.var": {
+  "data_offsets": [
+   10285548,
+   10285580
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N1_5.var_eps": {
+  "data_offsets": [
+   10285580,
+   10285612
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_0": {
+  "data_offsets": [
+   916932,
+   941508
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_0.centered": {
+  "data_offsets": [
+   818532,
+   843108
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_0.mean": {
+  "data_offsets": [
+   818500,
+   818532
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_0.normalized": {
+  "data_offsets": [
+   867780,
+   892356
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_0.rstd": {
+  "data_offsets": [
+   867748,
+   867780
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_0.scaled": {
+  "data_offsets": [
+   892356,
+   916932
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_0.squared": {
+  "data_offsets": [
+   843108,
+   867684
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_0.var": {
+  "data_offsets": [
+   867684,
+   867716
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_0.var_eps": {
+  "data_offsets": [
+   867716,
+   867748
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_1": {
+  "data_offsets": [
+   2951884,
+   2976460
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_1.centered": {
+  "data_offsets": [
+   2853484,
+   2878060
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_1.mean": {
+  "data_offsets": [
+   2853452,
+   2853484
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_1.normalized": {
+  "data_offsets": [
+   2902732,
+   2927308
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_1.rstd": {
+  "data_offsets": [
+   2902700,
+   2902732
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_1.scaled": {
+  "data_offsets": [
+   2927308,
+   2951884
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_1.squared": {
+  "data_offsets": [
+   2878060,
+   2902636
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_1.var": {
+  "data_offsets": [
+   2902636,
+   2902668
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_1.var_eps": {
+  "data_offsets": [
+   2902668,
+   2902700
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_2": {
+  "data_offsets": [
+   4986828,
+   5011404
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_2.centered": {
+  "data_offsets": [
+   4888428,
+   4913004
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_2.mean": {
+  "data_offsets": [
+   4888396,
+   4888428
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_2.normalized": {
+  "data_offsets": [
+   4937676,
+   4962252
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_2.rstd": {
+  "data_offsets": [
+   4937644,
+   4937676
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_2.scaled": {
+  "data_offsets": [
+   4962252,
+   4986828
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_2.squared": {
+  "data_offsets": [
+   4913004,
+   4937580
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_2.var": {
+  "data_offsets": [
+   4937580,
+   4937612
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_2.var_eps": {
+  "data_offsets": [
+   4937612,
+   4937644
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_3": {
+  "data_offsets": [
+   7021772,
+   7046348
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_3.centered": {
+  "data_offsets": [
+   6923372,
+   6947948
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_3.mean": {
+  "data_offsets": [
+   6923340,
+   6923372
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_3.normalized": {
+  "data_offsets": [
+   6972620,
+   6997196
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_3.rstd": {
+  "data_offsets": [
+   6972588,
+   6972620
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_3.scaled": {
+  "data_offsets": [
+   6997196,
+   7021772
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_3.squared": {
+  "data_offsets": [
+   6947948,
+   6972524
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_3.var": {
+  "data_offsets": [
+   6972524,
+   6972556
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_3.var_eps": {
+  "data_offsets": [
+   6972556,
+   6972588
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_4": {
+  "data_offsets": [
+   9056716,
+   9081292
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_4.centered": {
+  "data_offsets": [
+   8958316,
+   8982892
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_4.mean": {
+  "data_offsets": [
+   8958284,
+   8958316
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_4.normalized": {
+  "data_offsets": [
+   9007564,
+   9032140
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_4.rstd": {
+  "data_offsets": [
+   9007532,
+   9007564
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_4.scaled": {
+  "data_offsets": [
+   9032140,
+   9056716
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_4.squared": {
+  "data_offsets": [
+   8982892,
+   9007468
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_4.var": {
+  "data_offsets": [
+   9007468,
+   9007500
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_4.var_eps": {
+  "data_offsets": [
+   9007500,
+   9007532
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_5": {
+  "data_offsets": [
+   11091660,
+   11116236
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_5.centered": {
+  "data_offsets": [
+   10993260,
+   11017836
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_5.mean": {
+  "data_offsets": [
+   10993228,
+   10993260
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_5.normalized": {
+  "data_offsets": [
+   11042508,
+   11067084
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_5.rstd": {
+  "data_offsets": [
+   11042476,
+   11042508
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_5.scaled": {
+  "data_offsets": [
+   11067084,
+   11091660
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_5.squared": {
+  "data_offsets": [
+   11017836,
+   11042412
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "N2_5.var": {
+  "data_offsets": [
+   11042412,
+   11042444
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "N2_5.var_eps": {
+  "data_offsets": [
+   11042444,
+   11042476
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "O_0": {
+  "data_offsets": [
+   769348,
+   793924
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "O_0.mm": {
+  "data_offsets": [
+   744772,
+   769348
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "O_1": {
+  "data_offsets": [
+   2804300,
+   2828876
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "O_1.mm": {
+  "data_offsets": [
+   2779724,
+   2804300
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "O_2": {
+  "data_offsets": [
+   4839244,
+   4863820
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "O_2.mm": {
+  "data_offsets": [
+   4814668,
+   4839244
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "O_3": {
+  "data_offsets": [
+   6874188,
+   6898764
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "O_3.mm": {
+  "data_offsets": [
+   6849612,
+   6874188
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "O_4": {
+  "data_offsets": [
+   8909132,
+   8933708
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "O_4.mm": {
+  "data_offsets": [
+   8884556,
+   8909132
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "O_5": {
+  "data_offsets": [
+   10944076,
+   10968652
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "O_5.mm": {
+  "data_offsets": [
+   10919500,
+   10944076
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Q_0": {
+  "data_offsets": [
+   405826,
+   430402
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_0.heads": {
+  "data_offsets": [
+   356674,
+   381250
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "Q_0.perm": {
+  "data_offsets": [
+   381250,
+   405826
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_0.slice": {
+  "data_offsets": [
+   332098,
+   356674
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Q_1": {
+  "data_offsets": [
+   2440780,
+   2465356
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_1.heads": {
+  "data_offsets": [
+   2391628,
+   2416204
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "Q_1.perm": {
+  "data_offsets": [
+   2416204,
+   2440780
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_1.slice": {
+  "data_offsets": [
+   2367052,
+   2391628
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Q_2": {
+  "data_offsets": [
+   4475724,
+   4500300
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_2.heads": {
+  "data_offsets": [
+   4426572,
+   4451148
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "Q_2.perm": {
+  "data_offsets": [
+   4451148,
+   4475724
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_2.slice": {
+  "data_offsets": [
+   4401996,
+   4426572
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Q_3": {
+  "data_offsets": [
+   6510668,
+   6535244
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_3.heads": {
+  "data_offsets": [
+   6461516,
+   6486092
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "Q_3.perm": {
+  "data_offsets": [
+   6486092,
+   6510668
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_3.slice": {
+  "data_offsets": [
+   6436940,
+   6461516
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Q_4": {
+  "data_offsets": [
+   8545612,
+   8570188
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_4.heads": {
+  "data_offsets": [
+   8496460,
+   8521036
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "Q_4.perm": {
+  "data_offsets": [
+   8521036,
+   8545612
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_4.slice": {
+  "data_offsets": [
+   8471884,
+   8496460
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Q_5": {
+  "data_offsets": [
+   10580556,
+   10605132
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_5.heads": {
+  "data_offsets": [
+   10531404,
+   10555980
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "Q_5.perm": {
+  "data_offsets": [
+   10555980,
+   10580556
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "Q_5.slice": {
+  "data_offsets": [
+   10506828,
+   10531404
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "S_0": {
+  "data_offsets": [
+   630084,
+   633156
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_0.masked": {
+  "data_offsets": [
+   633412,
+   636484
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_0.qk": {
+  "data_offsets": [
+   627010,
+   630082
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_1": {
+  "data_offsets": [
+   2665036,
+   2668108
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_1.masked": {
+  "data_offsets": [
+   2668364,
+   2671436
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_1.qk": {
+  "data_offsets": [
+   2661964,
+   2665036
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_2": {
+  "data_offsets": [
+   4699980,
+   4703052
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_2.masked": {
+  "data_offsets": [
+   4703308,
+   4706380
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_2.qk": {
+  "data_offsets": [
+   4696908,
+   4699980
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_3": {
+  "data_offsets": [
+   6734924,
+   6737996
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_3.masked": {
+  "data_offsets": [
+   6738252,
+   6741324
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_3.qk": {
+  "data_offsets": [
+   6731852,
+   6734924
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_4": {
+  "data_offsets": [
+   8769868,
+   8772940
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_4.masked": {
+  "data_offsets": [
+   8773196,
+   8776268
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_4.qk": {
+  "data_offsets": [
+   8766796,
+   8769868
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_5": {
+  "data_offsets": [
+   10804812,
+   10807884
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_5.masked": {
+  "data_offsets": [
+   10808140,
+   10811212
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "S_5.qk": {
+  "data_offsets": [
+   10801740,
+   10804812
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   8
+  ]
+ },
+ "V_0": {
+  "data_offsets": [
+   602434,
+   627010
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_0.heads": {
+  "data_offsets": [
+   553282,
+   577858
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "V_0.perm": {
+  "data_offsets": [
+   577858,
+   602434
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_0.slice": {
+  "data_offsets": [
+   528706,
+   553282
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "V_1": {
+  "data_offsets": [
+   2637388,
+   2661964
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_1.heads": {
+  "data_offsets": [
+   2588236,
+   2612812
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "V_1.perm": {
+  "data_offsets": [
+   2612812,
+   2637388
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_1.slice": {
+  "data_offsets": [
+   2563660,
+   2588236
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "V_2": {
+  "data_offsets": [
+   4672332,
+   4696908
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_2.heads": {
+  "data_offsets": [
+   4623180,
+   4647756
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "V_2.perm": {
+  "data_offsets": [
+   4647756,
+   4672332
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_2.slice": {
+  "data_offsets": [
+   4598604,
+   4623180
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "V_3": {
+  "data_offsets": [
+   6707276,
+   6731852
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_3.heads": {
+  "data_offsets": [
+   6658124,
+   6682700
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "V_3.perm": {
+  "data_offsets": [
+   6682700,
+   6707276
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_3.slice": {
+  "data_offsets": [
+   6633548,
+   6658124
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "V_4": {
+  "data_offsets": [
+   8742220,
+   8766796
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_4.heads": {
+  "data_offsets": [
+   8693068,
+   8717644
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "V_4.perm": {
+  "data_offsets": [
+   8717644,
+   8742220
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_4.slice": {
+  "data_offsets": [
+   8668492,
+   8693068
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "V_5": {
+  "data_offsets": [
+   10777164,
+   10801740
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_5.heads": {
+  "data_offsets": [
+   10728012,
+   10752588
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   12,
+   64
+  ]
+ },
+ "V_5.perm": {
+  "data_offsets": [
+   10752588,
+   10777164
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   12,
+   8,
+   64
+  ]
+ },
+ "V_5.slice": {
+  "data_offsets": [
+   10703436,
+   10728012
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "X_0": {
+  "data_offsets": [
+   37056,
+   61632
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "X_0.position": {
+  "data_offsets": [
+   24768,
+   37056
+  ],
+  "dtype": "F16",
+  "shape": [
+   8,
+   768
+  ]
+ },
+ "X_0.token": {
+  "data_offsets": [
+   192,
+   24768
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "X_1": {
+  "data_offsets": [
+   2072012,
+   2096588
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "X_2": {
+  "data_offsets": [
+   4106956,
+   4131532
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "X_3": {
+  "data_offsets": [
+   6141900,
+   6166476
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "X_4": {
+  "data_offsets": [
+   8176844,
+   8201420
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "X_5": {
+  "data_offsets": [
+   10211788,
+   10236364
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "X_6": {
+  "data_offsets": [
+   12246732,
+   12271308
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Xf": {
+  "data_offsets": [
+   12369740,
+   12394316
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Xf.centered": {
+  "data_offsets": [
+   12271340,
+   12295916
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Xf.mean": {
+  "data_offsets": [
+   12271308,
+   12271340
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "Xf.normalized": {
+  "data_offsets": [
+   12320588,
+   12345164
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Xf.rstd": {
+  "data_offsets": [
+   12320556,
+   12320588
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "Xf.scaled": {
+  "data_offsets": [
+   12345164,
+   12369740
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Xf.squared": {
+  "data_offsets": [
+   12295916,
+   12320492
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Xf.var": {
+  "data_offsets": [
+   12320492,
+   12320524
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "Xf.var_eps": {
+  "data_offsets": [
+   12320524,
+   12320556
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "Xm_0": {
+  "data_offsets": [
+   793924,
+   818500
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Xm_1": {
+  "data_offsets": [
+   2828876,
+   2853452
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Xm_2": {
+  "data_offsets": [
+   4863820,
+   4888396
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Xm_3": {
+  "data_offsets": [
+   6898764,
+   6923340
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Xm_4": {
+  "data_offsets": [
+   8933708,
+   8958284
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "Xm_5": {
+  "data_offsets": [
+   10968652,
+   10993228
+  ],
+  "dtype": "F16",
+  "shape": [
+   2,
+   8,
+   768
+  ]
+ },
+ "__header_bytes__": 31200,
+ "__metadata__": {
+  "format": "tensormorph-activation-trace",
+  "model": "distilgpt2",
+  "sample": "sample_batch"
+ },
+ "c_eps": {
+  "data_offsets": [
+   61632,
+   61634
+  ],
+  "dtype": "F16",
+  "shape": []
+ },
+ "c_gelu_a": {
+  "data_offsets": [
+   1138116,
+   1138118
+  ],
+  "dtype": "F16",
+  "shape": []
+ },
+ "c_gelu_b": {
+  "data_offsets": [
+   1138118,
+   1138120
+  ],
+  "dtype": "F16",
+  "shape": []
+ },
+ "c_half": {
+  "data_offsets": [
+   1138120,
+   1138122
+  ],
+  "dtype": "F16",
+  "shape": []
+ },
+ "c_one": {
+  "data_offsets": [
+   1138122,
+   1138124
+  ],
+  "dtype": "F16",
+  "shape": []
+ },
+ "c_sqrt_dh": {
+  "data_offsets": [
+   630082,
+   630084
+  ],
+  "dtype": "F16",
+  "shape": []
+ },
+ "ids": {
+  "data_offsets": [
+   0,
+   128
+  ],
+  "dtype": "I64",
+  "shape": [
+   2,
+   8
+  ]
+ },
+ "pos": {
+  "data_offsets": [
+   128,
+   192
+  ],
+  "dtype": "I64",
+  "shape": [
+   8
+  ]
+ }
+}

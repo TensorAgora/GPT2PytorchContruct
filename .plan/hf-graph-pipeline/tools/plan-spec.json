@@ -1,0 +1,2930 @@
+{
+ "plan": {
+  "slug": "hf-graph-pipeline",
+  "title": "HF weights → tensor manifest → graph JSON pipeline",
+  "version": "2026-11-21.2",
+  "master_document": "prompts/hf-weights-to-graph-json-pipeline.md",
+  "objective": "An offline Python pipeline that reads only the headers and small config files of every Hugging Face repo in the catalog, writes an Observed-only tensor manifest, and builds a verified viz-graph v1 JSON through a registered architecture library; plus the graph⇔TEL design with one round-trip proof."
+ },
+ "requirements": [
+  {
+   "id": "R-00",
+   "text": "`python -m tools.hf_graph <huggingface_url> [--revision R]` writes manifest.json, report.json and graph.json for one repo, and the batch runner calls this same function",
+   "source": "§1, §5"
+  },
+  {
+   "id": "R-01",
+   "text": "Every row of `csv/categories/<category>/<format>.csv` becomes a job (huggingface_url → repo id), plus golden repos missing from the catalog from `csv/goldens.csv`; job count = 29,779 + golden extras (1 today)",
+   "source": "§1, §2, §8.1"
+  },
+  {
+   "id": "R-02",
+   "text": "Discovery records each repo's pinned `sha`, file list with sizes, `gated`, and the weight files to read per §5.1 (index shards, else root safetensors, diffusers component folders, one GGUF per D2 with multi-part as one file), or a terminal `skipped:*` status",
+   "source": "§1, §5.1, D2, D7"
+  },
+  {
+   "id": "R-03",
+   "text": "Small files are fetched through `hf_hub_url(repo, path, revision=sha)` and cached by (repo, sha, path); a second run makes 0 network requests for cached rows",
+   "source": "§1, §5.1"
+  },
+  {
+   "id": "R-04",
+   "text": "Safetensors headers of every shard are read by HTTP range (bytes 0-7, then 8..7+N) with 0 payload bytes; tensor count equals the index `weight_map`",
+   "source": "§1, §3, §5.1"
+  },
+  {
+   "id": "R-05",
+   "text": "GGUF headers (KV and tensor infos) are read by incremental HTTP range (1 MiB windows, doubling) within the D3 byte budget, large arrays stored as {type, count, head}, types from `gguf.constants`, never `GGUFReader`; tensor count equals `tensor_count`",
+   "source": "§1, §3, §5.1"
+  },
+  {
+   "id": "R-06",
+   "text": "`manifest.json` follows tensor-manifest v1 (§5.2) with a JSON Schema and a validator, holds Observed facts only, stores GGUF `ne` as read plus `shape` reversed and llama.cpp names as stored, and a re-run is byte-identical apart from `fetched_at`",
+   "source": "§1, §5.2"
+  },
+  {
+   "id": "R-07",
+   "text": "Quantization sidecars (FP8 weight_scale_inv, MXFP4, GPTQ/AWQ, MLX, bitsandbytes, GGUF ggml types) bind only when their shape relation holds and each binding is recorded in report.json; Qwen3.8-27B-FP8 has every weight_scale_inv attached and 0 unbound sidecars",
+   "source": "§1, §4 (§7.4)"
+  },
+  {
+   "id": "R-08",
+   "text": "The ladder R1 (GGUF general.architecture), R2 (config architectures, then model_type, also nested in text_config/llm_config/language_config/thinker_config; diffusers `_class_name` from model_index.json and component configs; the timm `architecture`/`pretrained_cfg`; the catalog's backbone_class and timm_module), R3 (tensor-name fingerprint), R4 (name hint) proposes ranked candidates; Kimi-K2 resolves to the deepseek_v3 descriptor",
+   "source": "§1, §4 (§6)"
+  },
+  {
+   "id": "R-09",
+   "text": "Hyperparameters resolve from `metadata_spec.json` expressions, each recorded with its source (config key, GGUF key, shape, catalog, default); every dim in a graph has a recorded source in report.json",
+   "source": "§1, §2"
+  },
+  {
+   "id": "R-10",
+   "text": "The binding verifier puts every stored tensor in exactly one class (bound, tied, ignored, aux, component) or fails the candidate with a near-miss report naming the tensor",
+   "source": "§1, §4 (§7.5)"
+  },
+  {
+   "id": "R-11",
+   "text": "The pipeline rebuilds each golden repo from its pinned header structurally equal to its `json/*.json` (same dims, parameter set and shapes, checkpoint_key or view per parameter, op/edge/multiplication counts and totals), each remaining difference listed with its cause",
+   "source": "§1, §8.1"
+  },
+  {
+   "id": "R-12",
+   "text": "Path B traces timm and diffusers classes and descriptor-less LLM model_types on the `meta` device without remote code, maps ATen ops to Program primitives and the rest to typed `opaque` ops (D5); a tiny timm model and a tiny diffusers UNet give valid graphs whose parameters all bind",
+   "source": "§1, §6, D4, D5"
+  },
+  {
+   "id": "R-13",
+   "text": "graph.json is viz-graph v1 plus only the §5.3 additive fields (checkpoint, provenance, components, execution), every parameter names a checkpoint_key or view, report.json is written, and graphs are stored once per content key with per-repo graph.ref (D9)",
+   "source": "§1, §5.3, §5.4, D9"
+  },
+  {
+   "id": "R-14",
+   "text": "The batch runs over all rows with an append-only ledger.jsonl that drives resume, bounded concurrency and backoff, HF_TOKEN optional and never logged; killing and restarting skips completed rows",
+   "source": "§1, §5.4"
+  },
+  {
+   "id": "R-15",
+   "text": "Coverage reports coverage.csv (category × format × status), coverage_model_type.csv (model_type × status) and near_misses.csv ranked by unlockable rows, with totals matching the ledger",
+   "source": "§1, §5.4"
+  },
+  {
+   "id": "R-16",
+   "text": "docs/GRAPH_TEL.md records the §9 graph⇔TEL design (mapping, bindings, counted exclusions), and the per-graph round trip reproduces §9.5 on the 8 goldens: --const-as-buffer gives 0 differences and 6/8 pass D3; adding --fix-contract gives 8/8 with 0 differences, compile clean and D3 pass",
+   "source": "§1, §9"
+  },
+  {
+   "id": "R-17",
+   "text": "The first task confirms every §2 input path; a missing or moved path is recorded in HARNESS.md, never assumed",
+   "source": "§2"
+  },
+  {
+   "id": "R-18",
+   "text": "Python work uses uv and the existing .venv (never conda); new dependencies go in optional extras only: `hub` (gguf, jsonschema) and `trace` (transformers, timm, diffusers)",
+   "source": "§3"
+  },
+  {
+   "id": "R-19",
+   "text": "`output/` and weight files (*.safetensors, *.gguf, *.bin, *.pt, *.pth, *.ckpt) are git-ignored and never stored; git holds small JSON test fixtures only",
+   "source": "D6"
+  },
+  {
+   "id": "R-20",
+   "text": "A viz-graph v1 JSON Schema written from the 8 goldens plus a checker enforce the §8.2 graph invariants (schema, acyclic, every op input produced earlier or an input/parameter, parameter shape equals header shape, totals recompute exactly); all 8 goldens pass",
+   "source": "§8.2"
+  },
+  {
+   "id": "R-21",
+   "text": "A structural comparator reports every difference between two graphs over the §8.1 fields (dims, parameter set and shapes, checkpoint_key or view, op/edge/multiplication counts, totals)",
+   "source": "§8.1"
+  },
+  {
+   "id": "R-22",
+   "text": "Besides header ranges, only config.json, *.safetensors.index.json, model_index.json, <component>/config.json, the timm config.json and params.json are ever fetched",
+   "source": "§3"
+  },
+  {
+   "id": "R-23",
+   "text": "Gated repos get skipped:gated without HF_TOKEN and skipped:gated_not_accepted when the token lacks accepted terms; the token never appears in logs, manifests or reports, and nothing about the user beyond it is sent",
+   "source": "§3"
+  },
+  {
+   "id": "R-24",
+   "text": "HTTP access uses bounded concurrency, exponential backoff on 429 and 5xx, and honours Retry-After",
+   "source": "§3"
+  },
+  {
+   "id": "R-25",
+   "text": "Header fixtures live in tests/fixtures/headers/<org>__<repo>@<sha>/ as small JSON only (config.json, index, per-file header JSON, provenance), never weights, and tests run offline from them",
+   "source": "§8.3"
+  },
+  {
+   "id": "R-26",
+   "text": "No repository code executes: trust_remote_code is never set, and remote-code repos bind only through a descriptor matched by `architectures`, else skipped:remote_code",
+   "source": "§3, D4"
+  },
+  {
+   "id": "R-27",
+   "text": "Descriptors are JSON documents with match, hyperparameters (ordered sources plus a shape check), schemes (hf, gguf, mlx), recipe, ties, ignored and provenance, and support the layer selectors uniform, list(key), first_k(key), period, pattern, index_sets, per_layer_config and by_presence",
+   "source": "§4 (§7.2), §6"
+  },
+  {
+   "id": "R-28",
+   "text": "The arch.mjs blocks rms, rope, softmax, gqa, swiglu and experts are ported to Python functions on Program, reusing program.py and viz.py rather than re-implementing them",
+   "source": "§2, §6"
+  },
+  {
+   "id": "R-29",
+   "text": "The GPT-2 descriptor rebuilds json/distilgpt2.json byte-identically",
+   "source": "§8.1"
+  },
+  {
+   "id": "R-30",
+   "text": "Llama-family descriptors rebuild the qwen2.5-7b-instruct, mistral-7b-instruct-v0.3, phi-3.5-mini-instruct and gemma-2-2b-it goldens structurally equal from the configs they were spelled from",
+   "source": "§7 (Wave 0)"
+  },
+  {
+   "id": "R-31",
+   "text": "The mixtral and deepseek_v3 descriptors (arch.mjs ports) and the qwen3_5 descriptor (over qwen3_5.py) rebuild their goldens structurally equal from their spelled configs, deepseek's 174 keyless views matched rather than given invented keys",
+   "source": "§7 (Wave 0), §8.1"
+  },
+  {
+   "id": "R-32",
+   "text": "The same (repo, sha, registry version) produces byte-identical manifest.json, report.json and graph.json, `fetched_at` excluded",
+   "source": "§3, §8.3 (C6)"
+  },
+  {
+   "id": "R-33",
+   "text": "Each repo writes to output/categories/<category>/<format>/<org>__<repo>/ with a §5.4 status (ok, ok_assumed, partial, no_graph, skipped:*, failed:<code>); no_graph writes the tensor inventory and prefix tree",
+   "source": "§5, §5.4"
+  },
+  {
+   "id": "R-34",
+   "text": "A 100-row smoke run measures throughput and header bytes per model before the full run is sized, and sets the D3 header byte budget",
+   "source": "§3, §7 (Wave 0), D3"
+  },
+  {
+   "id": "R-35",
+   "text": "The §2 category/key table is recomputed from fetched data and the descriptor backlog is ordered by rows unlocked",
+   "source": "§2"
+  },
+  {
+   "id": "R-36",
+   "text": "Each golden repo is pinned at a sha in csv/goldens.csv and its real config.json is diffed against the config the golden was spelled from, every delta listed with its cause",
+   "source": "§8.1"
+  },
+  {
+   "id": "R-37",
+   "text": "HF↔GGUF name maps are generated from a pinned gguf-py (commit and MIT notice kept) plus an overlay of storage transforms (llama Q/K rope permutation checked at the pinned commit, fused QKV split, gate_up split, Gemma norm +1)",
+   "source": "§4 (§7.6), §6"
+  },
+  {
+   "id": "R-38",
+   "text": "A conformance runner checks C1 (binding on a real header fixture), C3 (HF and GGUF schemes give the same canonical names), C4 (matmul, edge and FLOP counts), C5 (hostile input) and C6 (determinism) per descriptor",
+   "source": "§8.3"
+  },
+  {
+   "id": "R-39",
+   "text": "Descriptors for the top decoder_dense keys by rows pass C1, C4 and C6, and decoder_dense coverage rises by the predicted rows",
+   "source": "§7 (Wave 1)"
+  },
+  {
+   "id": "R-40",
+   "text": "Expert ops and their multiplications carry execution {kind: routed, of: E, active: K, router}, totals add contraction_flops and active_flops, active_flops equals the K-of-E hand count, and the mixtral and deepseek-v3 goldens stay structurally equal",
+   "source": "§5.3 (D8), §7 (Wave 2)"
+  },
+  {
+   "id": "R-41",
+   "text": "All four expert storage forms bind and descriptors cover the top decoder_moe keys",
+   "source": "§4 (§15), §7 (Wave 2)"
+  },
+  {
+   "id": "R-42",
+   "text": "Delta-rule and Mamba blocks are selected per layer (layer_types, hybrid_override_pattern), unrolled steps carry execution {kind: scan, axis: T, step, body}, the qwen3.8-27b-fp8 golden stays structurally equal, and descriptors cover the top decoder_hybrid keys",
+   "source": "§5.3 (D8), §7 (Wave 3)"
+  },
+  {
+   "id": "R-43",
+   "text": "Assemblies bind the VLM text tower and mark vision towers, projectors, MTP and draft heads bound or declared_without_graph in `components`, never silently dropped; no stored tensor falls outside a class",
+   "source": "§4 (§7.3), §5.3, §7 (Wave 4)"
+  },
+  {
+   "id": "R-44",
+   "text": "BERT-family (bert, modernbert, xlm-roberta, roberta, deberta-v2, distilbert) and T5/BART (t5, mt5, bart, marian) descriptors pass C1 and C4",
+   "source": "§7 (Wave 5)"
+  },
+  {
+   "id": "R-45",
+   "text": "C2: for every path-A descriptor with an upstream class, the tiny-config path-A matmul signature equals path B's, modulo dense-vs-routed experts",
+   "source": "§6, §7 (Wave 6)"
+  },
+  {
+   "id": "R-46",
+   "text": "After the full run every job has one terminal status, the reports add up to the R-01 job count, and a re-run with unchanged shas is a no-op",
+   "source": "§7 (Wave 7), §8.2"
+  },
+  {
+   "id": "R-47",
+   "text": "Each output/categories/<category>/README.md summarizes that category's statuses, keys and near-misses",
+   "source": "§5.4"
+  },
+  {
+   "id": "R-48",
+   "text": "tel_roundtrip runs over every graph the pipeline writes",
+   "source": "§9.6"
+  },
+  {
+   "id": "R-49",
+   "text": "A TEL coverage analyzer counts per graph the T♭-spellable ops and each §9.4 counted exclusion",
+   "source": "§7 (Wave T), §9.4"
+  },
+  {
+   "id": "R-50",
+   "text": "`tools/viz_to_tel.py` → `tools/tel_compile.mjs` on distilgpt2 still prints PASS",
+   "source": "§9.6"
+  },
+  {
+   "id": "R-51",
+   "text": "The T♭ printer and decoder are ported to Python next to viz_graph() with both §9.6 fixes, matching tel.js on the 8 goldens (T-2 default)",
+   "source": "§9.6, §10 (T-2)"
+  },
+  {
+   "id": "R-52",
+   "text": "Pipeline graphs keep `axes[].symbol` for B and T",
+   "source": "§9.4",
+   "priority": "should"
+  }
+ ],
+ "waves": [
+  {
+   "id": 0,
+   "focus": "Foundations (master Wave 0): catalog, fetch, headers, manifest, registry core, path-A ports of the 8 goldens, single-URL CLI, batch with a 100-row smoke run; the TEL proof (master Wave T) runs alongside",
+   "gate": "tests/test_goldens.py: 8 goldens structurally equal from pinned headers (gemma-2 skipped when its gated fixture is absent); D3 set from the 100-row smoke run; tel_roundtrip reproduces §9.5",
+   "concurrency": "sequential; 09a has no dependencies and can run at any point in the wave"
+  },
+  {
+   "id": 1,
+   "focus": "Dense decoders (master Wave 1): generated name maps, sidecars, conformance runner, top dense descriptors; TEL Python port",
+   "gate": "tools.conformance passes C1/C4/C6 for every dense descriptor; Qwen3.8 FP8 has 0 unbound sidecars; decoder_dense coverage rises by the predicted rows"
+  },
+  {
+   "id": 2,
+   "focus": "MoE (master Wave 2): routed annotations, active_flops, four expert storage forms, MoE descriptors",
+   "gate": "mixtral and deepseek-v3 goldens structurally equal and active_flops equals the K-of-E hand count"
+  },
+  {
+   "id": 3,
+   "focus": "Hybrid and state (master Wave 3): delta rule, Mamba, layer selectors, scan annotation",
+   "gate": "qwen3.8-27b-fp8 golden structurally equal with scan annotations on every unrolled step"
+  },
+  {
+   "id": 4,
+   "focus": "Assemblies (master Wave 4): VLM wrappers, MTP, draft heads",
+   "gate": "no stored tensor outside a class on the multimodal_vlm and speculative_draft rows run"
+  },
+  {
+   "id": 5,
+   "focus": "Encoders (master Wave 5): BERT family, T5/BART",
+   "gate": "C1 and C4 pass for every encoder descriptor"
+  },
+  {
+   "id": 6,
+   "focus": "Library trace (master Wave 6): path B for timm, diffusers and uncovered LLM keys; C2",
+   "gate": "tiny timm and UNet graphs bind fully; C2 passes for every path-A descriptor with an upstream class"
+  },
+  {
+   "id": 7,
+   "focus": "Full run (master Wave 7) and TEL round trip over all pipeline graphs",
+   "gate": "every job has a terminal status and the reports add up to the R-01 job count"
+  }
+ ],
+ "modules": [
+  {
+   "id": "00a",
+   "slug": "foundation",
+   "title": "Confirm inputs, extras, gitignore, viz-graph schema, checker and comparator",
+   "kind": "foundation",
+   "master_sections": [
+    "§2",
+    "§3",
+    "§8.1",
+    "§8.2",
+    "D6"
+   ],
+   "wave": 0,
+   "complexity": "M",
+   "requirements": [
+    "R-17",
+    "R-18",
+    "R-19",
+    "R-20",
+    "R-21"
+   ],
+   "goal": "Confirm every input path, add the hub/trace extras, ignore output/, and ship tools/graph_check.py: viz-graph v1 schema, §8.2 invariants and the §8.1 structural comparator every later module verifies with.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Inputs",
+       "tasks": [
+        {
+         "text": "Open every §2 input (catalog files, metadata_spec.json, split_model_catalog.py, json/*.json, open-weight-model-graphs.md, the tensorprog/checkpoint modules, the four CLI tools, arch.mjs, activity_bar/shared/mock.js, TEL OPS/ADR/PKG dirs, docs/TEL_NEXT_STEPS.md); write the confirmed path table into 00a DESIGN.md 'Inputs' and add a HARNESS row for each missing or moved path",
+         "verify": "DESIGN.md 'Inputs' lists every §2 row with an absolute path, and `test -e` succeeds on each listed path",
+         "requirements": [
+          "R-17"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Environment",
+       "tasks": [
+        {
+         "text": "Add `output/` and the weight patterns *.gguf, *.bin, *.pt, *.pth, *.ckpt to .gitignore (*.safetensors is already there)",
+         "verify": "`git check-ignore -q output/categories/x/manifest.json && git check-ignore -q a.gguf && git check-ignore -q a.bin` exits 0",
+         "requirements": [
+          "R-19"
+         ]
+        },
+        {
+         "text": "Add optional extras to pyproject.toml: `hub = [huggingface_hub, gguf, jsonschema]` and `trace = [transformers, timm, diffusers]`; install with `uv sync --inexact --extra hub --extra dev` (inexact keeps transformers)",
+         "verify": "`.venv/bin/python -c 'import gguf, jsonschema, huggingface_hub, transformers'` exits 0 and `.venv/bin/python -m pytest -q` still reports 91 passed",
+         "requirements": [
+          "R-18"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "Graph checker",
+       "tasks": [
+        {
+         "text": "Write src/gpt2_pytorch/schemas/viz-graph-v1.schema.json from the 8 goldens: required top-level keys of json/*.json, item shapes of tensors/ops/edges/multiplications, the §5.3 additive fields optional",
+         "verify": "`.venv/bin/python -c \"import json,glob,jsonschema; s=json.load(open('src/gpt2_pytorch/schemas/viz-graph-v1.schema.json')); [jsonschema.validate(json.load(open(f)), s) for f in glob.glob('json/*.json')]\"` exits 0",
+         "requirements": [
+          "R-20"
+         ]
+        },
+        {
+         "text": "Write tools/graph_check.py: schema validation plus the §8.2 invariants (acyclic, every op input produced earlier or an input/parameter, totals recompute exactly; `--manifest M` adds parameter shape == header shape); exit 1 on any failure",
+         "verify": "`.venv/bin/python -m pytest tests/test_graph_check.py -q` passes: the 8 goldens pass, a copy with one op input renamed fails naming that op",
+         "requirements": [
+          "R-20"
+         ]
+        },
+        {
+         "text": "Add `--against GOLDEN` to tools/graph_check.py: compare dims, parameter set with shapes, checkpoint_key or view per parameter, op/edge/multiplication counts and the golden's totals keys (extra additive keys ignored); print each difference, exit 1 if any; `--ignore FIELD` (repeatable) skips a field such as `view` with the reason printed",
+         "verify": "`.venv/bin/python -m pytest tests/test_graph_check.py -q` passes: a golden against itself gives 0 differences, mistral against qwen2.5 lists dims differences",
+         "requirements": [
+          "R-21"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Gate",
+       "tasks": [
+        {
+         "text": "Run the checker over all goldens and the full suite as the module gate",
+         "verify": "`.venv/bin/python -m tools.graph_check json/*.json && .venv/bin/python -m pytest -q` exits 0 with 8 PASS lines",
+         "requirements": [
+          "R-20",
+          "R-21"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "Every §2 input is confirmed or recorded in HARNESS.md",
+     "requirements": [
+      "R-17"
+     ],
+     "verified_by": "00a.A.P1.T1"
+    },
+    {
+     "text": "The hub extra imports and output/ is ignored",
+     "requirements": [
+      "R-18",
+      "R-19"
+     ],
+     "verified_by": "00a.B.P1.T2"
+    },
+    {
+     "text": "All 8 goldens pass schema and §8.2 invariants; a mutated golden fails naming the op",
+     "requirements": [
+      "R-20"
+     ],
+     "verified_by": "00a.C.P1.T1"
+    },
+    {
+     "text": "A golden compared with itself gives 0 differences and with another golden lists them",
+     "requirements": [
+      "R-21"
+     ],
+     "verified_by": "00a.B.P2.T3"
+    }
+   ],
+   "deliverables": [
+    "tools/graph_check.py",
+    "src/gpt2_pytorch/schemas/viz-graph-v1.schema.json",
+    "pyproject.toml extras"
+   ],
+   "write_set": [
+    ".gitignore",
+    "pyproject.toml",
+    "uv.lock",
+    "src/gpt2_pytorch/schemas/viz-graph-v1.schema.json",
+    "tools/graph_check.py",
+    "tests/test_graph_check.py"
+   ],
+   "non_goals": [
+    "Manifest schema (05b)",
+    "Golden pinning (08a)"
+   ],
+   "blockers": [
+    {
+     "blocker": "`uv sync` is exact and would remove transformers (in the `reference` extra)",
+     "response": "use `uv sync --inexact` or name every extra"
+    }
+   ]
+  },
+  {
+   "id": "05a",
+   "slug": "catalog-and-discovery",
+   "title": "Catalog jobs, HTTP client, repo discovery and small-file cache",
+   "kind": "feature",
+   "master_sections": [
+    "§2",
+    "§3",
+    "§5.1",
+    "D2",
+    "D7"
+   ],
+   "wave": 0,
+   "complexity": "L",
+   "requirements": [
+    "R-01",
+    "R-02",
+    "R-03",
+    "R-22",
+    "R-23",
+    "R-24"
+   ],
+   "goal": "Turn catalog rows into jobs and discover each repo (sha, files, gated, weight files) through one rate-limited, token-safe HTTP client with a (repo, sha, path) small-file cache.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 05a DESIGN.md: Job fields, the §5.4 status vocabulary, the HTTP client contract (range GET with byte counting, small-file GET via hf_hub_url, on-disk cache keyed (repo, sha, path), backoff and Retry-After, token redaction, built on the client huggingface_hub already uses, no new HTTP dependency) and the §5.1/D2/D7 file-selection rules",
+         "verify": "DESIGN.md has sections Job, Statuses, HTTP client and File selection, each naming its function signature",
+         "requirements": [
+          "R-02",
+          "R-03",
+          "R-24"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Catalog",
+       "tasks": [
+        {
+         "text": "Create csv/goldens.csv (repo, golden, format, revision) with the 8 §8.1 goldens; mixtral = TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF (file mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf, per mock.js), revision filled in 08a",
+         "verify": "csv/goldens.csv has 8 data rows and exactly one repo absent from csv/categories/all_models.csv",
+         "requirements": [
+          "R-01"
+         ]
+        },
+        {
+         "text": "Write src/gpt2_pytorch/hub/catalog.py `load_jobs()`: every csv/categories/<category>/<format>.csv row → Job(repo_id, category, format, row), plus csv/goldens.csv repos not already present",
+         "verify": "`.venv/bin/python -c \"from gpt2_pytorch.hub.catalog import load_jobs; print(len(load_jobs()))\"` prints 29780",
+         "requirements": [
+          "R-01"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "HTTP client",
+       "tasks": [
+        {
+         "text": "Write src/gpt2_pytorch/hub/http.py: bounded concurrency, exponential backoff on 429/5xx honouring Retry-After, `get_range(url, start, end)` counting bytes, `get_small(repo, sha, path)` cached on disk, HF_TOKEN from env and redacted from every log line and exception",
+         "verify": "`.venv/bin/python -m pytest tests/test_hub_http.py -q` passes on a fake transport: 429 + Retry-After retried after the delay, 503 backed off, a cached second call makes 0 requests, the token string absent from captured logs",
+         "requirements": [
+          "R-03",
+          "R-23",
+          "R-24"
+         ]
+        },
+        {
+         "text": "Enforce the §3 small-file allowlist in get_small (config.json, *.safetensors.index.json, model_index.json, <component>/config.json, params.json); anything else raises",
+         "verify": "`.venv/bin/python -m pytest tests/test_hub_http.py -q -k allowlist` passes: fetching model.safetensors or modeling_x.py raises",
+         "requirements": [
+          "R-22"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "Discovery",
+       "tasks": [
+        {
+         "text": "Write src/gpt2_pytorch/hub/discover.py `discover(job, revision=None)`: HfApi.model_info(files_metadata=True) → sha, siblings with sizes, gated; weight files per §5.1 (index shards, else root *.safetensors, diffusers component folders, GGUF Q4_K_M else smallest with the others listed, multi-part as one logical file); pytorch/onnx/other → skipped:deferred_format, none → skipped:no_weights",
+         "verify": "`.venv/bin/python -m pytest tests/test_discover.py -q` passes on recorded model_info fixtures (sharded, single, diffusers, GGUF multi-quant, multi-part GGUF, pytorch-only)",
+         "requirements": [
+          "R-02"
+         ]
+        },
+        {
+         "text": "Add gated handling to discover: no HF_TOKEN → skipped:gated; token but 401/403 on the first file → skipped:gated_not_accepted",
+         "verify": "`.venv/bin/python -m pytest tests/test_discover.py -q -k gated` passes for both statuses",
+         "requirements": [
+          "R-23"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Smoke",
+       "tasks": [
+        {
+         "text": "[network] Add `python -m gpt2_pytorch.hub.discover --smoke N` (stratified over category × format) printing status counts and request totals; run it twice on 100 rows",
+         "verify": "first run: every one of 100 rows has a sha or a terminal skipped:* status; second run prints `network requests: 0` for the cached rows",
+         "requirements": [
+          "R-02",
+          "R-03"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "Job count is 29,780 (29,779 + 1 golden extra)",
+     "requirements": [
+      "R-01"
+     ],
+     "verified_by": "05a.B.P1.T2"
+    },
+    {
+     "text": "On 100 rows every row has a sha or a terminal skipped:*; the cached re-run makes 0 requests",
+     "requirements": [
+      "R-02",
+      "R-03"
+     ],
+     "verified_by": "05a.C.P1.T1"
+    },
+    {
+     "text": "Backoff, Retry-After and token redaction hold on the fake transport",
+     "requirements": [
+      "R-23",
+      "R-24"
+     ],
+     "verified_by": "05a.B.P2.T1"
+    },
+    {
+     "text": "A file outside the §3 allowlist cannot be fetched",
+     "requirements": [
+      "R-22"
+     ],
+     "verified_by": "05a.B.P2.T2"
+    }
+   ],
+   "depends_on": [
+    "00a"
+   ],
+   "dependency_reasons": {
+    "00a": "uses the hub extra and the schema directory"
+   },
+   "deliverables": [
+    "src/gpt2_pytorch/hub/catalog.py",
+    "src/gpt2_pytorch/hub/http.py",
+    "src/gpt2_pytorch/hub/discover.py",
+    "csv/goldens.csv"
+   ],
+   "write_set": [
+    "src/gpt2_pytorch/hub/__init__.py",
+    "src/gpt2_pytorch/hub/catalog.py",
+    "src/gpt2_pytorch/hub/http.py",
+    "src/gpt2_pytorch/hub/discover.py",
+    "csv/goldens.csv",
+    "tests/test_hub_http.py",
+    "tests/test_discover.py",
+    "tests/fixtures/model_info/"
+   ],
+   "non_goals": [
+    "Header parsing (05b)",
+    "Batch ledger (05d)"
+   ],
+   "blockers": [
+    {
+     "blocker": "Hub rate limits during the smoke run",
+     "response": "keep concurrency low (4) and rely on backoff; 05d sizes the full run"
+    }
+   ]
+  },
+  {
+   "id": "05b",
+   "slug": "headers-and-manifest",
+   "title": "Safetensors and GGUF header readers, fixtures, tensor manifest v1",
+   "kind": "feature",
+   "master_sections": [
+    "§3",
+    "§5.1",
+    "§5.2",
+    "§8.3"
+   ],
+   "wave": 0,
+   "complexity": "L",
+   "requirements": [
+    "R-04",
+    "R-05",
+    "R-06",
+    "R-25"
+   ],
+   "goal": "Read safetensors and GGUF headers by range with 0 payload bytes, capture offline header fixtures, and write a validated, deterministic manifest.json.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 05b DESIGN.md: own 2-range reader vs huggingface_hub `parse_safetensors_file_metadata`/`get_safetensors_metadata` (both exist in 2.4.0 but expose no byte count and no component subfolders), GGUF window growth and the large-array summary threshold, the failed:<code> list, and every §5.2 manifest field with its source",
+         "verify": "DESIGN.md 'Readers' states the chosen safetensors path with its reason, and 'Manifest' lists every §5.2 field with its source",
+         "requirements": [
+          "R-04",
+          "R-05",
+          "R-06"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Readers",
+       "tasks": [
+        {
+         "text": "Write `read_safetensors_header(get_range)` in src/gpt2_pytorch/hub/headers.py: bytes 0-7 → N, bytes 8..7+N → JSON, returns (header, bytes_read); reuse the parsing in checkpoint/safetensors_loader.py",
+         "verify": "`.venv/bin/python -m pytest tests/test_headers.py -q -k safetensors` passes on a fixture header (bytes_read == 8 + N, payload 0)",
+         "requirements": [
+          "R-04"
+         ]
+        },
+        {
+         "text": "Write `read_gguf_header(get_range, budget)` in hub/headers.py: magic, version, tensor_count, kv_count, KV section in 1 MiB windows doubling, tensor-info table; tokens/scores/merges arrays as {type, count, head}; type names from gguf.constants; never GGUFReader; failed:truncated|corrupt|over_budget",
+         "verify": "`.venv/bin/python -m pytest tests/test_headers.py -q -k gguf` passes: tensor count == tensor_count, tokenizer.ggml.tokens summarized, a truncated header → failed:truncated",
+         "requirements": [
+          "R-05"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "Fixtures",
+       "tasks": [
+        {
+         "text": "Write src/gpt2_pytorch/hub/fixtures.py: `capture(repo, sha)` saves config.json, the index, one `<file>.header.json` per weight file (safetensors: the header dict verbatim; GGUF: KV with large arrays summarized plus tensor infos and the header byte length) and provenance.json to tests/fixtures/headers/<org>__<repo>@<sha>/; never weight bytes; `fixture_reader(dir)` rebuilds safetensors header bytes from the JSON for offline tests",
+         "verify": "[network] `.venv/bin/python -m gpt2_pytorch.hub.fixtures distilbert/distilgpt2` creates tests/fixtures/headers/distilbert__distilgpt2@<sha>/ holding only .json files, total under 1 MiB",
+         "requirements": [
+          "R-25"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "Manifest",
+       "tasks": [
+        {
+         "text": "Write src/gpt2_pytorch/schemas/tensor-manifest-v1.schema.json from §5.2",
+         "verify": "`.venv/bin/python -c \"import json,jsonschema; jsonschema.Draft202012Validator.check_schema(json.load(open('src/gpt2_pytorch/schemas/tensor-manifest-v1.schema.json')))\"` exits 0",
+         "requirements": [
+          "R-06"
+         ]
+        },
+        {
+         "text": "Write src/gpt2_pytorch/hub/manifest.py `build_manifest(...)` and `validate_manifest(m)`: tensors sorted by (file, key), GGUF `ne` as read and `shape` reversed, llama.cpp names kept, stats with payload_bytes_read 0, canonical JSON (sorted keys, fixed separators), fetched_at the only non-deterministic field",
+         "verify": "`.venv/bin/python -m pytest tests/test_manifest.py -q` passes: fixture manifests validate, two builds are byte-identical apart from fetched_at, GGUF ne [4096, 1024] → shape [1024, 4096]",
+         "requirements": [
+          "R-06"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Real repos",
+       "tasks": [
+        {
+         "text": "[network] Capture fixtures for Qwen/Qwen2.5-7B-Instruct (sharded) and TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF (Q4_K_M), then build and validate both manifests offline from them",
+         "verify": "both manifests validate with payload_bytes_read == 0; Qwen2.5 tensor count == len(index weight_map); mixtral tensor count == tensor_count and blk.0.ffn_gate_exps.weight shape == [8, 14336, 4096]",
+         "requirements": [
+          "R-04",
+          "R-05",
+          "R-25"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "Sharded safetensors and GGUF real headers read with 0 payload bytes and matching tensor counts",
+     "requirements": [
+      "R-04",
+      "R-05"
+     ],
+     "verified_by": "05b.C.P1.T1"
+    },
+    {
+     "text": "Manifests validate and rebuild byte-identically apart from fetched_at",
+     "requirements": [
+      "R-06"
+     ],
+     "verified_by": "05b.B.P3.T2"
+    },
+    {
+     "text": "Fixture folders exist and tests read them offline",
+     "requirements": [
+      "R-25"
+     ],
+     "verified_by": "05b.C.P1.T1"
+    }
+   ],
+   "depends_on": [
+    "05a",
+    "00a"
+   ],
+   "dependency_reasons": {
+    "05a": "range reads, small files and discovery output",
+    "00a": "jsonschema from the hub extra"
+   },
+   "deliverables": [
+    "src/gpt2_pytorch/hub/headers.py",
+    "src/gpt2_pytorch/hub/manifest.py",
+    "src/gpt2_pytorch/hub/fixtures.py",
+    "src/gpt2_pytorch/schemas/tensor-manifest-v1.schema.json",
+    "tests/fixtures/headers/"
+   ],
+   "write_set": [
+    "src/gpt2_pytorch/hub/headers.py",
+    "src/gpt2_pytorch/hub/manifest.py",
+    "src/gpt2_pytorch/hub/fixtures.py",
+    "src/gpt2_pytorch/schemas/tensor-manifest-v1.schema.json",
+    "tests/test_headers.py",
+    "tests/test_manifest.py",
+    "tests/fixtures/headers/"
+   ],
+   "non_goals": [
+    "Sidecar binding (06e)",
+    "Anything architecture-dependent in the manifest"
+   ],
+   "blockers": [
+    {
+     "blocker": "A GGUF KV section larger than the default budget",
+     "response": "D3 is set in 05d from measurements; until then use a generous provisional cap and return failed:over_budget above it"
+    }
+   ]
+  },
+  {
+   "id": "06a",
+   "slug": "block-library",
+   "title": "Descriptor format, selectors, blocks from arch.mjs, GPT-2 and llama-family descriptors",
+   "kind": "foundation",
+   "master_sections": [
+    "§2",
+    "§4",
+    "§6",
+    "§8.1",
+    "§9.4"
+   ],
+   "wave": 0,
+   "complexity": "L",
+   "requirements": [
+    "R-27",
+    "R-28",
+    "R-29",
+    "R-30",
+    "R-52"
+   ],
+   "goal": "Path A core: descriptor JSON with selectors, the arch.mjs blocks ported onto Program, build(), and the gpt2 and llama-family descriptors reproducing five goldens.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Read arch.mjs (llamaGraph, mixtralGraph, deepseekGraph, the six blocks), activity_bar/shared/mock.js, tensorprog/lower.py, qwen3_5.py and program.py; write 06a DESIGN.md: block signatures on Program with the arch.mjs line each ports, descriptor JSON (§7.2 keys), selector semantics, and `build(descriptor, hyper, scheme) -> (viz_graph, expected_params)`",
+         "verify": "DESIGN.md 'Blocks' lists rms, rope, softmax, gqa, swiglu and experts with Python signatures and arch.mjs line numbers; 'Descriptor' shows one complete example",
+         "requirements": [
+          "R-27",
+          "R-28"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Format",
+       "tasks": [
+        {
+         "text": "Write src/gpt2_pytorch/registry/descriptor.py: load and validate descriptor JSON (match, hyperparameters, schemes, recipe, ties, ignored, provenance) and the selectors uniform, list(key), first_k(key), period, pattern, index_sets, per_layer_config, by_presence",
+         "verify": "`.venv/bin/python -m pytest tests/test_descriptor.py -q` passes: each selector maps a sample config to the expected per-layer kinds (first_k_dense_replace=3 over 6 layers → 3 dense, 3 moe)",
+         "requirements": [
+          "R-27"
+         ]
+        },
+        {
+         "text": "Transcribe the configs the goldens were spelled from into tests/fixtures/spelled/<golden>.config.json (HF config.json keys): the 6 arch.mjs goldens from activity_bar/shared/mock.js and distilgpt2 from src/gpt2_pytorch/config.py",
+         "verify": "tests/fixtures/spelled/ holds 7 config files, each with hidden_size (or n_embd) matching its golden's dims.D",
+         "requirements": [
+          "R-30"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "Blocks and build",
+       "tasks": [
+        {
+         "text": "Port rms, rope, softmax, gqa, swiglu and experts from arch.mjs to src/gpt2_pytorch/registry/blocks.py as functions on Program (no new primitives); set axes[].symbol for B and T",
+         "verify": "`.venv/bin/python -m pytest tests/test_blocks.py -q` passes: one llama layer built from blocks has the same op primitives, in order, with the same tensor shapes as layer 0 of json/qwen2.5-7b-instruct.json",
+         "requirements": [
+          "R-28",
+          "R-52"
+         ]
+        },
+        {
+         "text": "Write src/gpt2_pytorch/registry/build.py `build(descriptor, hyper, scheme)` → viz_graph() output plus expected parameters {checkpoint_key or view: shape}, with a CLI `python -m gpt2_pytorch.registry.build --descriptor ID --config FILE --out FILE`",
+         "verify": "`.venv/bin/python -m gpt2_pytorch.registry.build --help` lists --descriptor, --config and --out",
+         "requirements": [
+          "R-27"
+         ]
+        },
+        {
+         "text": "Write registry/descriptors/gpt2.json whose recipe calls tensorprog/lower.py (no rewrite) and keeps the golden's `source` string",
+         "verify": "`.venv/bin/python -m gpt2_pytorch.registry.build --descriptor gpt2 --config tests/fixtures/spelled/distilgpt2.config.json --out $TMPDIR/d.json && cmp $TMPDIR/d.json json/distilgpt2.json` exits 0",
+         "requirements": [
+          "R-29"
+         ]
+        },
+        {
+         "text": "Write llama-family descriptors (llama, qwen2, mistral, phi3, gemma2: bias, sliding window, softcap and norm +1 as descriptor fields) over the blocks",
+         "verify": "for qwen2.5-7b-instruct, mistral-7b-instruct-v0.3, phi-3.5-mini-instruct and gemma-2-2b-it, build from the spelled config and `tools.graph_check --against json/<golden>.json` prints 0 differences",
+         "requirements": [
+          "R-30"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Goldens",
+       "tasks": [
+        {
+         "text": "Add tests/test_path_a_goldens.py building every golden that has a descriptor from its spelled config and comparing it with tools.graph_check",
+         "verify": "`.venv/bin/python -m pytest tests/test_path_a_goldens.py -q` passes: distilgpt2 byte-identical, the 4 llama-family goldens with 0 differences",
+         "requirements": [
+          "R-29",
+          "R-30"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "distilgpt2 rebuilds byte-identically through the gpt2 descriptor",
+     "requirements": [
+      "R-29"
+     ],
+     "verified_by": "06a.C.P1.T1"
+    },
+    {
+     "text": "qwen2.5, mistral, phi-3.5 and gemma-2 rebuild with 0 structural differences",
+     "requirements": [
+      "R-30"
+     ],
+     "verified_by": "06a.C.P1.T1"
+    },
+    {
+     "text": "Every selector maps a sample config to the expected layer kinds",
+     "requirements": [
+      "R-27"
+     ],
+     "verified_by": "06a.B.P1.T1"
+    },
+    {
+     "text": "Blocks reproduce a golden layer's primitives and shapes, with B/T symbols set",
+     "requirements": [
+      "R-28",
+      "R-52"
+     ],
+     "verified_by": "06a.B.P2.T1"
+    }
+   ],
+   "depends_on": [
+    "00a"
+   ],
+   "dependency_reasons": {
+    "00a": "verifies with tools/graph_check.py --against"
+   },
+   "deliverables": [
+    "src/gpt2_pytorch/registry/descriptor.py",
+    "src/gpt2_pytorch/registry/blocks.py",
+    "src/gpt2_pytorch/registry/build.py",
+    "src/gpt2_pytorch/registry/descriptors/"
+   ],
+   "write_set": [
+    "src/gpt2_pytorch/registry/__init__.py",
+    "src/gpt2_pytorch/registry/descriptor.py",
+    "src/gpt2_pytorch/registry/blocks.py",
+    "src/gpt2_pytorch/registry/build.py",
+    "src/gpt2_pytorch/registry/descriptors/",
+    "tests/fixtures/spelled/",
+    "tests/test_descriptor.py",
+    "tests/test_blocks.py",
+    "tests/test_path_a_goldens.py"
+   ],
+   "non_goals": [
+    "Resolution and binding (06c)",
+    "Generated GGUF name maps (06d)"
+   ],
+   "blockers": [
+    {
+     "blocker": "arch.mjs goldens set B/T symbol null while R-52 wants symbols",
+     "response": "§8.1 structural equality does not compare symbols; set them and note it in DECISIONS"
+    },
+    {
+     "blocker": "distilgpt2 byte identity includes `source` and key order",
+     "response": "the gpt2 descriptor passes the golden's source string through to viz_graph()"
+    }
+   ]
+  },
+  {
+   "id": "06b",
+   "slug": "golden-ports",
+   "title": "mixtral, deepseek_v3 and qwen3_5 descriptors",
+   "kind": "feature",
+   "master_sections": [
+    "§2",
+    "§7",
+    "§8.1"
+   ],
+   "wave": 0,
+   "complexity": "M",
+   "requirements": [
+    "R-31"
+   ],
+   "goal": "Finish the Wave 0 golden set: the MoE (mixtral, DeepSeek-V3 with MLA) and hybrid (qwen3_5) descriptors rebuild their goldens.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 06b DESIGN.md: per golden its descriptor id, recipe blocks, the arch.mjs or qwen3_5.py lines it follows, new blocks needed (mla, shared experts), deepseek's 174 keyless per-expert views, and which qwen3_5.py functions the recipe calls instead of rewriting",
+         "verify": "DESIGN.md has one section each for mixtral, deepseek_v3 and qwen3_5 naming recipe blocks and source lines",
+         "requirements": [
+          "R-31"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Descriptors",
+       "tasks": [
+        {
+         "text": "Write registry/descriptors/mixtral.json (gqa + experts; GGUF names hand-listed until 06d generates them)",
+         "verify": "build from tests/fixtures/spelled/mixtral-8x7b-instruct-q4km.config.json and `tools.graph_check --against json/mixtral-8x7b-instruct-q4km.json` prints 0 differences",
+         "requirements": [
+          "R-31"
+         ]
+        },
+        {
+         "text": "Add the mla block to registry/blocks.py and write registry/descriptors/deepseek_v3.json (first_k_dense_replace selector, shared experts, per-expert tensors as keyless views)",
+         "verify": "build from the spelled deepseek-v3 config and `tools.graph_check --against json/deepseek-v3.json` prints 0 differences, including the 174 keyless views",
+         "requirements": [
+          "R-31"
+         ]
+        },
+        {
+         "text": "[network] Fetch Qwen/Qwen3.8-27B-FP8 config.json into tests/fixtures/spelled/qwen3.8-27b-fp8.config.json; write registry/descriptors/qwen3_5.json whose recipe calls tensorprog/qwen3_5.py lower_qwen3_5 (scheme prefix model.language_model.)",
+         "verify": "build from that config and `tools.graph_check --against json/qwen3.8-27b-fp8.json --ignore view` prints 0 differences (the 400 FP8 `*_scale_inv` views come from the header; full equality is checked in 08a and 06e)",
+         "requirements": [
+          "R-31"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Goldens",
+       "tasks": [
+        {
+         "text": "Extend tests/test_path_a_goldens.py to all 8 goldens",
+         "verify": "`.venv/bin/python -m pytest tests/test_path_a_goldens.py -q` passes for 8 goldens",
+         "requirements": [
+          "R-31"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "mixtral, deepseek-v3 and qwen3.8 rebuild from spelled configs with 0 differences, deepseek's views matched",
+     "requirements": [
+      "R-31"
+     ],
+     "verified_by": "06b.C.P1.T1"
+    }
+   ],
+   "depends_on": [
+    "06a"
+   ],
+   "dependency_reasons": {
+    "06a": "descriptor format, blocks and build()"
+   },
+   "deliverables": [
+    "registry/descriptors/mixtral.json",
+    "registry/descriptors/deepseek_v3.json",
+    "registry/descriptors/qwen3_5.json"
+   ],
+   "write_set": [
+    "src/gpt2_pytorch/registry/blocks.py",
+    "src/gpt2_pytorch/registry/descriptors/",
+    "tests/fixtures/spelled/",
+    "tests/test_path_a_goldens.py"
+   ],
+   "non_goals": [
+    "Routed/scan annotations (07b, 07c)",
+    "Generated name maps (06d)"
+   ],
+   "blockers": [
+    {
+     "blocker": "No local Qwen3.8-27B-FP8 sample was found at planning time",
+     "response": "fetch config.json from the Hub (allowlisted small file)"
+    }
+   ]
+  },
+  {
+   "id": "06c",
+   "slug": "resolve-and-bind",
+   "title": "Resolution ladder, hyperparameter sources, binding verifier",
+   "kind": "foundation",
+   "master_sections": [
+    "§3",
+    "§4",
+    "§6",
+    "D4"
+   ],
+   "wave": 0,
+   "complexity": "L",
+   "requirements": [
+    "R-08",
+    "R-09",
+    "R-10",
+    "R-26"
+   ],
+   "goal": "Turn a manifest into ranked descriptor candidates, resolved dims with sources, and a binding partition that accepts or rejects each candidate with a near-miss report.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 06c DESIGN.md: candidate record (descriptor, rung, evidence, score), the R1–R4 order with nested config keys, a small parser for the prose-like metadata_spec.json dims (`hidden_size | n_embd (GPT-2)`; never eval), the hyper source record, the five binding classes and the near-miss report format",
+         "verify": "DESIGN.md 'Ladder', 'Hyper' and 'Binding' each have a worked example (Kimi-K2, Qwen2.5 D=3584, a missing q_proj)",
+         "requirements": [
+          "R-08",
+          "R-09",
+          "R-10"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Resolve and bind",
+       "tasks": [
+        {
+         "text": "Write src/gpt2_pytorch/registry/resolve.py `candidates(manifest, row)`: R1 GGUF general.architecture, R2 architectures before model_type (also in text_config/llm_config/language_config/thinker_config), diffusers `_class_name` (model_index.json, component configs), timm `architecture`/`pretrained_cfg`, catalog backbone_class/timm_module, R3 tensor-name fingerprint, R4 name hint; an auto_map/remote-code repo keeps only architectures-matched candidates, else skipped:remote_code; trust_remote_code never set",
+         "verify": "`.venv/bin/python -m pytest tests/test_resolve.py -q` passes: Kimi-K2 (model_type kimi_k2, architectures [DeepseekV3ForCausalLM]) → first candidate deepseek_v3; a diffusers model_index.json with UNet2DConditionModel yields a candidate keyed UNet2DConditionModel; an auto_map-only config → skipped:remote_code",
+         "requirements": [
+          "R-08",
+          "R-26"
+         ]
+        },
+        {
+         "text": "Write src/gpt2_pytorch/registry/hyper.py: descriptor sources first, then csv/categories/<category>/metadata_spec.json config/GGUF expressions, each dim with source config:<key> | gguf:<key> | shape:<tensor> | catalog:<col> | default; shape check against the header",
+         "verify": "`.venv/bin/python -m pytest tests/test_hyper.py -q` passes: the Qwen2.5 fixture gives D=3584, Hkv=4, Dh=128 with config sources; the mixtral GGUF fixture gives gguf sources",
+         "requirements": [
+          "R-09"
+         ]
+        },
+        {
+         "text": "Write src/gpt2_pytorch/registry/bind.py `verify(expected, manifest)`: every stored tensor in exactly one of bound, tied, ignored, aux, component; else a near-miss report of missing, misshaped and unclaimed tensors",
+         "verify": "`.venv/bin/python -m pytest tests/test_bind.py -q` passes: distilgpt2 binds fully; one tensor removed or one shape changed fails and names that tensor",
+         "requirements": [
+          "R-10"
+         ]
+        },
+        {
+         "text": "Try candidates in rank order: the first that binds wins, the others' near-misses are kept",
+         "verify": "`.venv/bin/python -m pytest tests/test_resolve.py -q -k fallthrough` passes: a wrong first candidate falls to the second with its near-miss recorded",
+         "requirements": [
+          "R-08",
+          "R-10"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Fixtures",
+       "tasks": [
+        {
+         "text": "Run resolve → hyper → build → bind offline on the distilgpt2, Qwen2.5-7B-Instruct and mixtral GGUF fixtures via `python -m gpt2_pytorch.registry.resolve <fixture dir>`",
+         "verify": "each prints its winning descriptor, rung and `unbound: 0`, and every dim has a source",
+         "requirements": [
+          "R-08",
+          "R-09",
+          "R-10"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "Kimi-K2 resolves to deepseek_v3; remote-code-only repos are skipped:remote_code",
+     "requirements": [
+      "R-08",
+      "R-26"
+     ],
+     "verified_by": "06c.B.P1.T1"
+    },
+    {
+     "text": "Every dim of the fixture graphs has a recorded source",
+     "requirements": [
+      "R-09"
+     ],
+     "verified_by": "06c.C.P1.T1"
+    },
+    {
+     "text": "A removed or misshaped tensor fails binding and is named",
+     "requirements": [
+      "R-10"
+     ],
+     "verified_by": "06c.B.P1.T3"
+    }
+   ],
+   "depends_on": [
+    "05b",
+    "06b"
+   ],
+   "dependency_reasons": {
+    "05b": "manifests and fixtures",
+    "06b": "deepseek_v3 and mixtral descriptors for the ladder tests"
+   },
+   "deliverables": [
+    "src/gpt2_pytorch/registry/resolve.py",
+    "src/gpt2_pytorch/registry/hyper.py",
+    "src/gpt2_pytorch/registry/bind.py"
+   ],
+   "write_set": [
+    "src/gpt2_pytorch/registry/resolve.py",
+    "src/gpt2_pytorch/registry/hyper.py",
+    "src/gpt2_pytorch/registry/bind.py",
+    "tests/test_resolve.py",
+    "tests/test_hyper.py",
+    "tests/test_bind.py"
+   ],
+   "non_goals": [
+    "Sidecar rules (06e)",
+    "Path B fallback (06f)"
+   ],
+   "blockers": [
+    {
+     "blocker": "metadata_spec.json dims are prose, not executable expressions",
+     "response": "parse the `a | b` alternation and defaults; descriptors carry anything the parser cannot read"
+    }
+   ]
+  },
+  {
+   "id": "05c",
+   "slug": "graph-writer-cli",
+   "title": "run_one, graph and report writers, content store, single-URL CLI",
+   "kind": "slice",
+   "master_sections": [
+    "§1",
+    "§5",
+    "§5.3",
+    "§5.4",
+    "D9"
+   ],
+   "wave": 0,
+   "complexity": "M",
+   "requirements": [
+    "R-00",
+    "R-13",
+    "R-32",
+    "R-33"
+   ],
+   "goal": "Thin end-to-end slice: one URL (or a fixture dir) → manifest.json, report.json and a content-addressed graph through `python -m tools.hf_graph`.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 05c DESIGN.md: run_one stage order S1–S12 with each side exit's status, report.json fields (status, candidates, near-misses, binding partition, hyper sources, bytes read), the §5.3 additive fields, content key = sha256(descriptor@version, resolved hyper, naming scheme), graph.ref format, §5.4 paths",
+         "verify": "DESIGN.md maps every §5 stage S1–S12 to a function and every side exit to a §5.4 status",
+         "requirements": [
+          "R-13",
+          "R-33"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Writers",
+       "tasks": [
+        {
+         "text": "Write src/gpt2_pytorch/hub/pipeline.py `run_one(job, out_root, reader=None)`: discover → small files → headers → manifest → resolve → hyper → bind → build → write; statuses per §5.4, no_graph writes the tensor inventory and prefix tree into report.json",
+         "verify": "`.venv/bin/python -m pytest tests/test_pipeline.py -q` passes offline: the distilgpt2 fixture → ok; a fixture with an unknown model_type → no_graph with a prefix tree",
+         "requirements": [
+          "R-33"
+         ]
+        },
+        {
+         "text": "Write graph.json with the §5.3 additive fields (checkpoint, provenance {certainty, evidence, origin, descriptor id@version, rung, path, hyper_sources}, components) into output/categories/graphs/<content-key>.json, with per-repo graph.ref {content_key, checkpoint_key overrides}, or a full graph.json when the binding differs",
+         "verify": "`.venv/bin/python -m pytest tests/test_pipeline.py -q -k shared_graph` passes: two fixtures with identical configs write one graphs/*.json and two graph.ref",
+         "requirements": [
+          "R-13"
+         ]
+        },
+        {
+         "text": "Write all JSON canonically (sorted keys, fixed separators, trailing newline); fetched_at is the only volatile field",
+         "verify": "`.venv/bin/python -m pytest tests/test_pipeline.py -q -k deterministic` passes: two runs give byte-identical files apart from fetched_at",
+         "requirements": [
+          "R-32"
+         ]
+        },
+        {
+         "text": "Write tools/hf_graph.py: `python -m tools.hf_graph <huggingface_url> [--revision R] [--out output/categories]` and `--fixture DIR` (offline) calling run_one",
+         "verify": "`.venv/bin/python -m tools.hf_graph --fixture tests/fixtures/headers/distilbert__distilgpt2@* --out $TMPDIR/o` prints status ok and three output paths",
+         "requirements": [
+          "R-00"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "One URL",
+       "tasks": [
+        {
+         "text": "[network] Run `python -m tools.hf_graph https://huggingface.co/Qwen/Qwen2.5-7B-Instruct`",
+         "verify": "output/categories/decoder_dense/safetensors/Qwen__Qwen2.5-7B-Instruct/ has manifest.json, report.json and graph.json or graph.ref, and `tools.graph_check <graph> --manifest <manifest>` exits 0",
+         "requirements": [
+          "R-00",
+          "R-13"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "Qwen2.5-7B-Instruct URL writes all three outputs and the graph passes §8.2",
+     "requirements": [
+      "R-00",
+      "R-13"
+     ],
+     "verified_by": "05c.C.P1.T1"
+    },
+    {
+     "text": "Identical configs share one stored graph",
+     "requirements": [
+      "R-13"
+     ],
+     "verified_by": "05c.B.P1.T2"
+    },
+    {
+     "text": "Outputs are byte-identical across runs apart from fetched_at",
+     "requirements": [
+      "R-32"
+     ],
+     "verified_by": "05c.B.P1.T3"
+    },
+    {
+     "text": "Unknown architectures end as no_graph with an inventory",
+     "requirements": [
+      "R-33"
+     ],
+     "verified_by": "05c.B.P1.T1"
+    }
+   ],
+   "depends_on": [
+    "05a",
+    "05b",
+    "06c",
+    "06a"
+   ],
+   "dependency_reasons": {
+    "05a": "jobs and discovery",
+    "05b": "headers, manifests and fixture reader",
+    "06c": "resolve, hyper and bind",
+    "06a": "build()"
+   },
+   "deliverables": [
+    "src/gpt2_pytorch/hub/pipeline.py",
+    "tools/hf_graph.py"
+   ],
+   "write_set": [
+    "src/gpt2_pytorch/hub/pipeline.py",
+    "tools/hf_graph.py",
+    "tests/test_pipeline.py"
+   ],
+   "non_goals": [
+    "Batch loop and coverage (05d)"
+   ]
+  },
+  {
+   "id": "05d",
+   "slug": "batch-and-coverage",
+   "title": "Batch ledger, resume, coverage reports, backlog, 100-row smoke",
+   "kind": "feature",
+   "master_sections": [
+    "§2",
+    "§3",
+    "§5.4",
+    "§7",
+    "D3"
+   ],
+   "wave": 0,
+   "complexity": "M",
+   "requirements": [
+    "R-14",
+    "R-15",
+    "R-34",
+    "R-35"
+   ],
+   "goal": "Loop run_one over jobs with a resumable ledger, write coverage and the descriptor backlog, and measure throughput on 100 rows to set D3.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 05d DESIGN.md: ledger.jsonl record (repo, sha, stage, status, code, duration), resume rule (skip a repo whose latest terminal row has the same sha), concurrency model, coverage and near-miss columns, unlockable-rows ranking, backlog key choice (model_type, gguf arch, backbone class)",
+         "verify": "DESIGN.md has sections Ledger, Resume, Coverage and Backlog with column lists",
+         "requirements": [
+          "R-14",
+          "R-15"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Batch",
+       "tasks": [
+        {
+         "text": "Add `--all [--limit N] [--category C] [--concurrency K]` to tools/hf_graph.py: run_one over load_jobs() with an append-only output/categories/ledger.jsonl and resume",
+         "verify": "`.venv/bin/python -m pytest tests/test_batch.py -q` passes: a run stopped after 3 of 5 fixture jobs and restarted runs only the other 2; a set HF_TOKEN value is absent from the ledger and logs",
+         "requirements": [
+          "R-14"
+         ]
+        },
+        {
+         "text": "Add `--coverage`: coverage.csv (category × format × status), coverage_model_type.csv, near_misses.csv ranked by unlockable rows",
+         "verify": "`.venv/bin/python -m pytest tests/test_batch.py -q -k coverage` passes: every file's totals equal the ledger's terminal row count",
+         "requirements": [
+          "R-15"
+         ]
+        },
+        {
+         "text": "Write output/categories/descriptor_backlog.csv (key, category, rows, rows_unlocked) and recompute the §2 category/key table from catalog keys corrected by fetched configs",
+         "verify": "`.venv/bin/python -m pytest tests/test_batch.py -q -k backlog` passes on fixture ledgers: rows_unlocked sums to the unresolved row count",
+         "requirements": [
+          "R-35"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Smoke",
+       "tasks": [
+        {
+         "text": "[network] Run `--all --limit 100` stratified over category × format at low concurrency; record rows/min, requests per row and header bytes per model (p50, p95, max); set the D3 cap in DECISIONS.md",
+         "verify": "ledger.jsonl has 100 terminal rows, coverage.csv sums to 100, and DECISIONS.md D3 states a byte cap with the measured p95",
+         "requirements": [
+          "R-34",
+          "R-15"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "A killed batch resumes without redoing completed rows",
+     "requirements": [
+      "R-14"
+     ],
+     "verified_by": "05d.B.P1.T1"
+    },
+    {
+     "text": "Coverage totals match the ledger",
+     "requirements": [
+      "R-15"
+     ],
+     "verified_by": "05d.C.P1.T1"
+    },
+    {
+     "text": "D3 is set from the 100-row measurement",
+     "requirements": [
+      "R-34"
+     ],
+     "verified_by": "05d.C.P1.T1"
+    },
+    {
+     "text": "The backlog ranks keys by rows unlocked",
+     "requirements": [
+      "R-35"
+     ],
+     "verified_by": "05d.B.P1.T3"
+    }
+   ],
+   "depends_on": [
+    "05c"
+   ],
+   "dependency_reasons": {
+    "05c": "run_one and the CLI"
+   },
+   "deliverables": [
+    "tools/hf_graph.py --all/--coverage",
+    "output/categories/descriptor_backlog.csv (untracked)"
+   ],
+   "write_set": [
+    "tools/hf_graph.py",
+    "src/gpt2_pytorch/hub/batch.py",
+    "tests/test_batch.py",
+    ".plan/hf-graph-pipeline/DECISIONS.md"
+   ],
+   "non_goals": [
+    "The full run (07f)"
+   ]
+  },
+  {
+   "id": "08a",
+   "slug": "goldens-pinned",
+   "title": "Pin the 8 goldens, diff their configs, rebuild them from headers",
+   "kind": "validation",
+   "master_sections": [
+    "§8.1",
+    "§7"
+   ],
+   "wave": 0,
+   "complexity": "M",
+   "requirements": [
+    "R-11",
+    "R-36"
+   ],
+   "goal": "Wave 0 exit: each golden repo pinned at a sha, its real config diffed against the spelled one, and rebuilt by the pipeline from its header fixture.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 08a DESIGN.md: per golden its repo (confirm the mixtral GGUF repo holds mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf), format, spelled-config path and gated rule (gemma-2: skip with a message when its fixture is absent)",
+         "verify": "DESIGN.md lists 8 goldens with repo, format and tests/fixtures/spelled path",
+         "requirements": [
+          "R-36"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Pin and rebuild",
+       "tasks": [
+        {
+         "text": "[network] Fill csv/goldens.csv revisions and capture a header fixture per golden (gemma-2 only with an accepted HF_TOKEN)",
+         "verify": "every csv/goldens.csv row has a 40-hex revision and tests/fixtures/headers/ has a folder for each non-gated golden",
+         "requirements": [
+          "R-36"
+         ]
+        },
+        {
+         "text": "Diff each golden's real config.json against tests/fixtures/spelled/<golden>.config.json (one-off script, no new tool); write each delta with its cause into 08a DESIGN.md 'Config deltas'",
+         "verify": "DESIGN.md 'Config deltas' has an entry per golden (or 'none')",
+         "requirements": [
+          "R-36"
+         ]
+        },
+        {
+         "text": "Add tests/test_goldens.py: `tools.hf_graph --fixture` per golden, then `tools.graph_check --against json/<golden>.json` (structural equality for all 8, distilgpt2 included: the pipeline adds §5.3 fields; byte identity stays on the builder path, 06a); fix differences or list each remaining one with its cause in DESIGN.md",
+         "verify": "`.venv/bin/python -m pytest tests/test_goldens.py -q` passes: 7 goldens with 0 unlisted differences, gemma-2 passes or skips with a message",
+         "requirements": [
+          "R-11"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Wave 0 gate",
+       "tasks": [
+        {
+         "text": "Run the full suite with the golden tests as the Wave 0 gate",
+         "verify": "`.venv/bin/python -m pytest -q` exits 0 and includes tests/test_goldens.py and tests/test_path_a_goldens.py (distilgpt2 byte-identical via the builder)",
+         "requirements": [
+          "R-11"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "All goldens rebuild from pinned headers structurally equal, remaining differences listed with causes",
+     "requirements": [
+      "R-11"
+     ],
+     "verified_by": "08a.C.P1.T1"
+    },
+    {
+     "text": "Each golden is pinned and its config deltas listed",
+     "requirements": [
+      "R-36"
+     ],
+     "verified_by": "08a.B.P1.T2"
+    }
+   ],
+   "depends_on": [
+    "05c",
+    "05b"
+   ],
+   "dependency_reasons": {
+    "05c": "tools.hf_graph --fixture",
+    "05b": "fixture capture"
+   },
+   "deliverables": [
+    "csv/goldens.csv revisions",
+    "tests/fixtures/headers/<golden>@<sha>/",
+    "tests/test_goldens.py"
+   ],
+   "write_set": [
+    "csv/goldens.csv",
+    "tests/fixtures/headers/",
+    "tests/test_goldens.py"
+   ],
+   "non_goals": [
+    "Regenerating goldens (they are the oracle)"
+   ],
+   "blockers": [
+    {
+     "blocker": "gemma-2-2b-it is gated",
+     "response": "skip with a message when the fixture is absent; never block the Wave 0 exit"
+    }
+   ]
+  },
+  {
+   "id": "09a",
+   "slug": "tel-proof",
+   "title": "Graph⇔TEL design doc, round trip over goldens, TEL coverage analyzer",
+   "kind": "feature",
+   "master_sections": [
+    "§9",
+    "§7 (Wave T)"
+   ],
+   "wave": 0,
+   "complexity": "M",
+   "requirements": [
+    "R-16",
+    "R-49",
+    "R-50"
+   ],
+   "goal": "Write the §9 design, make tel_roundtrip.cjs run over many graphs, add the counted-exclusion analyzer, and reproduce §9.5 on the goldens.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design doc",
+       "tasks": [
+        {
+         "text": "Write docs/GRAPH_TEL.md from §9: mapping (§9.2), rule T-1, bindings (tensor:// URI; the store name for an HF repo and the sharded-repo → store mapping checked against ADR-0027 and PKG/tel/src/storage/bind.ts), dtype rule, counted exclusions (§9.4) and the round-trip claim (§9.5)",
+         "verify": "docs/GRAPH_TEL.md has sections Mapping, Bindings, Exclusions and Round trip, and Bindings cites the ADR-0027 and bind.ts lines it relies on",
+         "requirements": [
+          "R-16"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Tools",
+       "tasks": [
+        {
+         "text": "Let tools/tel_roundtrip.cjs take several graph paths or a directory and print one JSON line per graph plus a summary line (no change to tel.js)",
+         "verify": "`node tools/tel_roundtrip.cjs json/*.json --const-as-buffer` prints 8 lines with diff_total 0 and a summary with d3 pass 6/8",
+         "requirements": [
+          "R-16"
+         ]
+        },
+        {
+         "text": "Write tools/tel_coverage.py: per graph, count T♭-spellable ops and each §9.4 exclusion (routed MoE, unrolled recurrence, list-valued constants, concrete B/T without symbol, opaque ops)",
+         "verify": "`.venv/bin/python -m tools.tel_coverage json/*.json` prints a row per golden whose list-constant count equals tel_roundtrip's list_constants",
+         "requirements": [
+          "R-49"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Proof",
+       "tasks": [
+        {
+         "text": "Reproduce §9.5 on the 8 goldens",
+         "verify": "`node tools/tel_roundtrip.cjs json/*.json --const-as-buffer` → 8× diff_total 0 and d3 pass 6/8; adding `--fix-contract` → 8× diff_total 0, compile ok, d3 pass 8/8",
+         "requirements": [
+          "R-16"
+         ]
+        },
+        {
+         "text": "Keep the distilgpt2 baseline",
+         "verify": "`.venv/bin/python -m tools.viz_to_tel --graph json/distilgpt2.json --out $TMPDIR/d.tel && node tools/tel_compile.mjs $TMPDIR/d.tel artifacts/tel/model.tel` prints PASS",
+         "requirements": [
+          "R-50"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "§9.5 reproduced: 6/8 then 8/8 D3 with 0 differences",
+     "requirements": [
+      "R-16"
+     ],
+     "verified_by": "09a.C.P1.T1"
+    },
+    {
+     "text": "distilgpt2 viz_to_tel baseline prints PASS",
+     "requirements": [
+      "R-50"
+     ],
+     "verified_by": "09a.C.P1.T2"
+    },
+    {
+     "text": "Exclusion counts agree with tel_roundtrip",
+     "requirements": [
+      "R-49"
+     ],
+     "verified_by": "09a.B.P1.T2"
+    }
+   ],
+   "deliverables": [
+    "docs/GRAPH_TEL.md",
+    "tools/tel_roundtrip.cjs (multi-graph)",
+    "tools/tel_coverage.py"
+   ],
+   "write_set": [
+    "docs/GRAPH_TEL.md",
+    "tools/tel_roundtrip.cjs",
+    "tools/tel_coverage.py"
+   ],
+   "non_goals": [
+    "The batch TEL converter (next stage)",
+    "Editing TensormorphDesignUI/nodes/tel.js"
+   ],
+   "blockers": [
+    {
+     "blocker": "tools/tel_roundtrip.cjs is untracked",
+     "response": "commit it with this module's first change"
+    }
+   ]
+  },
+  {
+   "id": "06d",
+   "slug": "namemaps",
+   "title": "Generated HF↔GGUF name maps with a storage-transform overlay",
+   "kind": "feature",
+   "master_sections": [
+    "§4 (§7.6)",
+    "§6"
+   ],
+   "wave": 1,
+   "complexity": "M",
+   "requirements": [
+    "R-37"
+   ],
+   "goal": "Generate HF↔GGUF name tables from pinned gguf-py and record GGUF storage transforms in an overlay, replacing hand-listed GGUF names.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Read gguf-py tensor_mapping.py and constants.py at the pinned version (gguf 0.19.0; record its commit) and convert_hf_to_gguf.py's llama Q/K permute at that commit; write 06d DESIGN.md: generated table format and overlay transforms (stack, split, fuse, transpose, offset, rope_permute)",
+         "verify": "DESIGN.md states the pinned version and commit and quotes the convert_hf_to_gguf.py line that permutes Q/K",
+         "requirements": [
+          "R-37"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Maps",
+       "tasks": [
+        {
+         "text": "Write tools/gen_namemaps.py producing src/gpt2_pytorch/registry/namemaps/gguf.json from gguf.constants and tensor_mapping, with commit and MIT notice in the file; `--check` regenerates and compares",
+         "verify": "`.venv/bin/python tools/gen_namemaps.py --check` exits 0",
+         "requirements": [
+          "R-37"
+         ]
+        },
+        {
+         "text": "Write registry/namemaps/overlay.json: llama-family attn_q/attn_k rope_permute, fused QKV split, gate_up split, Gemma norm +1 offset",
+         "verify": "`.venv/bin/python -m pytest tests/test_namemaps.py -q` passes: blk.0.attn_q.weight ↔ model.layers.0.self_attn.q_proj.weight carries rope_permute; Gemma blk.0.attn_norm.weight carries offset +1",
+         "requirements": [
+          "R-37"
+         ]
+        },
+        {
+         "text": "Point descriptor `schemes.gguf` at the generated map and drop mixtral's hand-listed names",
+         "verify": "`.venv/bin/python -m pytest tests/test_path_a_goldens.py tests/test_goldens.py -q` passes (mixtral still 0 differences)",
+         "requirements": [
+          "R-37"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "C3",
+       "tasks": [
+        {
+         "text": "Check that the HF and GGUF schemes give the same canonical names for llama and mixtral",
+         "verify": "`.venv/bin/python -m pytest tests/test_namemaps.py -q -k c3` passes",
+         "requirements": [
+          "R-37"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "Generated maps regenerate identically and the overlay records the four transforms",
+     "requirements": [
+      "R-37"
+     ],
+     "verified_by": "06d.B.P1.T2"
+    },
+    {
+     "text": "HF and GGUF schemes agree on canonical names for llama and mixtral",
+     "requirements": [
+      "R-37"
+     ],
+     "verified_by": "06d.C.P1.T1"
+    }
+   ],
+   "depends_on": [
+    "06a",
+    "08a"
+   ],
+   "dependency_reasons": {
+    "06a": "descriptor schemes",
+    "08a": "golden tests as the regression check"
+   },
+   "deliverables": [
+    "tools/gen_namemaps.py",
+    "src/gpt2_pytorch/registry/namemaps/"
+   ],
+   "write_set": [
+    "tools/gen_namemaps.py",
+    "src/gpt2_pytorch/registry/namemaps/",
+    "src/gpt2_pytorch/registry/descriptors/",
+    "tests/test_namemaps.py"
+   ],
+   "serialize_with": [
+    "06e"
+   ]
+  },
+  {
+   "id": "06e",
+   "slug": "sidecars",
+   "title": "Quantization sidecar binding",
+   "kind": "feature",
+   "master_sections": [
+    "§4 (§7.4)"
+   ],
+   "wave": 1,
+   "complexity": "M",
+   "requirements": [
+    "R-07"
+   ],
+   "goal": "Bind quantization sidecars to their principals only when the shape relation holds, and record each binding in report.json.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 06e DESIGN.md: per scheme (FP8 weight_scale_inv, MXFP4 _blocks/_scales, GPTQ/AWQ qweight/qzeros/scales/g_idx, MLX scales/biases, bitsandbytes, GGUF ggml types) the tensor-name pattern and shape relation, from design doc §7.4",
+         "verify": "DESIGN.md has a table with one row per scheme: pattern, principal, shape relation, `view` text",
+         "requirements": [
+          "R-07"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Rules",
+       "tasks": [
+        {
+         "text": "Write src/gpt2_pytorch/registry/sidecars.py and call it from bind.py: a sidecar matching its pattern and shape relation becomes `aux` attached to its principal and named in the principal's `view`",
+         "verify": "`.venv/bin/python -m pytest tests/test_sidecars.py -q` passes: one synthetic header per scheme binds, and a wrong-shape sidecar stays unbound",
+         "requirements": [
+          "R-07"
+         ]
+        },
+        {
+         "text": "Record bindings in report.json as `sidecars: [{tensor, principal, scheme}]` and route the qwen3_5 descriptor's `_scale_inv` views through sidecars.py",
+         "verify": "`.venv/bin/python -m pytest tests/test_path_a_goldens.py tests/test_goldens.py -q` passes (qwen3.8 views unchanged)",
+         "requirements": [
+          "R-07"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "FP8 golden",
+       "tasks": [
+        {
+         "text": "[network once] Capture the Qwen/Qwen3.8-27B-FP8 header fixture if 08a did not, then run `tools.hf_graph --fixture` on it",
+         "verify": "its report.json lists every weight_scale_inv attached to a principal and 0 unbound sidecars",
+         "requirements": [
+          "R-07"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "Qwen3.8-27B-FP8: every weight_scale_inv attached, 0 unbound sidecars",
+     "requirements": [
+      "R-07"
+     ],
+     "verified_by": "06e.C.P1.T1"
+    },
+    {
+     "text": "A sidecar with the wrong shape relation never binds",
+     "requirements": [
+      "R-07"
+     ],
+     "verified_by": "06e.B.P1.T1"
+    }
+   ],
+   "depends_on": [
+    "06c",
+    "08a"
+   ],
+   "dependency_reasons": {
+    "06c": "bind.py classes",
+    "08a": "golden fixtures"
+   },
+   "deliverables": [
+    "src/gpt2_pytorch/registry/sidecars.py"
+   ],
+   "write_set": [
+    "src/gpt2_pytorch/registry/sidecars.py",
+    "src/gpt2_pytorch/registry/bind.py",
+    "src/gpt2_pytorch/registry/descriptors/qwen3_5.json",
+    "tests/test_sidecars.py"
+   ]
+  },
+  {
+   "id": "07a",
+   "slug": "dense-descriptors",
+   "title": "Conformance runner and top dense-decoder descriptors",
+   "kind": "feature",
+   "master_sections": [
+    "§7 (Wave 1)",
+    "§8.3"
+   ],
+   "wave": 1,
+   "complexity": "L",
+   "requirements": [
+    "R-38",
+    "R-39"
+   ],
+   "goal": "Add tools/conformance.py (C1, C3–C6) and descriptors for the top decoder_dense keys by rows, then show the coverage gain.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Backlog",
+       "tasks": [
+        {
+         "text": "Pick the decoder_dense keys from output/categories/descriptor_backlog.csv (expected: llama, qwen2, qwen3, mistral, hf_olmo, gemma2, gemma3_text, phi3) and write 07a DESIGN.md: per key the descriptor it extends, its differences (q/k norm, sliding-window pattern, bias) and predicted rows",
+         "verify": "DESIGN.md lists each chosen key with predicted rows and the descriptor it extends",
+         "requirements": [
+          "R-39"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Conformance",
+       "tasks": [
+        {
+         "text": "Write tools/conformance.py `<descriptor>...`: C1 binds a real header fixture, C3 HF/GGUF canonical names agree, C4 matmul/edge/FLOP counts equal the golden (or a hand count recorded in the descriptor's provenance), C5 hostile input (truncated header, wrong shape, huge counts) fails cleanly, C6 two builds are byte-identical",
+         "verify": "`.venv/bin/python -m tools.conformance llama mixtral` prints PASS for C1, C3, C4, C5 and C6 for both",
+         "requirements": [
+          "R-38"
+         ]
+        }
+       ]
+      },
+      {
+       "title": "Descriptors",
+       "tasks": [
+        {
+         "text": "[network for fixtures] Add qwen3 and hf_olmo descriptors with a header fixture each",
+         "verify": "`.venv/bin/python -m tools.conformance qwen3 hf_olmo` prints C1, C4 and C6 PASS",
+         "requirements": [
+          "R-39"
+         ]
+        },
+        {
+         "text": "[network for fixtures] Add gemma3_text and the remaining chosen keys with a header fixture each",
+         "verify": "`.venv/bin/python -m tools.conformance <each new id>` prints C1, C4 and C6 PASS",
+         "requirements": [
+          "R-39"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Coverage",
+       "tasks": [
+        {
+         "text": "[network] Re-run decoder_dense rows (`tools.hf_graph --all --category decoder_dense`, sized by the D3 throughput) and `--coverage`",
+         "verify": "decoder_dense ok rows in coverage.csv rise by at least the DESIGN.md prediction minus the listed misses",
+         "requirements": [
+          "R-39"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "Every dense descriptor passes C1, C4 and C6",
+     "requirements": [
+      "R-38",
+      "R-39"
+     ],
+     "verified_by": "07a.B.P2.T2"
+    },
+    {
+     "text": "decoder_dense coverage rises by the predicted rows",
+     "requirements": [
+      "R-39"
+     ],
+     "verified_by": "07a.C.P1.T1"
+    }
+   ],
+   "depends_on": [
+    "05d",
+    "06d",
+    "06e"
+   ],
+   "dependency_reasons": {
+    "05d": "backlog and coverage",
+    "06d": "GGUF schemes for C3",
+    "06e": "FP8/GPTQ/AWQ repos bind"
+   },
+   "deliverables": [
+    "tools/conformance.py",
+    "dense descriptors"
+   ],
+   "write_set": [
+    "tools/conformance.py",
+    "src/gpt2_pytorch/registry/descriptors/",
+    "tests/fixtures/headers/"
+   ]
+  },
+  {
+   "id": "09b",
+   "slug": "tel-python-port",
+   "title": "Python T♭ printer and decoder (T-2)",
+   "kind": "feature",
+   "master_sections": [
+    "§9.5",
+    "§9.6",
+    "§10 (T-2)"
+   ],
+   "wave": 1,
+   "complexity": "M",
+   "requirements": [
+    "R-51"
+   ],
+   "goal": "Port tel.js printFlat/build to Python next to viz_graph() with both fixes, checked against tel.js on the goldens.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Read nodes/tel.js printFlat, build and decodeExpr plus doc.raise and doc.sigma; write 09b DESIGN.md: `print_flat(graph) -> (source, sigma)` with contract respelling and constants as buffers, and `build(source, sigma) -> graph`, multi-axis `over` allowed",
+         "verify": "DESIGN.md names the tel.js functions and line ranges each Python function ports",
+         "requirements": [
+          "R-51"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Port",
+       "tasks": [
+        {
+         "text": "Add `--emit-flat FILE` to tools/tel_roundtrip.cjs (writes tel.js's T♭ after both fixes) and write print_flat in src/gpt2_pytorch/tensorprog/tel_flat.py",
+         "verify": "`.venv/bin/python -m pytest tests/test_tel_flat.py -q -k print` passes: Python T♭ text equals tel.js `--emit-flat` output for the 8 goldens",
+         "requirements": [
+          "R-51"
+         ]
+        },
+        {
+         "text": "Write build() in tensorprog/tel_flat.py",
+         "verify": "`.venv/bin/python -m pytest tests/test_tel_flat.py -q -k roundtrip` passes: print_flat → build gives 0 differences on the 8 goldens",
+         "requirements": [
+          "R-51"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Compile",
+       "tasks": [
+        {
+         "text": "Compile the Python T♭ of the 8 goldens with TEL",
+         "verify": "`.venv/bin/python -m pytest tests/test_tel_flat.py -q` passes, including TEL compile clean and D3 equal for all 8",
+         "requirements": [
+          "R-51"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "Python T♭ equals tel.js on the 8 goldens and round-trips with 0 differences",
+     "requirements": [
+      "R-51"
+     ],
+     "verified_by": "09b.C.P1.T1"
+    }
+   ],
+   "depends_on": [
+    "09a"
+   ],
+   "dependency_reasons": {
+    "09a": "multi-graph tel_roundtrip and the §9.5 baseline"
+   },
+   "deliverables": [
+    "src/gpt2_pytorch/tensorprog/tel_flat.py"
+   ],
+   "write_set": [
+    "src/gpt2_pytorch/tensorprog/tel_flat.py",
+    "tools/tel_roundtrip.cjs",
+    "tests/test_tel_flat.py"
+   ],
+   "non_goals": [
+    "The batch TEL converter"
+   ]
+  },
+  {
+   "id": "07b",
+   "slug": "moe",
+   "title": "Routed MoE annotations, expert storage forms, MoE descriptors",
+   "kind": "feature",
+   "master_sections": [
+    "§5.3 (D8)",
+    "§4 (§15)",
+    "§7 (Wave 2)"
+   ],
+   "wave": 2,
+   "complexity": "L",
+   "requirements": [
+    "R-40",
+    "R-41"
+   ],
+   "goal": "Keep MoE dense in v1 primitives but annotate routing and report active FLOPs; bind all expert storage forms; cover the top decoder_moe keys.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 07b DESIGN.md: the routed `execution` annotation, active_flops formula with the K-of-E hand count for mixtral and deepseek-v3, the four expert storage forms (design doc §15) with their overlay transforms, and the decoder_moe keys chosen from the backlog (qwen3_moe, gpt_oss, deepseek_v2, glm_moe_dsa, deepseek_v4)",
+         "verify": "DESIGN.md gives the hand-counted active_flops for mixtral and deepseek-v3 and one row per storage form",
+         "requirements": [
+          "R-40",
+          "R-41"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Routing and storage",
+       "tasks": [
+        {
+         "text": "Make the experts block emit `execution: {kind: routed, of: E, active: K, router: <op>}` on expert ops and their multiplications, and add totals.contraction_flops and totals.active_flops",
+         "verify": "`.venv/bin/python -m pytest tests/test_path_a_goldens.py tests/test_goldens.py -q` passes and rebuilt mixtral's totals.active_flops equals the DESIGN.md hand count",
+         "requirements": [
+          "R-40"
+         ]
+        },
+        {
+         "text": "Bind the four expert storage forms (per-expert tensors, stacked [E, ...], fused gate_up, GGUF *_exps) through the overlay",
+         "verify": "`.venv/bin/python -m pytest tests/test_moe_storage.py -q` passes with one synthetic header per form",
+         "requirements": [
+          "R-41"
+         ]
+        },
+        {
+         "text": "[network for fixtures] Add descriptors for the chosen decoder_moe keys (gpt_oss uses the MXFP4 sidecars)",
+         "verify": "`.venv/bin/python -m tools.conformance <each new id>` prints C1, C4 and C6 PASS",
+         "requirements": [
+          "R-41"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Goldens and coverage",
+       "tasks": [
+        {
+         "text": "Check both MoE goldens and their active FLOPs",
+         "verify": "mixtral and deepseek-v3 rebuild with 0 differences and both active_flops equal the DESIGN.md hand counts",
+         "requirements": [
+          "R-40"
+         ]
+        },
+        {
+         "text": "[network] Re-run decoder_moe rows and `--coverage`",
+         "verify": "decoder_moe ok rows in coverage.csv rise by at least the DESIGN.md prediction minus the listed misses",
+         "requirements": [
+          "R-41"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "mixtral and deepseek-v3 stay equal and active_flops matches the hand count",
+     "requirements": [
+      "R-40"
+     ],
+     "verified_by": "07b.C.P1.T1"
+    },
+    {
+     "text": "All four storage forms bind and decoder_moe coverage rises",
+     "requirements": [
+      "R-41"
+     ],
+     "verified_by": "07b.C.P1.T2"
+    }
+   ],
+   "depends_on": [
+    "07a"
+   ],
+   "dependency_reasons": {
+    "07a": "conformance runner and dense descriptors"
+   },
+   "write_set": [
+    "src/gpt2_pytorch/registry/blocks.py",
+    "src/gpt2_pytorch/registry/descriptors/",
+    "src/gpt2_pytorch/registry/namemaps/overlay.json",
+    "tests/test_moe_storage.py"
+   ]
+  },
+  {
+   "id": "07c",
+   "slug": "hybrid-state",
+   "title": "Delta rule, Mamba, layer selectors, scan annotation, hybrid descriptors",
+   "kind": "feature",
+   "master_sections": [
+    "§5.3 (D8)",
+    "§4 (§7.2, §15)",
+    "§7 (Wave 3)"
+   ],
+   "wave": 3,
+   "complexity": "L",
+   "requirements": [
+    "R-42"
+   ],
+   "goal": "Make delta-rule and Mamba layers selectable blocks with scan annotations and cover the top decoder_hybrid keys.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 07c DESIGN.md: how qwen3_5.py's delta-rule lowering becomes a block (called, not re-implemented), the Mamba block (unrolled at --seq T), the scan annotation's `body` group, selectors used (layer_types, hybrid_override_pattern) and the chosen keys (lfm2, jamba, nemotron_h, falcon_h1, qwen35 GGUF, qwen3_5_moe)",
+         "verify": "DESIGN.md names, per chosen key, the selector and blocks its layers use",
+         "requirements": [
+          "R-42"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Blocks",
+       "tasks": [
+        {
+         "text": "Expose qwen3_5.py's delta rule as a block selected by list(layer_types) and tag every unrolled step `execution: {kind: scan, axis: T, step: i, body: <group id>}`",
+         "verify": "`.venv/bin/python -m pytest tests/test_goldens.py -q` passes and every delta-rule step op of the rebuilt qwen3.8 graph has execution.kind == 'scan'",
+         "requirements": [
+          "R-42"
+         ]
+        },
+        {
+         "text": "Add the Mamba block (selective scan unrolled over T, scan-annotated) to registry/blocks.py",
+         "verify": "`.venv/bin/python -m pytest tests/test_blocks.py -q -k mamba` passes on a tiny config (shapes and op count per step)",
+         "requirements": [
+          "R-42"
+         ]
+        },
+        {
+         "text": "[network for fixtures] Add the chosen hybrid descriptors",
+         "verify": "`.venv/bin/python -m tools.conformance <each new id>` prints C1 and C6 PASS",
+         "requirements": [
+          "R-42"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Golden and coverage",
+       "tasks": [
+        {
+         "text": "[network] Re-run decoder_hybrid and decoder_hybrid_moe rows and `--coverage`",
+         "verify": "qwen3.8 golden still 0 differences and decoder_hybrid ok rows rise by at least the DESIGN.md prediction minus listed misses",
+         "requirements": [
+          "R-42"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "qwen3.8 golden stays equal with scan annotations, and hybrid coverage rises",
+     "requirements": [
+      "R-42"
+     ],
+     "verified_by": "07c.C.P1.T1"
+    }
+   ],
+   "depends_on": [
+    "07a",
+    "07b"
+   ],
+   "dependency_reasons": {
+    "07a": "conformance runner",
+    "07b": "experts for hybrid MoE keys"
+   },
+   "write_set": [
+    "src/gpt2_pytorch/registry/blocks.py",
+    "src/gpt2_pytorch/registry/descriptors/"
+   ]
+  },
+  {
+   "id": "07d",
+   "slug": "assemblies",
+   "title": "VLM assemblies, MTP and draft heads",
+   "kind": "feature",
+   "master_sections": [
+    "§4 (§7.3)",
+    "§5.3",
+    "§7 (Wave 4)"
+   ],
+   "wave": 4,
+   "complexity": "M",
+   "requirements": [
+    "R-43"
+   ],
+   "goal": "Bind wrapper checkpoints: text tower bound, other components bound or declared without a graph, never dropped.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 07d DESIGN.md: the assembly descriptor (components with state bound|declared_without_graph, tensor prefixes, params), the partial status rule, and the chosen multimodal_vlm keys (qwen3_5_text, qwen3_5_moe_text, gemma4_text, qwen3_vl_text, qwen4_exp_text, paligemma) and speculative_draft heads",
+         "verify": "DESIGN.md shows the Qwen3.8 assembly with its text tower, vision tower and MTP components",
+         "requirements": [
+          "R-43"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Assemblies",
+       "tasks": [
+        {
+         "text": "Support assembly descriptors in build.py/bind.py and write graph `components` [{name, state, tensors, params}]; any declared component makes the status partial",
+         "verify": "`.venv/bin/python -m pytest tests/test_assemblies.py -q` passes: the Qwen3.8 fixture classes every stored tensor and lists its vision tower and MTP as components",
+         "requirements": [
+          "R-43"
+         ]
+        },
+        {
+         "text": "[network for fixtures] Add the chosen VLM wrappers and draft-head descriptors",
+         "verify": "`.venv/bin/python -m tools.conformance <each new id>` prints C1 PASS",
+         "requirements": [
+          "R-43"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Run",
+       "tasks": [
+        {
+         "text": "[network] Run multimodal_vlm and speculative_draft rows and `--coverage`",
+         "verify": "no ledger row has failed:unclassified_tensor, and every ok/partial report.json has 0 tensors outside a class",
+         "requirements": [
+          "R-43"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "No stored tensor falls outside a class on the VLM and draft rows",
+     "requirements": [
+      "R-43"
+     ],
+     "verified_by": "07d.C.P1.T1"
+    }
+   ],
+   "depends_on": [
+    "07c",
+    "07b"
+   ],
+   "dependency_reasons": {
+    "07c": "qwen3_5 hybrid text towers",
+    "07b": "MoE text towers"
+   },
+   "write_set": [
+    "src/gpt2_pytorch/registry/build.py",
+    "src/gpt2_pytorch/registry/bind.py",
+    "src/gpt2_pytorch/registry/descriptors/",
+    "tests/test_assemblies.py"
+   ]
+  },
+  {
+   "id": "07e",
+   "slug": "encoders",
+   "title": "BERT family and T5/BART descriptors",
+   "kind": "feature",
+   "master_sections": [
+    "§7 (Wave 5)"
+   ],
+   "wave": 5,
+   "complexity": "M",
+   "requirements": [
+    "R-44"
+   ],
+   "goal": "Cover encoders and encoder-decoders with post-norm, bidirectional and cross-attention blocks.",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 07e DESIGN.md: new blocks (layer-norm post-norm, bidirectional attention, GELU FFN, T5 relative position bias, cross attention), the keys (bert, modernbert, xlm-roberta, roberta, deberta-v2, distilbert, t5, mt5, bart, marian) and each one's C4 hand count (no goldens exist)",
+         "verify": "DESIGN.md lists each key with its blocks and the hand-counted matmuls and FLOPs used for C4",
+         "requirements": [
+          "R-44"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Descriptors",
+       "tasks": [
+        {
+         "text": "[network for fixtures] Add the BERT-family descriptors",
+         "verify": "`.venv/bin/python -m tools.conformance bert modernbert xlm-roberta roberta deberta-v2 distilbert` prints C1 and C4 PASS",
+         "requirements": [
+          "R-44"
+         ]
+        },
+        {
+         "text": "[network for fixtures] Add the T5/BART descriptors with cross attention",
+         "verify": "`.venv/bin/python -m tools.conformance t5 mt5 bart marian` prints C1 and C4 PASS",
+         "requirements": [
+          "R-44"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Run",
+       "tasks": [
+        {
+         "text": "[network] Run encoder and encoder_decoder rows and `--coverage`",
+         "verify": "every encoder descriptor passes C1 and C4 and encoder ok rows rise by the DESIGN.md prediction minus listed misses",
+         "requirements": [
+          "R-44"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "C1 and C4 pass for every encoder descriptor",
+     "requirements": [
+      "R-44"
+     ],
+     "verified_by": "07e.C.P1.T1"
+    }
+   ],
+   "depends_on": [
+    "07a"
+   ],
+   "dependency_reasons": {
+    "07a": "conformance runner"
+   },
+   "write_set": [
+    "src/gpt2_pytorch/registry/blocks.py",
+    "src/gpt2_pytorch/registry/descriptors/"
+   ],
+   "serialize_with": [
+    "07b",
+    "07c",
+    "07d"
+   ]
+  },
+  {
+   "id": "06f",
+   "slug": "library-trace",
+   "title": "Path B library trace and the C2 signature check",
+   "kind": "feature",
+   "master_sections": [
+    "§6",
+    "§3",
+    "D4",
+    "D5",
+    "§7 (Wave 6)"
+   ],
+   "wave": 6,
+   "complexity": "L",
+   "requirements": [
+    "R-12",
+    "R-45"
+   ],
+   "goal": "Trace transformers/timm/diffusers classes on the meta device into Program primitives as the coverage fallback, and check path A against path B (C2).",
+   "stages": {
+    "A": {
+     "phases": [
+      {
+       "title": "Design",
+       "tasks": [
+        {
+         "text": "Write 06f DESIGN.md: building a library class from config.json on the `meta` device (never trust_remote_code), torch.export vs torch.fx, the ATen → Program mapping taken from OPS/generated/pytorch-tel-mapping.md, typed opaque ops (D5), parameter-name binding through bind.py, certainty 'traced'",
+         "verify": "DESIGN.md has the ATen mapping table for the ops a tiny resnet and a tiny UNet2DConditionModel produce",
+         "requirements": [
+          "R-12"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "B": {
+     "phases": [
+      {
+       "title": "Trace",
+       "tasks": [
+        {
+         "text": "Install the trace extra (`uv sync --inexact --extra trace --extra hub --extra dev`)",
+         "verify": "`.venv/bin/python -c 'import timm, diffusers, transformers'` exits 0",
+         "requirements": [
+          "R-12"
+         ]
+        },
+        {
+         "text": "Write src/gpt2_pytorch/registry/trace.py: class from config on meta, export, map ATen ops to Program primitives, the rest to opaque ops with typed ports, then viz_graph()",
+         "verify": "`.venv/bin/python -m pytest tests/test_trace.py -q` passes: a tiny timm resnet and a tiny diffusers UNet give graphs that pass tools.graph_check with every parameter bound",
+         "requirements": [
+          "R-12"
+         ]
+        },
+        {
+         "text": "Make run_one fall back to path B when no path-A candidate binds (provenance path B)",
+         "verify": "`.venv/bin/python -m pytest tests/test_pipeline.py -q -k path_b` passes on a timm fixture",
+         "requirements": [
+          "R-12"
+         ]
+        },
+        {
+         "text": "Add `--c2` to tools/conformance.py: for each path-A descriptor with an upstream class, compare tiny-config matmul signatures of path A and path B modulo dense-vs-routed experts",
+         "verify": "`.venv/bin/python -m tools.conformance --c2 all` prints PASS for every descriptor with an upstream class",
+         "requirements": [
+          "R-45"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "Run",
+       "tasks": [
+        {
+         "text": "[network] Run vision_* and diffusion_* rows plus uncovered LLM keys and `--coverage`",
+         "verify": "coverage.csv shows path-B ok rows in those categories and ledger has no row that ran repo code (no trust_remote_code anywhere: `rg -n trust_remote_code src tools` finds only False/absent)",
+         "requirements": [
+          "R-12"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "Tiny timm and UNet graphs are valid and bind fully",
+     "requirements": [
+      "R-12"
+     ],
+     "verified_by": "06f.B.P1.T2"
+    },
+    {
+     "text": "C2 passes for every path-A descriptor with an upstream class",
+     "requirements": [
+      "R-45"
+     ],
+     "verified_by": "06f.B.P1.T4"
+    }
+   ],
+   "depends_on": [
+    "07b",
+    "07c",
+    "07d",
+    "07e"
+   ],
+   "dependency_reasons": {
+    "07b": "MoE descriptors for C2",
+    "07c": "hybrid descriptors for C2",
+    "07d": "assembly descriptors for C2",
+    "07e": "encoder descriptors for C2"
+   },
+   "write_set": [
+    "pyproject.toml",
+    "uv.lock",
+    "src/gpt2_pytorch/registry/trace.py",
+    "src/gpt2_pytorch/hub/pipeline.py",
+    "tools/conformance.py",
+    "tests/test_trace.py",
+    "tests/test_pipeline.py"
+   ],
+   "blockers": [
+    {
+     "blocker": "Data-dependent MoE traces specialize or fail",
+     "response": "MoE stays on path A; path B reports failed:trace_<code> and C2 compares modulo routed experts"
+    }
+   ]
+  },
+  {
+   "id": "07f",
+   "slug": "full-run",
+   "title": "Full catalog run, category READMEs, TEL round trip over all graphs",
+   "kind": "validation",
+   "master_sections": [
+    "§7 (Wave 7)",
+    "§5.4",
+    "§8.2",
+    "§9.6"
+   ],
+   "wave": 7,
+   "complexity": "M",
+   "requirements": [
+    "R-46",
+    "R-47",
+    "R-48"
+   ],
+   "goal": "Run every job to a terminal status, prove the reports add up and the re-run is a no-op, write category READMEs and round-trip every stored graph through TEL.",
+   "stages": {
+    "B": {
+     "phases": [
+      {
+       "title": "Run",
+       "tasks": [
+        {
+         "text": "[network] Run `python -m tools.hf_graph --all` at the D3-sized concurrency, then `--coverage`",
+         "verify": "ledger.jsonl has exactly one terminal status per load_jobs() job and coverage.csv sums to that count",
+         "requirements": [
+          "R-46"
+         ]
+        },
+        {
+         "text": "Add `--readme` to tools/hf_graph.py writing output/categories/<category>/README.md (status counts, top keys, top near-misses)",
+         "verify": "one README.md per category directory, and each one's totals equal that category's coverage.csv rows",
+         "requirements": [
+          "R-47"
+         ]
+        },
+        {
+         "text": "Run tools/tel_roundtrip.cjs and tools.tel_coverage over output/categories/graphs/",
+         "verify": "`node tools/tel_roundtrip.cjs output/categories/graphs --const-as-buffer --fix-contract` prints one line per stored graph plus a summary",
+         "requirements": [
+          "R-48"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "C": {
+     "phases": [
+      {
+       "title": "No-op",
+       "tasks": [
+        {
+         "text": "[network] Re-run `--all` with unchanged shas",
+         "verify": "the second run appends 0 terminal ledger rows and reads 0 header bytes",
+         "requirements": [
+          "R-46"
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "acceptance": [
+    {
+     "text": "Every job is terminal, reports add up, and the re-run is a no-op",
+     "requirements": [
+      "R-46"
+     ],
+     "verified_by": "07f.C.P1.T1"
+    },
+    {
+     "text": "Each category has a README whose totals match coverage",
+     "requirements": [
+      "R-47"
+     ],
+     "verified_by": "07f.B.P1.T2"
+    },
+    {
+     "text": "Every stored graph goes through the TEL round trip",
+     "requirements": [
+      "R-48"
+     ],
+     "verified_by": "07f.B.P1.T3"
+    }
+   ],
+   "depends_on": [
+    "06f",
+    "05d",
+    "09a"
+   ],
+   "dependency_reasons": {
+    "06f": "path B fallback in run_one",
+    "05d": "batch and coverage",
+    "09a": "multi-graph tel_roundtrip"
+   },
+   "write_set": [
+    "tools/hf_graph.py"
+   ],
+   "skip_stages": {
+    "A": "no design subject: runs and summarizes existing tools"
+   }
+  }
+ ]
+}

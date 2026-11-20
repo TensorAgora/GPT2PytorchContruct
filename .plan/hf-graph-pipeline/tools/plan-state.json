@@ -1,0 +1,352 @@
+{
+  "modules": {
+    "00a": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "05a": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "05b": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "06a": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "06b": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "06c": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "05c": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "05d": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "08a": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "09a": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "06d": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "06e": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "07a": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "09b": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "07b": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "07c": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "07d": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "07e": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "06f": {
+      "state": "NOT_STARTED",
+      "stages": {
+        "A": {
+          "status": "pending"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [],
+      "blocked": null
+    },
+    "07f": {
+      "state": "DESIGNED",
+      "stages": {
+        "A": {
+          "status": "skipped",
+          "reason": "no design subject: runs and summarizes existing tools"
+        },
+        "B": {
+          "status": "pending"
+        },
+        "C": {
+          "status": "pending"
+        }
+      },
+      "tasks": {},
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "DESIGNED",
+          "at": "2026-11-20T18:01:01+00:00",
+          "reason": "derived from stage progress"
+        }
+      ],
+      "blocked": null
+    }
+  }
+}
