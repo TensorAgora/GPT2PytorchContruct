@@ -1,0 +1,85 @@
+{
+ "id": "deepseek_v2",
+ "version": "1",
+ "extends": "deepseek_v3",
+ "match": {
+  "model_type": [
+   "deepseek_v2"
+  ],
+  "architectures": [
+   "DeepseekV2ForCausalLM"
+  ],
+  "gguf_architecture": [
+   "deepseek2"
+  ]
+ },
+ "hyperparameters": {
+  "QR": [
+   "q_lora_rank",
+   "=1"
+  ],
+  "Ns": [
+   "n_shared_experts",
+   "=1"
+  ],
+  "norm_topk": [
+   "norm_topk_prob",
+   "=0"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "q": "model.layers.{i}.self_attn.q_proj.weight"
+  }
+ },
+ "recipe": {
+  "flags": {
+   "scoring": "softmax"
+  },
+  "dims": {
+   "B": "B",
+   "T": "T",
+   "q": "T",
+   "k": "T",
+   "D": "D",
+   "H": "Hq",
+   "QR": "QR",
+   "QH": "Hq * (Dn + Dr)",
+   "Dqk": "Dn + Dr",
+   "Dn": "Dn",
+   "Dr": "Dr",
+   "Dr2": "Dr",
+   "KA": "KR + Dr",
+   "KR": "KR",
+   "KH": "Hq * (Dn + Dv)",
+   "Dkvh": "Dn + Dv",
+   "Dv": "Dv",
+   "HV": "Hq * Dv",
+   "F": "F",
+   "Fe": "Fe",
+   "E": "E",
+   "V": "V",
+   "Fs": "Fe * Ns"
+  },
+  "layers": {
+   "attention": {
+    "by_presence": {
+     "mla": "model.layers.{i}.self_attn.q_a_proj.weight"
+    },
+    "default": "mla_direct"
+   },
+   "mlp": {
+    "first_k": "first_k_dense_replace",
+    "first": "swiglu",
+    "then": "moe_deepseek"
+   }
+  }
+ },
+ "aux": [],
+ "components": [],
+ "provenance": {
+  "ported_from": "deepseek_v3 with a softmax router (norm_topk_prob), n_shared_experts shared width, and q_proj when q_lora_rank is null (V2-Lite; QR is then an unused size-1 axis)",
+  "fixture": "deepseek-ai/DeepSeek-V2-Lite",
+  "certainty": "template"
+ }
+}

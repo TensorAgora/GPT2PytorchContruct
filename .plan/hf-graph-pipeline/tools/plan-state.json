@@ -1087,20 +1087,72 @@
       "blocked": null
     },
     "07a": {
-      "state": "NOT_STARTED",
+      "state": "BUILT",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T19:59:41+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T19:59:41+00:00"
         },
         "C": {
           "status": "pending"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "07a.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: 8 dense keys with descriptor, differences, fixtures; predicted +1,505 rows",
+          "evidence": "",
+          "at": "2026-11-20T19:59:41+00:00"
+        },
+        "07a.B.P1.T1": {
+          "status": "done",
+          "reason": "tools/conformance.py C1/C3/C4/C5/C6; llama, mixtral all PASS",
+          "evidence": "",
+          "at": "2026-11-20T19:59:41+00:00"
+        },
+        "07a.B.P2.T1": {
+          "status": "done",
+          "reason": "qwen3 + hf_olmo descriptors with fixtures: C1/C4/C6 PASS",
+          "evidence": "",
+          "at": "2026-11-20T19:59:41+00:00"
+        },
+        "07a.B.P2.T2": {
+          "status": "done",
+          "reason": "gemma2 (real) + gemma3_text with fixtures: C1/C4/C6 PASS; gemma2_arch kept for the golden",
+          "evidence": "",
+          "at": "2026-11-20T19:59:41+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T19:59:41+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T19:59:41+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T19:59:41+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "09b": {
@@ -1183,10 +1235,13 @@
       "blocked": null
     },
     "07b": {
-      "state": "NOT_STARTED",
+      "state": "DESIGNED",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T19:59:41+00:00"
         },
         "B": {
           "status": "pending"
@@ -1195,8 +1250,47 @@
           "status": "pending"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "07b.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: routed annotation, hand-counted active_flops, 5 storage forms, chosen keys",
+          "evidence": "",
+          "at": "2026-11-20T19:59:41+00:00"
+        },
+        "07b.B.P1.T1": {
+          "status": "done",
+          "reason": "routed execution on expert ops+multiplications, active_flops; mixtral 204,346,490,880 == hand count; goldens 0 diffs",
+          "evidence": "",
+          "at": "2026-11-20T19:59:41+00:00"
+        },
+        "07b.B.P1.T2": {
+          "status": "done",
+          "reason": "test_moe_storage: per-expert, stacked, fused axis1, fused in_out, packed mxfp4 bind; wrong size fails",
+          "evidence": "",
+          "at": "2026-11-20T19:59:41+00:00"
+        },
+        "07b.B.P1.T3": {
+          "status": "done",
+          "reason": "qwen3_moe + deepseek_v2 with fixtures: C1/C4/C6 PASS (gpt_oss deferred, DESIGN)",
+          "evidence": "",
+          "at": "2026-11-20T19:59:41+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T19:59:41+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T19:59:41+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "07c": {

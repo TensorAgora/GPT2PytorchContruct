@@ -17,7 +17,7 @@ from pathlib import Path
 from gpt2_pytorch.hub.fixtures import FixtureClient, find
 from gpt2_pytorch.hub.manifest import dump, read_manifest
 from gpt2_pytorch.registry.build import build
-from gpt2_pytorch.registry.descriptor import DescriptorError, hyper_from_config, ids, load
+from gpt2_pytorch.registry.descriptor import DescriptorError, hyper_from_config, ids, layer_blocks, load
 from gpt2_pytorch.registry.hyper import resolve_hyper
 from gpt2_pytorch.registry.namemaps import c3, gguf_scheme, split_roles
 from gpt2_pytorch.registry.resolve import resolve_and_bind
@@ -25,12 +25,37 @@ from gpt2_pytorch.registry.resolve import resolve_and_bind
 SPELLED = Path("tests/fixtures/spelled")
 
 
-def decoder_counts(dims: dict, layers: int) -> dict:
-    """Closed-form contractions and FLOPs of the gqa + swiglu decoder (equal to the qwen2.5, mistral, phi-3.5 and gemma-2 goldens)."""
-    B, T, D, Dq, Dkv, Dh, F, V, Hkv = (dims[k] for k in ("B", "T", "D", "Dq", "Dkv", "Dh", "F", "V", "Hkv"))
-    Hq = dims["H"] * Hkv
-    per_layer = B * T * (2 * D * Dq + 2 * D * Dkv) + B * T * Dh * Dh * (Hq + Hkv) + 2 * B * Hq * T * T * Dh + 3 * B * T * D * F
-    return {"contractions": 11 * layers + 1, "contraction_flops": 2 * (layers * per_layer + B * T * D * V)}
+def block_counts(block: str, d: dict) -> tuple[int, int]:
+    """(contractions, MACs) one layer block adds at the example shape (B, T); validated on the 8 goldens' totals."""
+    B, T, D = d["B"], d["T"], d["D"]
+    BT = B * T
+    if block in ("gqa", "gqa_local"):
+        Hkv, Dh = d["Hkv"], d["Dh"]
+        Hq = d["H"] * Hkv
+        return 8, BT * (2 * D * d["Dq"] + 2 * D * d["Dkv"]) + BT * Dh * Dh * (Hq + Hkv) + 2 * B * Hq * T * T * Dh
+    if block in ("mla", "mla_direct"):
+        H, Dn, Dr, Dv = d["H"], d["Dn"], d["Dr"], d["Dv"]
+        q = BT * D * d["QH"] if block == "mla_direct" else BT * (D * d["QR"] + d["QR"] * d["QH"])
+        rest = BT * D * d["KA"] + BT * d["KR"] * d["KH"] + B * H * T * Dr * Dr + B * T * Dr * Dr \
+            + B * H * T * T * (Dn + Dr + Dv) + BT * d["HV"] * D
+        return (9 if block == "mla_direct" else 10), q + rest
+    if block == "swiglu":
+        return 3, 3 * BT * D * d["F"]
+    if block in ("moe_mixtral", "moe_qwen"):
+        return 4, BT * D * d["E"] + 3 * BT * d["E"] * d["Fe"] * D
+    if block == "moe_deepseek":
+        return 7, BT * D * d["E"] + 3 * BT * d["E"] * d["Fe"] * D + 3 * BT * D * d.get("Fs", d["Fe"])
+    raise KeyError(block)
+
+
+def decoder_counts(d: dict, layers: list[tuple[str, str]]) -> dict:
+    """Totals of the decoder template: every layer's (attention, mlp) blocks plus the head."""
+    n, macs = 1, d["B"] * d["T"] * d["D"] * d["V"]
+    for blocks in layers:
+        for blk in blocks:
+            c, m = block_counts(blk, d)
+            n, macs = n + c, macs + m
+    return {"contractions": n, "contraction_flops": 2 * macs}
 
 
 def _with_gguf(d: dict) -> dict:
@@ -78,10 +103,18 @@ def check(did: str) -> dict:
         want = json.loads(Path(golden).read_text())["totals"]
         keys = ("contractions", "contraction_flops", "edges", "ops")
         out["C4"] = "PASS" if all(g["totals"][k] == want[k] for k in keys) else f"FAIL {[(k, g['totals'][k], want[k]) for k in keys]}"
-    elif m is not None and d["recipe"]["template"] == "decoder" and _blocks(d) <= {"gqa", "gqa_local", "swiglu"}:
+        if d["recipe"]["template"] == "decoder" and out["C4"] == "PASS":  # the closed form must reproduce the golden as well
+            slots = {s: layer_blocks(sel, cfg, int(hyper_from_config(d, cfg)["L"][0])) for s, sel in d["recipe"]["layers"].items()}
+            closed = decoder_counts(g["dims"], list(zip(slots["attention"], slots["mlp"])))
+            if any(want[k] != v for k, v in closed.items()):
+                out["C4"] = f"FAIL closed form {closed} vs golden"
+    elif m is not None and d["recipe"]["template"] == "decoder":
         h = resolve_hyper(d, m, job.row)
-        g, _ = build(_with_gguf(d) if scheme == "gguf" else d, h, scheme, cfg=m["config"].get("config.json") or {})
-        want = decoder_counts(g["dims"], h["L"][0])
+        cfg = m["config"].get("config.json") or {}
+        g, _ = build(_with_gguf(d) if scheme == "gguf" else d, h, scheme, cfg=cfg)
+        names = [t["key"] for t in m["tensors"]]
+        slots = {s: layer_blocks(sel, cfg, h["L"][0], names) for s, sel in d["recipe"]["layers"].items()}
+        want = decoder_counts(g["dims"], list(zip(slots["attention"], slots["mlp"])))
         out["C4"] = "PASS" if all(g["totals"][k] == v for k, v in want.items()) else f"FAIL {want} vs {g['totals']}"
     else:
         out["C4"] = "n/a"

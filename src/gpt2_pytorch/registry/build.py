@@ -95,7 +95,27 @@ def decoder(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
         else:
             b.C("L", "Xf", head, "D")
     extra = {"lanes": r["lanes"]} if r.get("lanes") else {}
-    return _finish(b.p, d, name, EXAMPLE, extra)
+    g, exp = _finish(b.p, d, name, EXAMPLE, extra)
+    if b.routed:
+        annotate_routed(g, b.routed)
+    return g, exp
+
+
+def annotate_routed(g: dict, routed) -> None:
+    """D8: expert ops and their multiplications carry execution {kind: routed, of: E, active: K, router}; totals gain
+    active_flops (each routed contraction counted for K of its E experts)."""
+    E = g["dims"]["E"]
+    marks = {}
+    for start, end, router, k in routed:
+        for j in range(start, end):
+            marks[j] = {"kind": "routed", "of": "E", "active": k, "router": router}
+            g["ops"][j]["execution"] = marks[j]
+    removed = 0
+    for m in g["multiplications"]:
+        if m["op"] in marks:
+            m["execution"] = marks[m["op"]]
+            removed += m["flops"] * (E - marks[m["op"]]["active"]) // E
+    g["totals"]["active_flops"] = g["totals"]["contraction_flops"] - removed
 
 
 def gpt2_lowering(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):

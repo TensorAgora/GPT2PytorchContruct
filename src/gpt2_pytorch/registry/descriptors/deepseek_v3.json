@@ -73,6 +73,10 @@
   "tie": [
    "tie_word_embeddings",
    "=0"
+  ],
+  "norm_topk": [
+   "norm_topk_prob",
+   "=1"
   ]
  },
  "schemes": {

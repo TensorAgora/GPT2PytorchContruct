@@ -53,7 +53,7 @@ def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None =
                 b.missing.append([e["name"], key])
                 continue
             if view.startswith("["):  # a cut of the stored tensor: its index list must match the stored rank
-                if len(view.strip("[]").split(",")) != len(t["shape"]):
+                if len(view.split("]")[0].lstrip("[").split(",")) != len(t["shape"]):
                     b.misshaped.append([e["name"], key, view, t["shape"]])
             elif key not in sc.unchecked and list(t["shape"]) != list(e["shape"]):
                 b.misshaped.append([e["name"], key, e["shape"], t["shape"]])

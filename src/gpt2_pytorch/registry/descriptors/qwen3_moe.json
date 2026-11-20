@@ -1,0 +1,89 @@
+{
+ "id": "qwen3_moe",
+ "version": "1",
+ "extends": "qwen3",
+ "match": {
+  "model_type": [
+   "qwen3_moe"
+  ],
+  "architectures": [
+   "Qwen3MoeForCausalLM"
+  ],
+  "gguf_architecture": [
+   "qwen3moe"
+  ]
+ },
+ "hyperparameters": {
+  "Fe": [
+   "moe_intermediate_size"
+  ],
+  "E": [
+   "num_experts"
+  ],
+  "K": [
+   "num_experts_per_tok"
+  ],
+  "norm_topk": [
+   "norm_topk_prob",
+   "=1"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "router": "model.layers.{i}.mlp.gate.weight",
+   "experts_g": {
+    "view": "stack of model.layers.{i}.mlp.experts.{{0…{Em1}}}.gate_proj.weight"
+   },
+   "experts_u": {
+    "view": "stack of model.layers.{i}.mlp.experts.{{0…{Em1}}}.up_proj.weight"
+   },
+   "experts_d": {
+    "view": "stack of model.layers.{i}.mlp.experts.{{0…{Em1}}}.down_proj.weight"
+   }
+  }
+ },
+ "recipe": {
+  "root": "qwen3_moe",
+  "lanes": [
+   "E",
+   "H",
+   "B"
+  ],
+  "format_values": {
+   "Em1": "E - 1"
+  },
+  "dims": {
+   "B": "B",
+   "T": "T",
+   "q": "T",
+   "k": "T",
+   "D": "D",
+   "Dq": "Hq * Dh",
+   "Dkv": "Hkv * Dh",
+   "Dh": "Dh",
+   "Dh2": "Dh",
+   "F": "F",
+   "Fe": "Fe",
+   "V": "V",
+   "H": "Hq // Hkv",
+   "Hkv": "Hkv",
+   "E": "E"
+  },
+  "layers": {
+   "attention": {
+    "uniform": "gqa"
+   },
+   "mlp": {
+    "index_sets": {
+     "swiglu": "mlp_only_layers"
+    },
+    "default": "moe_qwen"
+   }
+  }
+ },
+ "provenance": {
+  "ported_from": "qwen3 attention + Qwen3MoeSparseMoeBlock (softmax router, top-k renormalized, per-expert tensors)",
+  "fixture": "Qwen/Qwen3-30B-A3B",
+  "certainty": "template"
+ }
+}
