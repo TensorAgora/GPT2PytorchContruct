@@ -1,4 +1,5 @@
-// node tools/tel_roundtrip.cjs <viz-graph.json> [--const-as-buffer] [--fix-contract]
+// node tools/tel_roundtrip.cjs <viz-graph.json | dir>... [--const-as-buffer] [--fix-contract]
+// One JSON line per graph (a directory means every *.json in it), then a {summary} line.
 // viz-graph -> T♭ (flat TEL, TensorNodes nodes/tel.js printFlat) -> graph (build/decodeExpr), every field TEL rebuilds
 // compared with the original and grouped by kind; then TEL compiles T♭ and D3 compares tm.core counts with the graph's.
 //   --const-as-buffer  tensor-valued constants (masks, rope tables) become declared buffers, as if bound by tensor:// URI
@@ -7,12 +8,14 @@
 //                      contract(a, b, over=X)
 // TN_NODES overrides the path to TensormorphDesignUI/tensormorph/ui/activity_bar/nodes.
 const NODES = process.env.TN_NODES ?? require('node:path').resolve(__dirname, '../../TensormorphDesignUI/tensormorph/ui/activity_bar/nodes');
-const args = process.argv.slice(2), path = args.find((a) => !a.startsWith('--')), flag = (f) => args.includes(f);
+const args = process.argv.slice(2), flag = (f) => args.includes(f);
+const fs = require('node:fs'), np = require('node:path');
 globalThis.window = globalThis;
 require(NODES + '/core.js'); require(NODES + '/registry.js'); require(NODES + '/doc.js');
 require(NODES + '/../vendor/tm-interface.js'); require(NODES + '/tel.js');
 const N = globalThis.TM.nodes, tel = globalThis.TMI.tel;
-const J = JSON.parse(require('node:fs').readFileSync(path, 'utf8'));
+function one(path) {
+const J = JSON.parse(fs.readFileSync(path, 'utf8'));
 const listConsts = J.tensors.filter((t) => t.role === 'constant' && Array.isArray(t.value)).map((t) => t.name);
 if (flag('--const-as-buffer')) for (const t of J.tensors) if (listConsts.includes(t.name)) { t.role = 'buffer'; t.value = null; }
 const doc = N.doc.raise(J, { glyphs: (ids) => new Map(ids.map((x) => [x, x])) });
@@ -71,8 +74,23 @@ const d3bad = keys.filter((k) => (got[k] || 0) !== (want[k] || 0)).map((k) => k 
 const carried = { module: 0, module_type: 0, region: 0, equation: 0, checkpoint_key: 0, view: 0, pytorch_name: 0 };
 for (const o of J.ops) for (const k of ['module', 'module_type', 'region', 'equation']) if (o[k] != null) carried[k]++;
 for (const t of J.tensors) for (const k of ['checkpoint_key', 'view', 'pytorch_name']) if (t[k] != null) carried[k]++;
-console.log(JSON.stringify({ name: path.split('/').pop(), mode: args.filter((a) => a.startsWith('--')).join(' ') || 'as-is', ops: J.ops.length,
+return ({ name: path.split('/').pop(), mode: args.filter((a) => a.startsWith('--')).join(' ') || 'as-is', ops: J.ops.length,
   tensors: J.tensors.length, list_constants: listConsts.length, respelled: respelled.size, flat_lines: flat.split('\n').length,
   parse_diagnostics: b.diagnostics.length, diff_total: Object.values(diffs).reduce((a, x) => a + x, 0), diffs, examples: ex,
   compile: { ok: c.ok, errors: errs.length, codes, first: errs[0] ? errs[0].code + ' ' + String(errs[0].message).slice(0, 140) : null, at: errs[0] && errs[0].span ? flat.split('\n')[flat.slice(0, errs[0].span.start).split('\n').length - 1] : null },
-  d3: { pass: c.ok && !errs.length && !d3bad.length, mismatches: d3bad }, carried_by_sigma_not_tel: carried }));
+  d3: { pass: c.ok && !errs.length && !d3bad.length, mismatches: d3bad }, carried_by_sigma_not_tel: carried });
+}
+
+const paths = args.filter((a) => !a.startsWith('--')).flatMap((p) => fs.statSync(p).isDirectory()
+  ? fs.readdirSync(p).filter((f) => f.endsWith('.json')).sort().map((f) => np.join(p, f)) : [p]);
+const rows = [];
+for (const p of paths) {
+  let r;
+  try { r = one(p); } catch (e) { r = { name: p.split('/').pop(), error: String(e.message || e).slice(0, 200) }; }
+  rows.push(r);
+  console.log(JSON.stringify(r));
+}
+const ok = (r) => !r.error;
+console.log(JSON.stringify({ summary: { graphs: rows.length, errors: rows.filter((r) => !ok(r)).length,
+  zero_diff: rows.filter((r) => ok(r) && r.diff_total === 0).length, compile_ok: rows.filter((r) => ok(r) && r.compile.ok && !r.compile.errors).length,
+  d3_pass: rows.filter((r) => ok(r) && r.d3.pass).length, mode: args.filter((a) => a.startsWith('--')).join(' ') || 'as-is' } }));

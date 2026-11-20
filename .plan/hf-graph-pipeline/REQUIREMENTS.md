@@ -22,7 +22,7 @@ Every requirement extracted from the master document, the module that owns it, a
 | R-13 | graph.json is viz-graph v1 plus only the §5.3 additive fields (checkpoint, provenance, components, execution), every parameter names a checkpoint_key or view, report.json is written, and graphs are stored once per content key with per-repo graph.ref (D9) | must | §1, §5.3, §5.4, D9 | 05c | 3/3 | 05c |
 | R-14 | The batch runs over all rows with an append-only ledger.jsonl that drives resume, bounded concurrency and backoff, HF_TOKEN optional and never logged; killing and restarting skips completed rows | must | §1, §5.4 | 05d | 2/2 | 05d |
 | R-15 | Coverage reports coverage.csv (category × format × status), coverage_model_type.csv (model_type × status) and near_misses.csv ranked by unlockable rows, with totals matching the ledger | must | §1, §5.4 | 05d | 3/3 | 05d |
-| R-16 | docs/GRAPH_TEL.md records the §9 graph⇔TEL design (mapping, bindings, counted exclusions), and the per-graph round trip reproduces §9.5 on the 8 goldens: --const-as-buffer gives 0 differences and 6/8 pass D3; adding --fix-contract gives 8/8 with 0 differences, compile clean and D3 pass | must | §1, §9 | 09a | 0/3 | 09a |
+| R-16 | docs/GRAPH_TEL.md records the §9 graph⇔TEL design (mapping, bindings, counted exclusions), and the per-graph round trip reproduces §9.5 on the 8 goldens: --const-as-buffer gives 0 differences and 6/8 pass D3; adding --fix-contract gives 8/8 with 0 differences, compile clean and D3 pass | must | §1, §9 | 09a | 3/3 | 09a |
 | R-17 | The first task confirms every §2 input path; a missing or moved path is recorded in HARNESS.md, never assumed | must | §2 | 00a | 1/1 | 00a |
 | R-18 | Python work uses uv and the existing .venv (never conda); new dependencies go in optional extras only: `hub` (gguf, jsonschema) and `trace` (transformers, timm, diffusers) | must | §3 | 00a | 1/1 | 00a |
 | R-19 | `output/` and weight files (*.safetensors, *.gguf, *.bin, *.pt, *.pth, *.ckpt) are git-ignored and never stored; git holds small JSON test fixtures only | must | D6 | 00a | 1/1 | 00a |
@@ -55,7 +55,7 @@ Every requirement extracted from the master document, the module that owns it, a
 | R-46 | After the full run every job has one terminal status, the reports add up to the R-01 job count, and a re-run with unchanged shas is a no-op | must | §7 (Wave 7), §8.2 | 07f | 0/2 | 07f |
 | R-47 | Each output/categories/<category>/README.md summarizes that category's statuses, keys and near-misses | must | §5.4 | 07f | 0/1 | 07f |
 | R-48 | tel_roundtrip runs over every graph the pipeline writes | must | §9.6 | 07f | 0/1 | 07f |
-| R-49 | A TEL coverage analyzer counts per graph the T♭-spellable ops and each §9.4 counted exclusion | must | §7 (Wave T), §9.4 | 09a | 0/1 | 09a |
-| R-50 | `tools/viz_to_tel.py` → `tools/tel_compile.mjs` on distilgpt2 still prints PASS | must | §9.6 | 09a | 0/1 | 09a |
+| R-49 | A TEL coverage analyzer counts per graph the T♭-spellable ops and each §9.4 counted exclusion | must | §7 (Wave T), §9.4 | 09a | 1/1 | 09a |
+| R-50 | `tools/viz_to_tel.py` → `tools/tel_compile.mjs` on distilgpt2 still prints PASS | must | §9.6 | 09a | 1/1 | 09a |
 | R-51 | The T♭ printer and decoder are ported to Python next to viz_graph() with both §9.6 fixes, matching tel.js on the 8 goldens (T-2 default) | must | §9.6, §10 (T-2) | 09b | 0/4 | 09b |
 | R-52 | Pipeline graphs keep `axes[].symbol` for B and T | should | §9.4 | 06a | 1/1 | 06a |

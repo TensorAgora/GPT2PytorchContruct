@@ -770,20 +770,88 @@
       "blocked": null
     },
     "09a": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T19:03:47+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T19:03:47+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "TEL proof done",
+          "evidence": "",
+          "at": "2026-11-20T19:03:48+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "09a.A.P1.T1": {
+          "status": "done",
+          "reason": "docs/GRAPH_TEL.md: Mapping, Bindings (ADR-0027 lines 37-41/56-60/71-83, bind.ts 42-47/94/125), Exclusions, Round trip",
+          "evidence": "",
+          "at": "2026-11-20T19:03:47+00:00"
+        },
+        "09a.B.P1.T1": {
+          "status": "done",
+          "reason": "tel_roundtrip.cjs takes paths/dirs, JSON line per graph + summary; --const-as-buffer: 8 zero-diff, d3 6/8",
+          "evidence": "",
+          "at": "2026-11-20T19:03:47+00:00"
+        },
+        "09a.B.P1.T2": {
+          "status": "done",
+          "reason": "tools/tel_coverage.py; list constants agree with tel_roundtrip on all 8",
+          "evidence": "",
+          "at": "2026-11-20T19:03:47+00:00"
+        },
+        "09a.C.P1.T1": {
+          "status": "done",
+          "reason": "§9.5 reproduced: 6/8 then 8/8 D3, 0 diffs, 174+96 respelled",
+          "evidence": "",
+          "at": "2026-11-20T19:03:47+00:00"
+        },
+        "09a.C.P1.T2": {
+          "status": "done",
+          "reason": "viz_to_tel -> tel_compile distilgpt2 PASS",
+          "evidence": "",
+          "at": "2026-11-20T19:03:47+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T19:03:47+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T19:03:47+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T19:03:47+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T19:03:48+00:00",
+          "reason": "Stage C Integrate complete: TEL proof done",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "06d": {

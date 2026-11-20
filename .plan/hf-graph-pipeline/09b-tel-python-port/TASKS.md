@@ -4,8 +4,6 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/4. Depends on: 09a. Blocks: nothing.
 
-Waiting on: 09a (must be DONE before stages that need dependencies).
-
 Next: `09b.A.P1.T1` Read nodes/tel.js printFlat, build and decodeExpr plus doc.raise and doc.sigma; write 09b DESIGN.md: `print_flat(graph) -> (source, sigma)` with contract respelling and constants as buffers, and `build(source, sigma) -> graph`, multi-axis `over` allowed
 
 `[x]` done, `[~]` awaiting verification, `[-]` skipped, `[ ]` open. Boxes change only through the plan tool.
