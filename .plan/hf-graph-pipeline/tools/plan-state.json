@@ -98,20 +98,106 @@
       "blocked": null
     },
     "05a": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T18:14:20+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T18:17:32+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "smoke passed",
+          "evidence": "",
+          "at": "2026-11-20T18:18:37+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "05a.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: Job, Statuses, HTTP client, File selection with signatures",
+          "evidence": "",
+          "at": "2026-11-20T18:14:20+00:00"
+        },
+        "05a.B.P1.T1": {
+          "status": "done",
+          "reason": "csv/goldens.csv 8 rows, 1 absent from catalog (mixtral GGUF)",
+          "evidence": "",
+          "at": "2026-11-20T18:14:54+00:00"
+        },
+        "05a.B.P1.T2": {
+          "status": "done",
+          "reason": "load_jobs() -> 29780 unique jobs",
+          "evidence": "",
+          "at": "2026-11-20T18:14:54+00:00"
+        },
+        "05a.B.P2.T1": {
+          "status": "done",
+          "reason": "http.py; test_hub_http 6 passed (429/Retry-After, 503 backoff, cache 0 req, token redacted)",
+          "evidence": "",
+          "at": "2026-11-20T18:15:51+00:00"
+        },
+        "05a.B.P2.T2": {
+          "status": "done",
+          "reason": "allowlist enforced; -k allowlist passes",
+          "evidence": "",
+          "at": "2026-11-20T18:15:51+00:00"
+        },
+        "05a.B.P3.T1": {
+          "status": "done",
+          "reason": "discover.py; test_discover 8 passed (sharded, single, diffusers, gguf quant/multipart, pytorch-only)",
+          "evidence": "",
+          "at": "2026-11-20T18:17:32+00:00"
+        },
+        "05a.B.P3.T2": {
+          "status": "done",
+          "reason": "gated + gated_not_accepted; -k gated passes",
+          "evidence": "",
+          "at": "2026-11-20T18:17:32+00:00"
+        },
+        "05a.C.P1.T1": {
+          "status": "done",
+          "reason": "[network] smoke 100: all rows sha or terminal (54 discovered, 46 deferred); re-run 0 requests",
+          "evidence": "",
+          "at": "2026-11-20T18:18:37+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T18:14:20+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T18:14:20+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T18:17:32+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T18:18:37+00:00",
+          "reason": "Stage C Integrate complete: smoke passed",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "05b": {

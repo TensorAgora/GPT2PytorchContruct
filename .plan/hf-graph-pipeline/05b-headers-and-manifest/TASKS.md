@@ -4,8 +4,6 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/7. Depends on: 05a, 00a. Blocks: 06c, 05c, 08a.
 
-Waiting on: 05a (must be DONE before stages that need dependencies).
-
 Next: `05b.A.P1.T1` Write 05b DESIGN.md: own 2-range reader vs huggingface_hub `parse_safetensors_file_metadata`/`get_safetensors_metadata` (both exist in 2.4.0 but expose no byte count and no component subfolders), GGUF window growth and the large-array summary threshold, the failed:<code> list, and every §5.2 manifest field with its source
 
 `[x]` done, `[~]` awaiting verification, `[-]` skipped, `[ ]` open. Boxes change only through the plan tool.

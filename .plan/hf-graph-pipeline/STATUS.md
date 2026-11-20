@@ -4,19 +4,19 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.2).
 
-Tasks closed: 7 of 109. Modules: DONE 1, NOT_STARTED 18, DESIGNED 1.
+Tasks closed: 15 of 109. Modules: DONE 2, NOT_STARTED 17, DESIGNED 1.
 
 ## Per module
 
 | module | title | wave | state | active stage | tasks | waiting on |
 |---|---|---|---|---|---|---|
 | [00a](00a-foundation/TASKS.md) | Confirm inputs, extras, gitignore, viz-graph schema, checker and comparator | 0 | DONE | - | 7/7 | - |
-| [05a](05a-catalog-and-discovery/TASKS.md) | Catalog jobs, HTTP client, repo discovery and small-file cache | 0 | NOT_STARTED | A | 0/8 | - |
-| [05b](05b-headers-and-manifest/TASKS.md) | Safetensors and GGUF header readers, fixtures, tensor manifest v1 | 0 | NOT_STARTED | A | 0/7 | 05a |
+| [05a](05a-catalog-and-discovery/TASKS.md) | Catalog jobs, HTTP client, repo discovery and small-file cache | 0 | DONE | - | 8/8 | - |
+| [05b](05b-headers-and-manifest/TASKS.md) | Safetensors and GGUF header readers, fixtures, tensor manifest v1 | 0 | NOT_STARTED | A | 0/7 | - |
 | [06a](06a-block-library/TASKS.md) | Descriptor format, selectors, blocks from arch.mjs, GPT-2 and llama-family descriptors | 0 | NOT_STARTED | A | 0/8 | - |
 | [06b](06b-golden-ports/TASKS.md) | mixtral, deepseek_v3 and qwen3_5 descriptors | 0 | NOT_STARTED | A | 0/5 | 06a |
 | [06c](06c-resolve-and-bind/TASKS.md) | Resolution ladder, hyperparameter sources, binding verifier | 0 | NOT_STARTED | A | 0/6 | 05b, 06b |
-| [05c](05c-graph-writer-cli/TASKS.md) | run_one, graph and report writers, content store, single-URL CLI | 0 | NOT_STARTED | A | 0/6 | 05a, 05b, 06c, 06a |
+| [05c](05c-graph-writer-cli/TASKS.md) | run_one, graph and report writers, content store, single-URL CLI | 0 | NOT_STARTED | A | 0/6 | 05b, 06c, 06a |
 | [05d](05d-batch-and-coverage/TASKS.md) | Batch ledger, resume, coverage reports, backlog, 100-row smoke | 0 | NOT_STARTED | A | 0/5 | 05c |
 | [08a](08a-goldens-pinned/TASKS.md) | Pin the 8 goldens, diff their configs, rebuild them from headers | 0 | NOT_STARTED | A | 0/5 | 05c, 05b |
 | [09a](09a-tel-proof/TASKS.md) | Graph⇔TEL design doc, round trip over goldens, TEL coverage analyzer | 0 | NOT_STARTED | A | 0/5 | - |
@@ -33,7 +33,6 @@ Tasks closed: 7 of 109. Modules: DONE 1, NOT_STARTED 18, DESIGNED 1.
 
 ## Next actions
 
-- 05a stage A: `05a.A.P1.T1` Write 05a DESIGN.md: Job fields, the §5.4 status vocabulary, the HTTP client contract (range GET with byte counting, small-file GET via hf_hub_url, on-disk cache keyed (repo, sha, path), backoff and Retry-After, token redaction, built on the client huggingface_hub already uses, no new HTTP dependency) and the §5.1/D2/D7 file-selection rules
 - 05b stage A: `05b.A.P1.T1` Write 05b DESIGN.md: own 2-range reader vs huggingface_hub `parse_safetensors_file_metadata`/`get_safetensors_metadata` (both exist in 2.4.0 but expose no byte count and no component subfolders), GGUF window growth and the large-array summary threshold, the failed:<code> list, and every §5.2 manifest field with its source
 - 06a stage A: `06a.A.P1.T1` Read arch.mjs (llamaGraph, mixtralGraph, deepseekGraph, the six blocks), activity_bar/shared/mock.js, tensorprog/lower.py, qwen3_5.py and program.py; write 06a DESIGN.md: block signatures on Program with the arch.mjs line each ports, descriptor JSON (§7.2 keys), selector semantics, and `build(descriptor, hyper, scheme) -> (viz_graph, expected_params)`
 - 06b stage A: `06b.A.P1.T1` Write 06b DESIGN.md: per golden its descriptor id, recipe blocks, the arch.mjs or qwen3_5.py lines it follows, new blocks needed (mla, shared experts), deepseek's 174 keyless per-expert views, and which qwen3_5.py functions the recipe calls instead of rewriting

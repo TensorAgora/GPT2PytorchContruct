@@ -4,7 +4,7 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/6. Depends on: 05a, 05b, 06c, 06a. Blocks: 05d, 08a.
 
-Waiting on: 05a, 05b, 06c, 06a (must be DONE before stages that need dependencies).
+Waiting on: 05b, 06c, 06a (must be DONE before stages that need dependencies).
 
 Next: `05c.A.P1.T1` Write 05c DESIGN.md: run_one stage order S1–S12 with each side exit's status, report.json fields (status, candidates, near-misses, binding partition, hyper sources, bytes read), the §5.3 additive fields, content key = sha256(descriptor@version, resolved hyper, naming scheme), graph.ref format, §5.4 paths
 

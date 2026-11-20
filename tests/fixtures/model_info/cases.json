@@ -1,0 +1,221 @@
+{
+ "components_no_model_index": {
+  "info": {
+   "gated": false,
+   "sha": "8888888888888888888888888888888888888888",
+   "siblings": [
+    {
+     "rfilename": "bridge_flow.bin",
+     "size": 1
+    },
+    {
+     "rfilename": "transformer/pytorch_model_fsdp.bin",
+     "size": 9
+    },
+    {
+     "rfilename": "vae/config.json",
+     "size": 800
+    },
+    {
+     "rfilename": "vae/diffusion_pytorch_model.safetensors",
+     "size": 160
+    }
+   ]
+  }
+ },
+ "diffusers": {
+  "files": {
+   "text_encoder/model.safetensors.index.json": {
+    "weight_map": {
+     "x": "model-00001-of-00001.safetensors"
+    }
+   }
+  },
+  "info": {
+   "gated": false,
+   "sha": "cccccccccccccccccccccccccccccccccccccccc",
+   "siblings": [
+    {
+     "rfilename": "model_index.json",
+     "size": 500
+    },
+    {
+     "rfilename": "sd_xl_base_1.0.safetensors",
+     "size": 6900000000
+    },
+    {
+     "rfilename": "unet/config.json",
+     "size": 1800
+    },
+    {
+     "rfilename": "unet/diffusion_pytorch_model.safetensors",
+     "size": 10000000000
+    },
+    {
+     "rfilename": "unet/diffusion_pytorch_model.fp16.safetensors",
+     "size": 5000000000
+    },
+    {
+     "rfilename": "vae/config.json",
+     "size": 700
+    },
+    {
+     "rfilename": "vae/diffusion_pytorch_model.fp16.safetensors",
+     "size": 160000000
+    },
+    {
+     "rfilename": "text_encoder/config.json",
+     "size": 600
+    },
+    {
+     "rfilename": "text_encoder/model.safetensors.index.json",
+     "size": 20000
+    },
+    {
+     "rfilename": "text_encoder/model-00001-of-00001.safetensors",
+     "size": 490000000
+    },
+    {
+     "rfilename": "scheduler/scheduler_config.json",
+     "size": 400
+    }
+   ]
+  }
+ },
+ "gated": {
+  "info": {
+   "gated": "manual",
+   "sha": "9999999999999999999999999999999999999999",
+   "siblings": [
+    {
+     "rfilename": "config.json",
+     "size": 600
+    },
+    {
+     "rfilename": "model.safetensors",
+     "size": 5000000000
+    }
+   ]
+  }
+ },
+ "gguf_multi_part": {
+  "info": {
+   "gated": false,
+   "sha": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+   "siblings": [
+    {
+     "rfilename": "big-Q8_0-00001-of-00002.gguf",
+     "size": 50
+    },
+    {
+     "rfilename": "big-Q8_0-00002-of-00002.gguf",
+     "size": 50
+    },
+    {
+     "rfilename": "small-IQ2_XS.gguf",
+     "size": 200
+    }
+   ]
+  },
+  "job_format": "gguf"
+ },
+ "gguf_multi_quant": {
+  "info": {
+   "gated": false,
+   "sha": "dddddddddddddddddddddddddddddddddddddddd",
+   "siblings": [
+    {
+     "rfilename": "model.Q2_K.gguf",
+     "size": 3000
+    },
+    {
+     "rfilename": "model.Q4_K_M.gguf",
+     "size": 5000
+    },
+    {
+     "rfilename": "model.Q8_0.gguf",
+     "size": 9000
+    },
+    {
+     "rfilename": "mmproj-model-f16.gguf",
+     "size": 600
+    }
+   ]
+  },
+  "job_format": "gguf"
+ },
+ "pytorch_only": {
+  "info": {
+   "gated": false,
+   "sha": "ffffffffffffffffffffffffffffffffffffffff",
+   "siblings": [
+    {
+     "rfilename": "config.json",
+     "size": 600
+    },
+    {
+     "rfilename": "pytorch_model.bin",
+     "size": 500000000
+    }
+   ]
+  }
+ },
+ "sharded": {
+  "files": {
+   "model.safetensors.index.json": {
+    "metadata": {},
+    "weight_map": {
+     "a.weight": "model-00001-of-00002.safetensors",
+     "b.weight": "model-00002-of-00002.safetensors",
+     "c.weight": "model-00001-of-00002.safetensors"
+    }
+   }
+  },
+  "info": {
+   "gated": false,
+   "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "siblings": [
+    {
+     "rfilename": "config.json",
+     "size": 600
+    },
+    {
+     "rfilename": "model.safetensors.index.json",
+     "size": 30000
+    },
+    {
+     "rfilename": "model-00001-of-00002.safetensors",
+     "size": 4000000000
+    },
+    {
+     "rfilename": "model-00002-of-00002.safetensors",
+     "size": 3000000000
+    },
+    {
+     "rfilename": "consolidated.safetensors",
+     "size": 7000000000
+    }
+   ]
+  }
+ },
+ "single": {
+  "info": {
+   "gated": false,
+   "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "siblings": [
+    {
+     "rfilename": "config.json",
+     "size": 600
+    },
+    {
+     "rfilename": "model.safetensors",
+     "size": 350000000
+    },
+    {
+     "rfilename": "pytorch_model.bin",
+     "size": 350000000
+    }
+   ]
+  }
+ }
+}
