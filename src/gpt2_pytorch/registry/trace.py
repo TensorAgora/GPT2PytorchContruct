@@ -6,6 +6,7 @@ by size (r<pos>_<size>), so numpy broadcasting is TEL's subsequence rule. Parame
 are the checkpoint keys, and bind through bind.py like path A's.
 """
 import operator
+import threading
 
 from ..tensorprog.program import Program
 from ..tensorprog.viz import viz_graph
@@ -14,6 +15,10 @@ BINARY = {"add": "add", "sub": "sub", "mul": "mul", "div": "div"}
 UNARY = {"relu": "relu", "sigmoid": "sigmoid", "tanh": "tanh", "exp": "exp", "log": "log", "rsqrt": "rsqrt", "erf": "erf"}
 IDENTITY = {"dropout", "alias", "clone", "contiguous", "detach", "lift_fresh_copy", "_assert_tensor_metadata",
             "_to_copy", "to", "type_as"}  # dtype casts: the graph's dtypes are the checkpoint's
+
+
+# ponytail: one trace at a time; torch.export's fake-tensor state is process-global, so batch threads queue here
+_LOCK = threading.Lock()
 
 
 class TraceError(Exception):
@@ -250,13 +255,14 @@ def trace_graph(library: str, cls: str, cfg: dict, name: str = "model", kind: st
     import json as _json
 
     import torch
-    model = make_model(library, cls, cfg, kind)
-    args, kw = example_inputs(library, cls, cfg, model, kind)
-    try:
-        ep = torch.export.export(model, args, kwargs=kw, strict=False)
-    except Exception as e:  # noqa: BLE001 - data-dependent control flow and the like: report, never guess
-        raise TraceError(f"export failed: {type(e).__name__}: {str(e)[:200]}") from None
-    p, _ = to_program(ep, name)
+    with _LOCK:
+        model = make_model(library, cls, cfg, kind)
+        args, kw = example_inputs(library, cls, cfg, model, kind)
+        try:
+            ep = torch.export.export(model, args, kwargs=kw, strict=False)
+        except Exception as e:  # noqa: BLE001 - data-dependent control flow and the like: report, never guess
+            raise TraceError(f"export failed: {type(e).__name__}: {str(e)[:200]}") from None
+        p, _ = to_program(ep, name)
     doc = prune(p.to_dict(name, {"B": 1, "T": 8}) | {"verification": []})
     g = viz_graph(_json.loads(_json.dumps(doc)), f"gpt2_pytorch.registry.trace {library}:{cls} (torch.export on meta)")
     expected = [{k: t[k] for k in ("name", "role", "shape", "checkpoint_key", "view")} for t in g["tensors"] if t["role"] in ("parameter", "buffer")]
