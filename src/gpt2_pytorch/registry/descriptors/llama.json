@@ -104,7 +104,11 @@
   "when": "tie"
  },
  "ignored": [
-  "model.layers.*.self_attn.rotary_emb.inv_freq"
+  "model.layers.*.self_attn.rotary_emb.inv_freq",
+  "rope_freqs.weight",
+  "rope_factors_long.weight",
+  "rope_factors_short.weight",
+  "cls.output.weight"
  ],
  "provenance": {
   "ported_from": "TensormorphDesignUI viewport/graphs/arch.mjs llamaGraph (199-219)",

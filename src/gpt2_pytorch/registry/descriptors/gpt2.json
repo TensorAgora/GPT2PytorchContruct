@@ -51,7 +51,9 @@
  "ties": {
   "lm_head.weight": "transformer.wte.weight"
  },
- "ignored": [],
+ "ignored": [
+  "*.attn.masked_bias"
+ ],
  "provenance": {
   "ported_from": "tensorprog/lower.py (verified numerically by tools/tensor_program.py)",
   "golden": "json/distilgpt2.json",

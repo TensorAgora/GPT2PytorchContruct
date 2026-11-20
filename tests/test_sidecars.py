@@ -53,3 +53,36 @@ def test_wrong_shape_stays_unbound(scheme):
     next(t for t in tensors if t["key"] == bad)["shape"] = [7, 7, 7]
     b = verify(param(principal, shape), {"tensors": tensors, "config": {"config.json": cfg}}, D)
     assert not b.ok and (bad in b.unclaimed or b.missing or b.misshaped)
+
+
+def _m(*ts):
+    return {"tensors": [{"key": k, "dtype": dt, "shape": sh, "file": "m.safetensors", "numel": 1} for k, dt, sh in ts]}
+
+
+def test_modern_quant_forms_give_logical_principals():
+    from gpt2_pytorch.registry.sidecars import apply
+    p = "model.layers.0.mlp.down_proj"
+    cases = {  # form -> (manifest, config, logical shape of p.weight, scheme)
+        "fp8 tensor": (_m((f"{p}.weight", "F8_E4M3", [64, 256]), (f"{p}.weight_scale", "BF16", [1]), (f"{p}.input_scale", "BF16", [1])), {}, [64, 256], "fp8_tensor"),
+        "int8 channel": (_m((f"{p}.weight", "I8", [64, 256]), (f"{p}.weight_scale", "F32", [64])), {}, [64, 256], "int8_channel"),
+        "nvfp4 ct": (_m((f"{p}.weight_packed", "U8", [64, 128]), (f"{p}.weight_scale", "F8_E4M3", [64, 16]),
+                        (f"{p}.weight_global_scale", "F16", [1]), (f"{p}.input_global_scale", "F16", [1])), {}, [64, 256], "nvfp4"),
+        "nvfp4 modelopt": (_m((f"{p}.weight", "U8", [64, 128]), (f"{p}.weight_scale", "F8_E4M3", [64, 16]),
+                              (f"{p}.weight_scale_2", "F32", []), (f"{p}.input_scale", "F32", [])), {}, [64, 256], "nvfp4"),
+        "int4 packed": (_m((f"{p}.weight_packed", "I32", [64, 32]), (f"{p}.weight_scale", "BF16", [64, 4]), (f"{p}.weight_shape", "I64", [2]),
+                           (f"{p}.weight_zero_point", "I32", [8, 4])),
+                        {"quantization_config": {"config_groups": {"group_0": {"weights": {"num_bits": 4}}}}}, [64, 256], "pack_quantized_int4"),
+    }
+    for form, (m, cfg, shape, scheme) in cases.items():
+        s = apply(m, cfg)
+        assert s.stored[f"{p}.weight"]["shape"] == shape, form
+        others = {t["key"] for t in m["tensors"]} - {f"{p}.weight"}
+        assert others <= set(s.aux) and all(r["scheme"] == scheme for r in s.records), form
+
+
+def test_gptq_bias_is_aux_unless_bound():
+    from gpt2_pytorch.registry.sidecars import apply
+    p = "model.layers.0.mlp.down_proj"
+    s = apply(_m((f"{p}.qweight", "I32", [32, 64]), (f"{p}.qzeros", "I32", [2, 8]), (f"{p}.scales", "F16", [2, 64]), (f"{p}.bias", "F16", [64])),
+              {"quantization_config": {"quant_method": "gptq", "bits": 4}})
+    assert s.aux[f"{p}.bias"] == f"{p}.weight" and s.stored[f"{p}.weight"]["shape"] == [64, 256]

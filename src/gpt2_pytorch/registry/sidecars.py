@@ -73,6 +73,8 @@ def apply(manifest: dict, cfg: dict | None = None) -> Sidecars:
             parts = [p for p in (f"{base}.qweight", f"{base}.qzeros", f"{base}.scales", f"{base}.g_idx") if p in st]
             for p in parts:
                 s.attach(p, f"{base}.weight", scheme)
+            if f"{base}.bias" in st:  # auto-gptq stores a (zero) bias for every linear; a descriptor bias still binds first
+                s.attach(f"{base}.bias", f"{base}.weight", scheme)
             s.views[f"{base}.weight"] = f"{scheme} int{bits}: {' / '.join('.' + p.rsplit('.', 1)[1] for p in parts)} (group {group})"
         # MLX: P.weight U32 packed + P.scales + P.biases
         elif key.endswith(".scales") and (bi := st.get(key.removesuffix(".scales") + ".biases")) \
@@ -82,6 +84,33 @@ def apply(manifest: dict, cfg: dict | None = None) -> Sidecars:
                 s.attach(key, w["key"], "mlx")
                 s.attach(bi["key"], w["key"], "mlx")
                 s.views[w["key"]] = f"mlx int{bits}: {w['key']} + .scales / .biases (group {group})"
+        # compressed-tensors / ModelOpt: P.weight_scale beside P.weight (FP8, INT8, NVFP4) or P.weight_packed (NVFP4, INT4)
+        elif key.endswith(".weight_scale"):
+            base = key.removesuffix(".weight_scale")
+            w, pk, sh = st.get(base + ".weight"), st.get(base + ".weight_packed"), t["shape"]
+            extras = [base + x for x in (".input_scale", ".weight_scale_2", ".weight_global_scale", ".input_global_scale",
+                                         ".weight_shape", ".weight_zero_point", ".k_scale", ".v_scale") if base + x in st]
+            nvfp4 = t["dtype"].startswith("F8") and len(sh) == 2
+            if pk and pk["dtype"] == "U8" and nvfp4 and sh[1] * 16 == pk["shape"][1] * 2:
+                principal, logical, scheme = base + ".weight", [pk["shape"][0], pk["shape"][1] * 2], "nvfp4"
+            elif pk and pk["dtype"] == "I32":
+                nb = int(next((g.get("weights") or {} for g in (q.get("config_groups") or {}).values()), {}).get("num_bits") or 4)
+                principal, logical, scheme = base + ".weight", [pk["shape"][0], pk["shape"][1] * 32 // nb], f"pack_quantized_int{nb}"
+            elif w and w["dtype"] == "U8" and nvfp4 and sh[1] * 16 == w["shape"][1] * 2:
+                principal, logical, scheme = w["key"], [w["shape"][0], w["shape"][1] * 2], "nvfp4"
+            elif w and (w["dtype"].startswith("F8") or w["dtype"] == "I8") and math.prod(sh) <= w["shape"][0]:
+                principal, logical, scheme = w["key"], None, "fp8_tensor" if w["dtype"].startswith("F8") else "int8_channel"
+            else:
+                continue
+            if logical:
+                src = pk or w
+                st[principal] = {"key": principal, "dtype": scheme.upper(), "shape": logical, "file": src["file"],
+                                 **({"virtual": True} if pk else {"packed": True})}
+                if pk:
+                    s.attach(pk["key"], principal, scheme)
+            for k in [key] + extras:
+                s.attach(k, principal, scheme)
+            s.views[principal] = f"{scheme}: {' / '.join('.' + k.rsplit('.', 1)[1] for k in [key] + extras)}"
         # bitsandbytes: P.weight.absmax / .quant_map / .quant_state.* -> P.weight (shape only in the payload)
         elif (key.endswith(BNB_SUFFIXES) or ".quant_state." in key) and (p := st.get(key.split(".weight.", 1)[0] + ".weight")):
             s.attach(key, p["key"], "bitsandbytes")
