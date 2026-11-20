@@ -2,6 +2,7 @@
 depends on a chosen architecture. Canonical JSON; `provenance.fetched_at` is the only volatile field."""
 import datetime
 import gzip
+import os
 import json
 import math
 from concurrent.futures import ThreadPoolExecutor
@@ -26,7 +27,9 @@ def write_json(path, obj, gz: bool = False) -> Path:
     if gz:
         path = path.with_name(path.name + ".gz")
         raw = gzip.compress(raw, 6, mtime=0)
-    path.write_bytes(raw)
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_bytes(raw)
+    os.replace(tmp, path)  # atomic: a killed run never leaves a truncated graph that exists() would keep
     return path
 
 

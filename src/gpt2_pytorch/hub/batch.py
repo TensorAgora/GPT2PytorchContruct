@@ -55,7 +55,10 @@ def read_ledger(out) -> dict:
     if path.exists():
         for line in path.read_text().splitlines():
             if line.strip():
-                rec = json.loads(line)
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:  # the last line of a killed run
+                    continue
                 latest[rec["repo"]] = rec
     return latest
 
