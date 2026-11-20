@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass
 FORMAT = "tensormorph-tensor-program"
 VERSION = 1
 BINARY = {"add": "+", "sub": "-", "mul": "×", "div": "/"}
-UNARY = {"exp", "tanh", "rsqrt", "log", "sigmoid", "erf"}  # erf: exact GELU (BERT); a TEL builtin
+UNARY = {"exp", "tanh", "rsqrt", "log", "sigmoid", "erf", "relu"}  # erf: exact GELU (BERT); a TEL builtin
 
 
 @dataclass

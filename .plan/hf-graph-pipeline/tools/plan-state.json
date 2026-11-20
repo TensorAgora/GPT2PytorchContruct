@@ -1406,10 +1406,13 @@
       "blocked": null
     },
     "07e": {
-      "state": "NOT_STARTED",
+      "state": "DESIGNED",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T20:24:20+00:00"
         },
         "B": {
           "status": "pending"
@@ -1418,8 +1421,41 @@
           "status": "pending"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "07e.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: encoder + seq2seq blocks, keys, C4 closed forms (no goldens)",
+          "evidence": "",
+          "at": "2026-11-20T20:24:20+00:00"
+        },
+        "07e.B.P1.T1": {
+          "status": "done",
+          "reason": "bert, bert_tf, bert_bare, roberta, distilbert: C1 + C4 PASS on fixtures",
+          "evidence": "",
+          "at": "2026-11-20T20:24:20+00:00"
+        },
+        "07e.B.P1.T2": {
+          "status": "done",
+          "reason": "t5 (t5-small + mT5 fixture), bart_bare (bart-base): C1 + C4 PASS; marian deferred (DESIGN)",
+          "evidence": "",
+          "at": "2026-11-20T20:24:20+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T20:24:20+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T20:24:20+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "06f": {

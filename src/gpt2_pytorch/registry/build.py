@@ -195,7 +195,160 @@ def encoder(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
     return _finish(b.p, d, name, EXAMPLE)
 
 
-TEMPLATES = {"decoder": decoder, "encoder": encoder, "gpt2_lowering": gpt2_lowering, "qwen3_5": qwen3_5}
+def t5_buckets(T: int, bidirectional: bool, n: int, max_distance: int) -> list:
+    """HF T5Attention._relative_position_bucket for memory - query positions on a T x T grid"""
+    out = []
+    for q in range(T):
+        row = []
+        for k in range(T):
+            rel, nb, bucket = k - q, n, 0
+            if bidirectional:
+                nb //= 2
+                bucket += nb if rel > 0 else 0
+                rel = abs(rel)
+            else:
+                rel = -min(rel, 0)
+            exact = nb // 2
+            if rel < exact:
+                bucket += rel
+            else:
+                bucket += min(nb - 1, exact + int(math.log(rel / exact) / math.log(max_distance / exact) * (nb - exact)))
+            row.append(bucket)
+        out.append(row)
+    return out
+
+
+def seq2seq(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
+    """Encoder-decoder (T5 / mT5: pre-norm RMS, relative position bias, ReLU or gated-GELU FFN; BART: post-norm
+    LayerNorm, learned positions, GELU). Encoder ids and decoder ids share T; L is the decoder's logits."""
+    from .blocks import gelu_erf, gelu_tanh, layernorm, silu, softmax
+    r = d["recipe"]
+    t5 = r["flavour"] == "t5"
+    dims = {a: int(evaluate(str(e), {**EXAMPLE, **h})) for a, e in r["dims"].items()}
+    b = Builder(dims, r["root"], d["schemes"][scheme], {**h, **dims})
+    root = r["root"]
+    b.p.declare("ids", "input", ("B", "T"), "int64")
+    b.p.declare("dec_ids", "input", ("B", "T"), "int64")
+    if not t5:
+        b.p.declare("pos", "input", ("T",), "int64")
+    b.constant("c_eps", h["eps"])
+    b.constant("c_sqrt_dh", math.sqrt(dims["Dh"]))
+    b.constant("M01", [[1 if k <= q else 0 for k in range(EXAMPLE["T"])] for q in range(EXAMPLE["T"])], ["q", "k"])
+    E = b.param("E", ["V", "D"], "embed")
+    act = {"gelu": gelu_erf, "gelu_new": gelu_tanh, "swish": silu, "silu": silu}
+
+    def lin(out, x, w, axes, role, i, over, bias):
+        y = b.C(out if not bias else f"{out}.mm", x, b.param(w, axes, role, i=i, what="weight"), over)
+        return b.E("add", out, y, b.param("b" + w[1:], axes[:1], role, i=i, what="bias")) if bias else y
+
+    def mha(tag, i, xq, xkv, at, roles, mask=None, rel=None):
+        bias = not t5
+        with b.within(at, "Attention"):
+            q = lin(f"{tag}Q_{i}", xq, f"W{tag}q_{i}", ["Dq", "D"], roles[0], i, "D", bias)
+            k = lin(f"{tag}K_{i}", xkv, f"W{tag}k_{i}", ["Dq", "D"], roles[1], i, "D", bias)
+            v = lin(f"{tag}V_{i}", xkv, f"W{tag}v_{i}", ["Dq", "D"], roles[2], i, "D", bias)
+            qh = b.rename(f"{tag}Q_{i}.q", b.permute(f"{tag}Q_{i}.perm", b.reshape(f"{tag}Q_{i}.heads", q, ["B", "T", "H", "Dh"]), [0, 2, 1, 3]), "T", "q")
+            kh = b.rename(f"{tag}K_{i}.k", b.permute(f"{tag}K_{i}.perm", b.reshape(f"{tag}K_{i}.heads", k, ["B", "T", "H", "Dh"]), [0, 2, 1, 3]), "T", "k")
+            vh = b.rename(f"{tag}V_{i}.k", b.permute(f"{tag}V_{i}.perm", b.reshape(f"{tag}V_{i}.heads", v, ["B", "T", "H", "Dh"]), [0, 2, 1, 3]), "T", "k")
+            s = b.C(f"{tag}S_{i}.qk", qh, kh, "Dh")
+            if not t5:  # T5 folds the 1/sqrt(d) scale into its initialisation
+                s = b.E("div", f"{tag}S_{i}", s, "c_sqrt_dh")
+            if rel:
+                s = b.E("add", f"{tag}S_{i}.rel", s, rel)
+            if mask:
+                s = b.E("add", f"{tag}S_{i}.masked", s, b.E("log", f"{tag}Mask_{i}", "M01"))
+            softmax(b, f"{tag}A_{i}", s)
+            c = b.C(f"{tag}C_{i}", f"{tag}A_{i}", vh, "k")
+            merged = b.reshape(f"{tag}C_{i}.merged", b.permute(f"{tag}C_{i}.perm", b.rename(f"{tag}C_{i}.rename", c, "q", "T"), [0, 2, 1, 3]), ["B", "T", "Dq"])
+            return lin(f"{tag}O_{i}", merged, f"W{tag}o_{i}", ["D", "Dq"], roles[3], i, "Dq", bias)
+
+    def norm(out, x, role, i, at):
+        with b.within(at, "LayerNorm" if not t5 else "T5LayerNorm"):
+            if t5:
+                return rms(b, out, x, b.param(f"g{out}", ["D"], role, i=i), "D")
+            return layernorm(b, out, x, b.param(f"g{out}", ["D"], role, i=i, what="weight"), b.param(f"b{out}", ["D"], role, i=i, what="bias"))
+
+    def ffn(tag, i, x, at, role_prefix):
+        with b.within(at, "FeedForward"):
+            if t5 and cfg.get("feed_forward_proj", "relu").startswith("gated"):
+                g = gelu_tanh(b, f"{tag}G_{i}", b.C(f"{tag}G_{i}.mm", x, b.param(f"W{tag}g_{i}", ["F", "D"], f"{role_prefix}wi0", i=i), "D"))
+                u = b.C(f"{tag}U_{i}", x, b.param(f"W{tag}u_{i}", ["F", "D"], f"{role_prefix}wi1", i=i), "D")
+                hdn = b.E("mul", f"{tag}H_{i}", g, u)
+            elif t5:
+                hdn = b.E("relu", f"{tag}H_{i}", b.C(f"{tag}H_{i}.mm", x, b.param(f"W{tag}i_{i}", ["F", "D"], f"{role_prefix}wi", i=i), "D"))
+            else:
+                f = act[cfg.get("activation_function", "gelu")]
+                hdn = f(b, f"{tag}H_{i}", lin(f"{tag}H_{i}.lin", x, f"W{tag}i_{i}", ["F", "D"], f"{role_prefix}fc1", i, "D", True))
+            return lin(f"{tag}M_{i}", hdn, f"W{tag}m_{i}", ["D", "F"], f"{role_prefix}fc2" if not t5 else f"{role_prefix}wo", i, "F", not t5)
+
+    def rel_bias(tag, bidirectional, role):
+        b.p.declare(f"{tag}bucket", "constant", ["q", "k"], "int64", value=t5_buckets(EXAMPLE["T"], bidirectional, dims["Nb"], h["Md"]))
+        with b.within(f"{root}.{'encoder' if bidirectional else 'decoder'}.block.0.layer.0.SelfAttention", "RelativeBias"):
+            g = b.gather(f"{tag}Pb", b.param(f"W{tag}rb", ["Nb", "H"], role), f"{tag}bucket", "Nb")  # [q, k, H]
+            return b.permute(f"{tag}Pb.perm", g, [2, 0, 1])
+
+    def embed(tag, ids, stack):
+        with b.within(f"{root}.{stack}.embed_tokens", "Embedding"):
+            x = b.gather(f"{tag}X_0.w", E, ids, "V")
+            if h.get("scale"):
+                x = b.E("mul", f"{tag}X_0.ws", x, b.constant("c_emb", math.sqrt(dims["D"])))
+            if t5:
+                return x
+            x = b.E("add", f"{tag}X_0.wp", x, b.gather(f"{tag}X_0.p", b.param(f"{tag}Ep", ["Pp", "D"], f"{stack}_pos"), "pos", "Pp"))
+        return norm(f"{tag}X_0", x, f"{stack}_emb_ln", 0, f"{root}.{stack}.layernorm_embedding") if f"{stack}_emb_ln" in b.scheme else x
+
+    # encoder
+    x = embed("e", "ids", "encoder")
+    rel = rel_bias("e", True, "enc_rel_bias") if t5 else None
+    for i in range(int(h["L"])):
+        at = f"{root}.encoder.block.{i}" if t5 else f"{root}.encoder.layers.{i}"
+        if t5:
+            n1 = norm(f"eN1_{i}", x, "enc_ln1", i, f"{at}.layer.0.layer_norm")
+            x = b.E("add", f"eXa_{i}", x, mha("e", i, n1, n1, f"{at}.layer.0.SelfAttention", ("enc_q", "enc_k", "enc_v", "enc_o"), rel=rel))
+            n2 = norm(f"eN2_{i}", x, "enc_ln2", i, f"{at}.layer.1.layer_norm")
+            x = b.E("add", f"eX_{i + 1}", x, ffn("e", i, n2, f"{at}.layer.1.DenseReluDense", "enc_"))
+        else:
+            x = norm(f"eXa_{i}", b.E("add", f"eXa_{i}.res", x, mha("e", i, x, x, f"{at}.self_attn", ("enc_q", "enc_k", "enc_v", "enc_o"))),
+                     "enc_ln1", i, f"{at}.self_attn_layer_norm")
+            x = norm(f"eX_{i + 1}", b.E("add", f"eX_{i + 1}.res", x, ffn("e", i, x, at, "enc_")), "enc_ln2", i, f"{at}.final_layer_norm")
+    xe = norm("eXf", x, "enc_final", 0, f"{root}.encoder.final_layer_norm") if t5 else x
+    # decoder
+    x = embed("d", "dec_ids", "decoder")
+    rel = rel_bias("d", False, "dec_rel_bias") if t5 else None
+    for i in range(int(h["Ld"])):
+        at = f"{root}.decoder.block.{i}" if t5 else f"{root}.decoder.layers.{i}"
+        self_roles, cross_roles = ("dec_q", "dec_k", "dec_v", "dec_o"), ("x_q", "x_k", "x_v", "x_o")
+        if t5:
+            n1 = norm(f"dN1_{i}", x, "dec_ln1", i, f"{at}.layer.0.layer_norm")
+            x = b.E("add", f"dXa_{i}", x, mha("d", i, n1, n1, f"{at}.layer.0.SelfAttention", self_roles, mask=True, rel=rel))
+            n2 = norm(f"dN2_{i}", x, "dec_ln2", i, f"{at}.layer.1.layer_norm")
+            x = b.E("add", f"dXc_{i}", x, mha("x", i, n2, xe, f"{at}.layer.1.EncDecAttention", cross_roles))
+            n3 = norm(f"dN3_{i}", x, "dec_ln3", i, f"{at}.layer.2.layer_norm")
+            x = b.E("add", f"dX_{i + 1}", x, ffn("d", i, n3, f"{at}.layer.2.DenseReluDense", "dec_"))
+        else:
+            x = norm(f"dXa_{i}", b.E("add", f"dXa_{i}.res", x, mha("d", i, x, x, f"{at}.self_attn", self_roles, mask=True)),
+                     "dec_ln1", i, f"{at}.self_attn_layer_norm")
+            x = norm(f"dXc_{i}", b.E("add", f"dXc_{i}.res", x, mha("x", i, x, xe, f"{at}.encoder_attn", cross_roles)),
+                     "dec_ln2", i, f"{at}.encoder_attn_layer_norm")
+            x = norm(f"dX_{i + 1}", b.E("add", f"dX_{i + 1}.res", x, ffn("d", i, x, at, "dec_")), "dec_ln3", i, f"{at}.final_layer_norm")
+    xd = norm("dXf", x, "dec_final", 0, f"{root}.decoder.final_layer_norm") if t5 else x
+    tie = bool(h.get("tie"))
+    head = E if tie else b.param("Wlm", ["V", "D"], "head")
+    for role in ("enc_embed", "dec_embed") + (("head",) if tie else ()):  # stored copies of the shared table are tied
+        if role in b.scheme:
+            b.p.aliases[b.key(role)[0]] = E
+    with b.within("lm_head", "Linear"):
+        if t5 and tie:  # T5 v1.0 rescales before the tied head
+            xd = b.E("mul", "dXf.scaled", xd, b.constant("c_tie_scale", dims["D"] ** -0.5))
+        if "logits_bias" in b.scheme:
+            raw = b.C("L.raw", xd, head, "D")
+            b.E("add", "L", raw, b.reshape("Lb", b.param("Wlb", ["U", "V"], "logits_bias"), ["V"]))
+        else:
+            b.C("L", xd, head, "D")
+    return _finish(b.p, d, name, EXAMPLE)
+
+
+TEMPLATES = {"decoder": decoder, "encoder": encoder, "seq2seq": seq2seq, "gpt2_lowering": gpt2_lowering, "qwen3_5": qwen3_5}
 
 
 def build(d: dict, hyper: dict, scheme: str = "hf", name: str = "model", cfg: dict | None = None, names=()):

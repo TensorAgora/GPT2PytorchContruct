@@ -1,0 +1,112 @@
+{
+ "id": "bart",
+ "version": "1",
+ "match": {
+  "model_type": [
+   "bart",
+   "mbart"
+  ],
+  "architectures": [
+   "BartForConditionalGeneration",
+   "MBartForConditionalGeneration"
+  ],
+  "gguf_architecture": []
+ },
+ "hyperparameters": {
+  "L": [
+   "encoder_layers"
+  ],
+  "Ld": [
+   "decoder_layers"
+  ],
+  "D": [
+   "d_model"
+  ],
+  "Hq": [
+   "encoder_attention_heads"
+  ],
+  "Dh": [
+   "=D // Hq"
+  ],
+  "F": [
+   "encoder_ffn_dim"
+  ],
+  "V": [
+   "vocab_size"
+  ],
+  "P": [
+   "max_position_embeddings"
+  ],
+  "eps": [
+   "=1e-5"
+  ],
+  "scale": [
+   "scale_embedding",
+   "=0"
+  ],
+  "tie": [
+   "tie_word_embeddings",
+   "=1"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "embed": "model.shared.weight",
+   "enc_embed": "model.encoder.embed_tokens.weight",
+   "dec_embed": "model.decoder.embed_tokens.weight",
+   "head": "lm_head.weight",
+   "logits_bias": "final_logits_bias",
+   "encoder_pos": "model.encoder.embed_positions.weight",
+   "encoder_emb_ln": "model.encoder.layernorm_embedding.{what}",
+   "enc_q": "model.encoder.layers.{i}.self_attn.q_proj.{what}",
+   "enc_k": "model.encoder.layers.{i}.self_attn.k_proj.{what}",
+   "enc_v": "model.encoder.layers.{i}.self_attn.v_proj.{what}",
+   "enc_o": "model.encoder.layers.{i}.self_attn.out_proj.{what}",
+   "enc_ln1": "model.encoder.layers.{i}.self_attn_layer_norm.{what}",
+   "enc_fc1": "model.encoder.layers.{i}.fc1.{what}",
+   "enc_fc2": "model.encoder.layers.{i}.fc2.{what}",
+   "enc_ln2": "model.encoder.layers.{i}.final_layer_norm.{what}",
+   "decoder_pos": "model.decoder.embed_positions.weight",
+   "decoder_emb_ln": "model.decoder.layernorm_embedding.{what}",
+   "dec_q": "model.decoder.layers.{i}.self_attn.q_proj.{what}",
+   "x_q": "model.decoder.layers.{i}.encoder_attn.q_proj.{what}",
+   "dec_k": "model.decoder.layers.{i}.self_attn.k_proj.{what}",
+   "x_k": "model.decoder.layers.{i}.encoder_attn.k_proj.{what}",
+   "dec_v": "model.decoder.layers.{i}.self_attn.v_proj.{what}",
+   "x_v": "model.decoder.layers.{i}.encoder_attn.v_proj.{what}",
+   "dec_o": "model.decoder.layers.{i}.self_attn.out_proj.{what}",
+   "x_o": "model.decoder.layers.{i}.encoder_attn.out_proj.{what}",
+   "dec_ln1": "model.decoder.layers.{i}.self_attn_layer_norm.{what}",
+   "dec_fc1": "model.decoder.layers.{i}.fc1.{what}",
+   "dec_fc2": "model.decoder.layers.{i}.fc2.{what}",
+   "dec_ln3": "model.decoder.layers.{i}.final_layer_norm.{what}",
+   "dec_ln2": "model.decoder.layers.{i}.encoder_attn_layer_norm.{what}"
+  }
+ },
+ "recipe": {
+  "template": "seq2seq",
+  "flavour": "bart",
+  "root": "bart",
+  "dims": {
+   "B": "B",
+   "T": "T",
+   "q": "T",
+   "k": "T",
+   "D": "D",
+   "Dq": "D",
+   "Dh": "Dh",
+   "H": "Hq",
+   "F": "F",
+   "V": "V",
+   "Pp": "P + 2",
+   "U": "1"
+  }
+ },
+ "ties": {},
+ "ignored": [],
+ "provenance": {
+  "ported_from": "HF BART: post-norm LayerNorm, learned positions (offset 2), layernorm_embedding, GELU; tied head plus final_logits_bias",
+  "fixture": null,
+  "certainty": "template"
+ }
+}

@@ -57,7 +57,8 @@ def assemble(a: dict) -> dict:
     d = copy.deepcopy(load(spec["text"]))
     rules = spec.get("prefix", {})
     view = lambda v: {**v, "view": "stack of " + _rewrite(v["view"].removeprefix("stack of "), rules)}  # noqa: E731
-    d["schemes"] = {"hf": {r: _rewrite(v, rules) if isinstance(v, str) else view(v) for r, v in d["schemes"]["hf"].items()}}
+    d["schemes"] = {"hf": {r: _rewrite(v, rules) if isinstance(v, str) else view(v) for r, v in d["schemes"]["hf"].items()
+                           if r not in spec.get("drop_roles", [])}}
     d["components"] = d.get("components", []) + a.get("components", [])
     d["ignored"] = d.get("ignored", []) + a.get("ignored", [])
     d["recipe"] = {**d["recipe"], "config": spec.get("config")} if spec.get("config") else d["recipe"]

@@ -131,6 +131,17 @@ def check(did: str) -> dict:
         layer = BT * 4 * dd["D"] * dd["Dq"] + 2 * dd["B"] * dd["H"] * dd["T"] * dd["T"] * dd["Dh"] + 2 * BT * dd["D"] * dd["F"]
         want = {"contractions": 8 * L, "contraction_flops": 2 * L * layer}  # q, k, v, o, scores, context, intermediate, output
         out["C4"] = "PASS" if all(g["totals"][k] == v for k, v in want.items()) else f"FAIL {want} vs {g['totals']}"
+    elif m is not None and d["recipe"]["template"] == "seq2seq":
+        h = resolve_hyper(d, m, job.row)
+        cfg = m["config"].get("config.json") or {}
+        g, _ = build(d, h, scheme, cfg=cfg)
+        dd, Le, Ld = g["dims"], int(h["L"][0]), int(h["Ld"][0])
+        B, T, D, Dq, F = dd["B"], dd["T"], dd["D"], dd["Dq"], dd["F"]
+        nf = 3 if d["recipe"]["flavour"] == "t5" and cfg.get("feed_forward_proj", "relu").startswith("gated") else 2
+        att = 4 * B * T * D * Dq + 2 * B * dd["H"] * T * T * dd["Dh"]  # projections + scores + context
+        want = {"contractions": Le * (6 + nf) + Ld * (12 + nf) + 1,
+                "contraction_flops": 2 * (Le * (att + nf * B * T * D * F) + Ld * (2 * att + nf * B * T * D * F) + B * T * D * dd["V"])}
+        out["C4"] = "PASS" if all(g["totals"][k] == v for k, v in want.items()) else f"FAIL {want} vs {g['totals']}"
     elif m is not None and d["recipe"]["template"] == "decoder":
         h = resolve_hyper(d, m, job.row)
         cfg = m["config"].get("config.json") or {}
@@ -153,8 +164,9 @@ def check(did: str) -> dict:
         big["shape"] = [big["shape"][0] + 1] + big["shape"][1:]
         huge = copy.deepcopy(m)
         cfg = huge["config"].setdefault("config.json", {}) or {}
-        for c in [cfg] + [v for v in cfg.values() if isinstance(v, dict)]:  # nested text_config too
-            for k in ("num_hidden_layers", "n_layer", "n_layers", "num_layers"):
+        layer_keys = [k for k in d["hyperparameters"].get("L", []) if not k.startswith(("=", "gguf:", "shape:", "catalog:", "missing:"))]
+        for c in [cfg] + [v for v in cfg.values() if isinstance(v, dict)]:  # the descriptor's own layer-count keys, nested too
+            for k in layer_keys + ["num_hidden_layers"]:
                 if k in c:
                     c[k] = 10 ** 7
         if "gguf" in huge and huge["gguf"]:

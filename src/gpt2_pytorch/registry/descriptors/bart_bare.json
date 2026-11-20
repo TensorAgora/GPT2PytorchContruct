@@ -1,0 +1,29 @@
+{
+ "id": "bart_bare",
+ "version": "1",
+ "assembly": {
+  "text": "bart",
+  "prefix": {
+   "model.": ""
+  },
+  "drop_roles": [
+   "logits_bias",
+   "head"
+  ]
+ },
+ "match": {
+  "model_type": [
+   "bart"
+  ],
+  "architectures": [
+   "BartModel"
+  ],
+  "gguf_architecture": []
+ },
+ "components": [],
+ "provenance": {
+  "fixture": "facebook/bart-base",
+  "certainty": "template",
+  "note": "BartModel: no model. prefix, no lm_head, no final_logits_bias (the head is the tied table)"
+ }
+}

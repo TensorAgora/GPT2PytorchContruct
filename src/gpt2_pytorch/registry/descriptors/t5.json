@@ -1,0 +1,121 @@
+{
+ "id": "t5",
+ "version": "1",
+ "match": {
+  "model_type": [
+   "t5",
+   "mt5"
+  ],
+  "architectures": [
+   "T5ForConditionalGeneration",
+   "MT5ForConditionalGeneration"
+  ],
+  "gguf_architecture": [
+   "t5"
+  ]
+ },
+ "hyperparameters": {
+  "L": [
+   "num_layers"
+  ],
+  "Ld": [
+   "num_decoder_layers",
+   "=L"
+  ],
+  "D": [
+   "d_model"
+  ],
+  "Hq": [
+   "num_heads"
+  ],
+  "Dh": [
+   "d_kv"
+  ],
+  "F": [
+   "d_ff"
+  ],
+  "V": [
+   "vocab_size"
+  ],
+  "Nb": [
+   "relative_attention_num_buckets",
+   "=32"
+  ],
+  "Md": [
+   "relative_attention_max_distance",
+   "=128"
+  ],
+  "eps": [
+   "layer_norm_epsilon",
+   "=1e-6"
+  ],
+  "tie": [
+   "tie_word_embeddings",
+   "=1"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "embed": "shared.weight",
+   "enc_embed": "encoder.embed_tokens.weight",
+   "dec_embed": "decoder.embed_tokens.weight",
+   "head": "lm_head.weight",
+   "enc_final": "encoder.final_layer_norm.weight",
+   "dec_final": "decoder.final_layer_norm.weight",
+   "enc_rel_bias": "encoder.block.0.layer.0.SelfAttention.relative_attention_bias.weight",
+   "dec_rel_bias": "decoder.block.0.layer.0.SelfAttention.relative_attention_bias.weight",
+   "enc_q": "encoder.block.{i}.layer.0.SelfAttention.q.weight",
+   "dec_q": "decoder.block.{i}.layer.0.SelfAttention.q.weight",
+   "x_q": "decoder.block.{i}.layer.1.EncDecAttention.q.weight",
+   "enc_k": "encoder.block.{i}.layer.0.SelfAttention.k.weight",
+   "dec_k": "decoder.block.{i}.layer.0.SelfAttention.k.weight",
+   "x_k": "decoder.block.{i}.layer.1.EncDecAttention.k.weight",
+   "enc_v": "encoder.block.{i}.layer.0.SelfAttention.v.weight",
+   "dec_v": "decoder.block.{i}.layer.0.SelfAttention.v.weight",
+   "x_v": "decoder.block.{i}.layer.1.EncDecAttention.v.weight",
+   "enc_o": "encoder.block.{i}.layer.0.SelfAttention.o.weight",
+   "dec_o": "decoder.block.{i}.layer.0.SelfAttention.o.weight",
+   "x_o": "decoder.block.{i}.layer.1.EncDecAttention.o.weight",
+   "enc_ln1": "encoder.block.{i}.layer.0.layer_norm.weight",
+   "enc_ln2": "encoder.block.{i}.layer.1.layer_norm.weight",
+   "dec_ln1": "decoder.block.{i}.layer.0.layer_norm.weight",
+   "dec_ln2": "decoder.block.{i}.layer.1.layer_norm.weight",
+   "dec_ln3": "decoder.block.{i}.layer.2.layer_norm.weight",
+   "enc_wi": "encoder.block.{i}.layer.1.DenseReluDense.wi.weight",
+   "enc_wi0": "encoder.block.{i}.layer.1.DenseReluDense.wi_0.weight",
+   "enc_wi1": "encoder.block.{i}.layer.1.DenseReluDense.wi_1.weight",
+   "enc_wo": "encoder.block.{i}.layer.1.DenseReluDense.wo.weight",
+   "dec_wi": "decoder.block.{i}.layer.2.DenseReluDense.wi.weight",
+   "dec_wi0": "decoder.block.{i}.layer.2.DenseReluDense.wi_0.weight",
+   "dec_wi1": "decoder.block.{i}.layer.2.DenseReluDense.wi_1.weight",
+   "dec_wo": "decoder.block.{i}.layer.2.DenseReluDense.wo.weight"
+  }
+ },
+ "recipe": {
+  "template": "seq2seq",
+  "flavour": "t5",
+  "root": "t5",
+  "dims": {
+   "B": "B",
+   "T": "T",
+   "q": "T",
+   "k": "T",
+   "D": "D",
+   "Dq": "Hq * Dh",
+   "Dh": "Dh",
+   "H": "Hq",
+   "F": "F",
+   "V": "V",
+   "Nb": "Nb"
+  }
+ },
+ "ties": {},
+ "ignored": [
+  "decoder.block.0.layer.1.EncDecAttention.relative_attention_bias.weight"
+ ],
+ "provenance": {
+  "ported_from": "HF T5 / mT5: pre-norm RMS (T5LayerNorm), relative position buckets gathered from the first block's table, no attention scale, ReLU (v1.0) or gated GELU (v1.1, mT5), tied head rescaled by D^-0.5",
+  "fixture": "google-t5/t5-small",
+  "certainty": "template"
+ }
+}

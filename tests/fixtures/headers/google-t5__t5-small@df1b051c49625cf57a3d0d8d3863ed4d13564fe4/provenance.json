@@ -1,0 +1,1 @@
+{"captured_at":"2026-11-20T20:18:42+00:00","category":"encoder_decoder","format":"safetensors","header_bytes_read":15536,"repo":"google-t5/t5-small","requests":4,"sha":"df1b051c49625cf57a3d0d8d3863ed4d13564fe4","tool":"gpt2_pytorch.hub.fixtures"}
