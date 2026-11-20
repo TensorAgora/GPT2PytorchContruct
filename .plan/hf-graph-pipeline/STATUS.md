@@ -4,7 +4,7 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.3).
 
-Tasks closed: 71 of 109. Modules: DONE 12, NOT_STARTED 7, DESIGNED 1.
+Tasks closed: 75 of 109. Modules: DONE 13, NOT_STARTED 6, DESIGNED 1.
 
 ## Per module
 
@@ -23,7 +23,7 @@ Tasks closed: 71 of 109. Modules: DONE 12, NOT_STARTED 7, DESIGNED 1.
 | [06d](06d-namemaps/TASKS.md) | Generated HF↔GGUF name maps with a storage-transform overlay | 1 | DONE | - | 5/5 | - |
 | [06e](06e-sidecars/TASKS.md) | Quantization sidecar binding | 1 | DONE | - | 4/4 | - |
 | [07a](07a-dense-descriptors/TASKS.md) | Conformance runner and top dense-decoder descriptors | 1 | NOT_STARTED | A | 0/5 | - |
-| [09b](09b-tel-python-port/TASKS.md) | Python T♭ printer and decoder (T-2) | 1 | NOT_STARTED | A | 0/4 | - |
+| [09b](09b-tel-python-port/TASKS.md) | Python T♭ printer and decoder (T-2) | 1 | DONE | - | 4/4 | - |
 | [07b](07b-moe/TASKS.md) | Routed MoE annotations, expert storage forms, MoE descriptors | 2 | NOT_STARTED | A | 0/6 | 07a |
 | [07c](07c-hybrid-state/TASKS.md) | Delta rule, Mamba, layer selectors, scan annotation, hybrid descriptors | 3 | NOT_STARTED | A | 0/5 | 07a, 07b |
 | [07d](07d-assemblies/TASKS.md) | VLM assemblies, MTP and draft heads | 4 | NOT_STARTED | A | 0/4 | 07c, 07b |
@@ -34,7 +34,6 @@ Tasks closed: 71 of 109. Modules: DONE 12, NOT_STARTED 7, DESIGNED 1.
 ## Next actions
 
 - 07a stage A: `07a.A.P1.T1` Pick the decoder_dense keys from output/categories/descriptor_backlog.csv (expected: llama, qwen2, qwen3, mistral, hf_olmo, gemma2, gemma3_text, phi3) and write 07a DESIGN.md: per key the descriptor it extends, its differences (q/k norm, sliding-window pattern, bias) and predicted rows
-- 09b stage A: `09b.A.P1.T1` Read nodes/tel.js printFlat, build and decodeExpr plus doc.raise and doc.sigma; write 09b DESIGN.md: `print_flat(graph) -> (source, sigma)` with contract respelling and constants as buffers, and `build(source, sigma) -> graph`, multi-axis `over` allowed
 - 07b stage A: `07b.A.P1.T1` Write 07b DESIGN.md: the routed `execution` annotation, active_flops formula with the K-of-E hand count for mixtral and deepseek-v3, the four expert storage forms (design doc §15) with their overlay transforms, and the decoder_moe keys chosen from the backlog (qwen3_moe, gpt_oss, deepseek_v2, glm_moe_dsa, deepseek_v4)
 - 07c stage A: `07c.A.P1.T1` Write 07c DESIGN.md: how qwen3_5.py's delta-rule lowering becomes a block (called, not re-implemented), the Mamba block (unrolled at --seq T), the scan annotation's `body` group, selectors used (layer_types, hybrid_override_pattern) and the chosen keys (lfm2, jamba, nemotron_h, falcon_h1, qwen35 GGUF, qwen3_5_moe)
 - 07d stage A: `07d.A.P1.T1` Write 07d DESIGN.md: the assembly descriptor (components with state bound|declared_without_graph, tensor prefixes, params), the partial status rule, and the chosen multimodal_vlm keys (qwen3_5_text, qwen3_5_moe_text, gemma4_text, qwen3_vl_text, qwen4_exp_text, paligemma) and speculative_draft heads

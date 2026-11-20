@@ -1104,20 +1104,82 @@
       "blocked": null
     },
     "09b": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T19:31:32+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T19:31:32+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "Python T♭ port matches tel.js",
+          "evidence": "",
+          "at": "2026-11-20T19:31:32+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "09b.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN maps tel_id/_rhs/print_flat/build to tel.js/doc.js lines",
+          "evidence": "",
+          "at": "2026-11-20T19:31:32+00:00"
+        },
+        "09b.B.P1.T1": {
+          "status": "done",
+          "reason": "--emit-flat in tel_roundtrip; print_flat byte-identical to tel.js on 8 goldens",
+          "evidence": "",
+          "at": "2026-11-20T19:31:32+00:00"
+        },
+        "09b.B.P1.T2": {
+          "status": "done",
+          "reason": "build(): 0 round-trip diffs, totals equal on 8 goldens; multi-axis over",
+          "evidence": "",
+          "at": "2026-11-20T19:31:32+00:00"
+        },
+        "09b.C.P1.T1": {
+          "status": "done",
+          "reason": "test_tel_flat: identical text, compile ok 8/8, D3 8/8",
+          "evidence": "",
+          "at": "2026-11-20T19:31:32+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T19:31:32+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T19:31:32+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T19:31:32+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T19:31:32+00:00",
+          "reason": "Stage C Integrate complete: Python T♭ port matches tel.js",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "07b": {

@@ -57,5 +57,5 @@ Every requirement extracted from the master document, the module that owns it, a
 | R-48 | tel_roundtrip runs over every graph the pipeline writes | must | §9.6 | 07f | 0/1 | 07f |
 | R-49 | A TEL coverage analyzer counts per graph the T♭-spellable ops and each §9.4 counted exclusion | must | §7 (Wave T), §9.4 | 09a | 1/1 | 09a |
 | R-50 | `tools/viz_to_tel.py` → `tools/tel_compile.mjs` on distilgpt2 still prints PASS | must | §9.6 | 09a | 1/1 | 09a |
-| R-51 | The T♭ printer and decoder are ported to Python next to viz_graph() with both §9.6 fixes, matching tel.js on the 8 goldens (T-2 default) | must | §9.6, §10 (T-2) | 09b | 0/4 | 09b |
+| R-51 | The T♭ printer and decoder are ported to Python next to viz_graph() with both §9.6 fixes, matching tel.js on the 8 goldens (T-2 default) | must | §9.6, §10 (T-2) | 09b | 4/4 | 09b |
 | R-52 | Pipeline graphs keep `axes[].symbol` for B and T | should | §9.4 | 06a | 1/1 | 06a |

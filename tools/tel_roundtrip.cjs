@@ -6,6 +6,7 @@
 //   --fix-contract     a contraction printed with `@` whose right operand has a batch axis (all but its last two) that is not
 //                      a batch axis of the left (e.g. N2[B,T,D] @ Wge[E,Fe,D].T, Hh[B,T,E,Fe] @ Wde[E,D,Fe].T) is respelled
 //                      contract(a, b, over=X)
+//   --emit-flat DIR    also write each graph's T♭ (after the fixes) to DIR/<name>.tel, and the TEL vocabulary to DIR/vocabulary.json
 // TN_NODES overrides the path to TensormorphDesignUI/tensormorph/ui/activity_bar/nodes.
 const NODES = process.env.TN_NODES ?? require('node:path').resolve(__dirname, '../../TensormorphDesignUI/tensormorph/ui/activity_bar/nodes');
 const args = process.argv.slice(2), flag = (f) => args.includes(f);
@@ -23,6 +24,7 @@ const T = new Map(doc.json.tensors.map((t) => [t.name, t])), S = N.doc.sigma(doc
 const isT = (o) => { if (o.primitive !== 'Contraction') return false; const A = T.get(o.inputs[0]).axes, B = T.get(o.inputs[1]).axes, ov = o.attrs.over || []; return ov.length === 1 && A[A.length - 1] === ov[0] && B[B.length - 1] === ov[0] && !(B.length === 2 && B[0] === ov[0]); };
 const printedWithAt = (o) => { const A = T.get(o.inputs[0]).axes, ov = o.attrs.over || []; return ov.length === 1 && A[A.length - 1] === ov[0]; };
 let flat = N.tel.printFlat(doc);
+const emit = () => { if (emitDir) fs.writeFileSync(np.join(emitDir, path.split('/').pop().replace(/\.json(\.gz)?$/, '') + '.tel'), flat); };
 const respelled = new Set();
 if (flag('--fix-contract')) {
   for (const o of doc.json.ops) {
@@ -34,6 +36,7 @@ if (flag('--fix-contract')) {
     respelled.add(o.out);
   }
 }
+emit();
 // graph from text, compared field by field
 const b = N.tel.build(flat, doc), byOut = new Map(b.ops.map((o) => [o.out, o]));
 const diffs = {}, ex = {};
@@ -81,8 +84,10 @@ return ({ name: path.split('/').pop(), mode: args.filter((a) => a.startsWith('--
   d3: { pass: c.ok && !errs.length && !d3bad.length, mismatches: d3bad }, carried_by_sigma_not_tel: carried });
 }
 
-const paths = args.filter((a) => !a.startsWith('--')).flatMap((p) => fs.statSync(p).isDirectory()
+const emitAt = args.indexOf('--emit-flat'), emitDir = emitAt >= 0 ? args[emitAt + 1] : null;
+const paths = args.filter((a, i) => !a.startsWith('--') && !(emitAt >= 0 && i === emitAt + 1)).flatMap((p) => fs.statSync(p).isDirectory()
   ? fs.readdirSync(p).filter((f) => f.endsWith('.json')).sort().map((f) => np.join(p, f)) : [p]);
+if (emitDir) { fs.mkdirSync(emitDir, { recursive: true }); fs.writeFileSync(np.join(emitDir, 'vocabulary.json'), JSON.stringify([...new Set([].concat(tel.TEL_VOCABULARY || [], tel.KEYWORDS || ['axis', 'indices', 'where', 'new']))].sort())); }
 const rows = [];
 for (const p of paths) {
   let r;
