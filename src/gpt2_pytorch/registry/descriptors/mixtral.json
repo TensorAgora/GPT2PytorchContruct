@@ -1,0 +1,99 @@
+{
+ "id": "mixtral",
+ "version": "1",
+ "extends": "llama",
+ "match": {
+  "model_type": [
+   "mixtral"
+  ],
+  "architectures": [
+   "MixtralForCausalLM"
+  ],
+  "gguf_architecture": []
+ },
+ "hyperparameters": {
+  "Fe": [
+   "intermediate_size"
+  ],
+  "E": [
+   "num_local_experts"
+  ],
+  "K": [
+   "num_experts_per_tok"
+  ],
+  "eps": [
+   "rms_norm_eps",
+   "=1e-5"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "router": "model.layers.{i}.block_sparse_moe.gate.weight",
+   "experts_g": {
+    "view": "stack of model.layers.{i}.block_sparse_moe.experts.{{0…{Em1}}}.w1.weight"
+   },
+   "experts_u": {
+    "view": "stack of model.layers.{i}.block_sparse_moe.experts.{{0…{Em1}}}.w3.weight"
+   },
+   "experts_d": {
+    "view": "stack of model.layers.{i}.block_sparse_moe.experts.{{0…{Em1}}}.w2.weight"
+   }
+  },
+  "gguf": {
+   "embed": "token_embd.weight",
+   "attn_norm": "blk.{i}.attn_norm.weight",
+   "q": "blk.{i}.attn_q.weight",
+   "k": "blk.{i}.attn_k.weight",
+   "v": "blk.{i}.attn_v.weight",
+   "o": "blk.{i}.attn_output.weight",
+   "ffn_norm": "blk.{i}.ffn_norm.weight",
+   "router": "blk.{i}.ffn_gate_inp.weight",
+   "experts_g": "blk.{i}.ffn_gate_exps.weight",
+   "experts_u": "blk.{i}.ffn_up_exps.weight",
+   "experts_d": "blk.{i}.ffn_down_exps.weight",
+   "norm": "output_norm.weight",
+   "head": "output.weight"
+  }
+ },
+ "recipe": {
+  "root": "mixtral",
+  "lanes": [
+   "E",
+   "H",
+   "B"
+  ],
+  "format_values": {
+   "Em1": "E - 1"
+  },
+  "dims": {
+   "B": "B",
+   "T": "T",
+   "q": "T",
+   "k": "T",
+   "D": "D",
+   "Dq": "Hq * Dh",
+   "Dkv": "Hkv * Dh",
+   "Dh": "Dh",
+   "Dh2": "Dh",
+   "Fe": "Fe",
+   "V": "V",
+   "H": "Hq // Hkv",
+   "Hkv": "Hkv",
+   "E": "E"
+  },
+  "layers": {
+   "attention": {
+    "uniform": "gqa"
+   },
+   "mlp": {
+    "uniform": "moe_mixtral"
+   }
+  }
+ },
+ "provenance": {
+  "ported_from": "arch.mjs mixtralGraph (222-249)",
+  "golden": "json/mixtral-8x7b-instruct-q4km.json",
+  "certainty": "template",
+  "note": "gguf scheme hand-listed until 06d generates it; the hf scheme reads per-expert tensors as stacked views"
+ }
+}

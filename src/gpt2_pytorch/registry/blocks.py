@@ -40,6 +40,7 @@ class Builder:
         t = self.scheme.get(role)
         if t is None:
             return None, None
+        kw.setdefault("what", "weight")
         if isinstance(t, dict):
             return None, t["view"].format(**self.fmt, **kw)
         return t.format(**self.fmt, **kw), None
@@ -207,5 +208,96 @@ def mlp_swiglu(b, h, i, layer):
     return swiglu(b, h, i, f"{layer}.mlp")
 
 
-ATTENTION = {"gqa": gqa}
-MLP = {"swiglu": mlp_swiglu}
+def router(b: Builder, i: int, moe: str):
+    with b.within(f"{moe}.gate", "Linear"):
+        return b.C(f"R_{i}", f"N2_{i}", b.param(f"Wr_{i}", ["E", "D"], "router", i=i), "D")
+
+
+def moe_mixtral(b, h, i, layer):
+    """sparse MoE (arch.mjs mixtralGraph 236-242): softmax over the router's top-k experts, every expert drawn"""
+    moe = f"{layer}.block_sparse_moe"
+    router(b, i, moe)
+    with b.within(moe, "SparseMoE"):
+        b.buffer(f"Sel_{i}", ["B", "T", "E"], f"the router's top-{h['K']} choice for each token: 1 for a chosen expert (runtime)")
+        b.E("exp", f"Gk_{i}.exp", f"R_{i}")
+        b.E("mul", f"Gk_{i}.chosen", f"Gk_{i}.exp", f"Sel_{i}")
+        b.R("sum", f"Gk_{i}.sum", f"Gk_{i}.chosen", "E")
+        b.E("div", f"Gk_{i}", f"Gk_{i}.chosen", f"Gk_{i}.sum")
+    experts(b, i, moe, f"N2_{i}")
+    with b.within(moe, "SparseMoE"):
+        b.E("mul", f"Yw_{i}", f"Y_{i}", f"Gk_{i}")
+        return b.R("sum", f"M_{i}", f"Yw_{i}", "E")
+
+
+def moe_deepseek(b, h, i, layer):
+    """DeepSeek MoE (arch.mjs deepseekGraph 301-322): sigmoid router, top-k normalized and scaled, routed experts as
+    keyless stacked views, plus the shared expert"""
+    moe = f"{layer}.mlp"
+    router(b, i, moe)
+    with b.within(moe, "DeepseekMoE"):
+        b.buffer(f"Sel_{i}", ["B", "T", "E"], f"the router's top-{h['K']} choice of sigmoid(R) + e_score_correction_bias, "
+                                              "group-limited: 1 for a chosen expert (runtime)")
+        b.E("sigmoid", f"Gk_{i}.score", f"R_{i}")
+        b.E("mul", f"Gk_{i}.chosen", f"Gk_{i}.score", f"Sel_{i}")
+        b.R("sum", f"Gk_{i}.sum", f"Gk_{i}.chosen", "E")
+        b.E("div", f"Gk_{i}.norm", f"Gk_{i}.chosen", f"Gk_{i}.sum")
+        b.E("mul", f"Gk_{i}", f"Gk_{i}.norm", "c_route")
+    experts(b, i, moe, f"N2_{i}")
+    swiglu(b, h, i, f"{moe}.shared_experts", F="Fe", prefix="s", roles=("shared_gate", "shared_up", "shared_down"),
+           syms=("Sg", "Sa", "Su", "Sh", "Ms"))
+    with b.within(moe, "DeepseekMoE"):
+        b.E("mul", f"Yw_{i}", f"Y_{i}", f"Gk_{i}")
+        b.R("sum", f"Mr_{i}", f"Yw_{i}", "E")
+        return b.E("add", f"M_{i}", f"Mr_{i}", f"Ms_{i}")
+
+
+def mla(b: Builder, h: dict, i: int, at: str):
+    """DeepSeek multi-head latent attention (arch.mjs deepseekGraph 266-300): low-rank queries, one compressed key/value
+    latent plus a shared rotary key; q·k over (nope ++ rope) is the sum of two contractions"""
+    layer = at.rsplit(".", 1)[0]
+    nope, rope_d, kv_rank, vhd = b.size("Dn"), b.size("Dr"), b.size("KR"), b.size("Dv")
+
+    def lin(sym, part, axes, x, over, role):
+        with b.within(f"{layer}.{part}", "Linear"):
+            return b.C(sym, x, b.param(f"W{sym.split('_')[0].lower()}_{i}", axes, role, i=i), over)
+
+    lin(f"Qa_{i}", "self_attn.q_a_proj", ["QR", "D"], f"N1_{i}", "D", "q_a")
+    with b.within(f"{at}.q_a_layernorm", "RMSNorm"):
+        rms(b, f"Qn_{i}", f"Qa_{i}", b.param(f"gqa_{i}", ["QR"], "q_a_norm", i=i), "QR")
+    lin(f"Qb_{i}", "self_attn.q_b_proj", ["QH", "QR"], f"Qn_{i}", "QR", "q_b")
+    lin(f"KVa_{i}", "self_attn.kv_a_proj_with_mqa", ["KA", "D"], f"N1_{i}", "D", "kv_a")
+    with b.within(at, "MLAttention"):
+        b.slice(f"Ckv_{i}", f"KVa_{i}", "KA", 0, kv_rank, "KR")
+        b.slice(f"Kp_{i}.t", f"KVa_{i}", "KA", kv_rank, kv_rank + rope_d, "Dr")
+    with b.within(f"{at}.kv_a_layernorm", "RMSNorm"):
+        rms(b, f"Cn_{i}", f"Ckv_{i}", b.param(f"gkv_{i}", ["KR"], "kv_a_norm", i=i), "KR")
+    lin(f"KVb_{i}", "self_attn.kv_b_proj", ["KH", "KR"], f"Cn_{i}", "KR", "kv_b")
+    with b.within(at, "MLAttention"):
+        b.reshape(f"Qh_{i}", f"Qb_{i}", ["B", "T", "H", "Dqk"])
+        b.permute(f"Qh_{i}.perm", f"Qh_{i}", [0, 2, 1, 3])
+        b.rename(f"Qh_{i}.q", f"Qh_{i}.perm", "T", "q")
+        b.slice(f"Qn_{i}.nope", f"Qh_{i}.q", "Dqk", 0, nope, "Dn")
+        b.slice(f"Qp_{i}.pe", f"Qh_{i}.q", "Dqk", nope, nope + rope_d, "Dr")
+        rope(b, f"Qr_{i}", f"Qp_{i}.pe", "q", "Dr", h["theta"])
+        b.reshape(f"KVh_{i}", f"KVb_{i}", ["B", "T", "H", "Dkvh"])
+        b.permute(f"KVh_{i}.perm", f"KVh_{i}", [0, 2, 1, 3])
+        b.rename(f"KVh_{i}.k", f"KVh_{i}.perm", "T", "k")
+        b.slice(f"Kn_{i}", f"KVh_{i}.k", "Dkvh", 0, nope, "Dn")
+        b.slice(f"V_{i}", f"KVh_{i}.k", "Dkvh", nope, nope + vhd, "Dv")
+        b.rename(f"Kp_{i}", f"Kp_{i}.t", "T", "k")
+        rope(b, f"Kr_{i}", f"Kp_{i}", "k", "Dr", h["theta"])
+        b.C(f"S_{i}.nope", f"Qn_{i}.nope", f"Kn_{i}", "Dn")
+        b.C(f"S_{i}.pe", f"Qr_{i}", f"Kr_{i}", "Dr")
+        b.E("add", f"S_{i}.qk", f"S_{i}.nope", f"S_{i}.pe")
+        b.E("div", f"S_{i}", f"S_{i}.qk", "c_sqrt_dh")
+        b.E("add", f"S_{i}.masked", f"S_{i}", mask(b, i))
+        softmax(b, f"A_{i}", f"S_{i}.masked")
+        b.C(f"C_{i}", f"A_{i}", f"V_{i}", "k")
+        b.rename(f"C_{i}.rename", f"C_{i}", "q", "T")
+        b.permute(f"C_{i}.perm", f"C_{i}.rename", [0, 2, 1, 3])
+        b.reshape(f"C_{i}.merged", f"C_{i}.perm", ["B", "T", "HV"])
+    return lin(f"O_{i}", "self_attn.o_proj", ["D", "HV"], f"C_{i}.merged", "HV", "o")
+
+
+ATTENTION = {"gqa": gqa, "mla": mla}
+MLP = {"swiglu": mlp_swiglu, "moe_mixtral": moe_mixtral, "moe_deepseek": moe_deepseek}

@@ -401,20 +401,88 @@
       "blocked": null
     },
     "06b": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T18:37:08+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T18:37:08+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "all 8 goldens rebuild from spelled configs",
+          "evidence": "",
+          "at": "2026-11-20T18:37:08+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "06b.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: mixtral, deepseek_v3, qwen3_5 sections with recipe blocks and arch.mjs/qwen3_5.py lines",
+          "evidence": "",
+          "at": "2026-11-20T18:37:08+00:00"
+        },
+        "06b.B.P1.T1": {
+          "status": "done",
+          "reason": "mixtral descriptor (gguf scheme hand-listed): 0 differences",
+          "evidence": "",
+          "at": "2026-11-20T18:37:08+00:00"
+        },
+        "06b.B.P1.T2": {
+          "status": "done",
+          "reason": "mla + moe_deepseek blocks, deepseek_v3 descriptor: 0 differences incl. 174 keyless views",
+          "evidence": "",
+          "at": "2026-11-20T18:37:08+00:00"
+        },
+        "06b.B.P1.T3": {
+          "status": "done",
+          "reason": "[network] Qwen3.8 config fetched; qwen3_5 template over lower_qwen3_5: 0 differences --ignore view",
+          "evidence": "",
+          "at": "2026-11-20T18:37:08+00:00"
+        },
+        "06b.C.P1.T1": {
+          "status": "done",
+          "reason": "test_path_a_goldens: 8 passed",
+          "evidence": "",
+          "at": "2026-11-20T18:37:08+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T18:37:08+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T18:37:08+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T18:37:08+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T18:37:08+00:00",
+          "reason": "Stage C Integrate complete: all 8 goldens rebuild from spelled configs",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "06c": {

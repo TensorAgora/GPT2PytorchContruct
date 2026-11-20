@@ -13,12 +13,13 @@ GOLDENS = {"distilgpt2": "gpt2", "qwen2.5-7b-instruct": "qwen2", "mistral-7b-ins
            "phi-3.5-mini-instruct": "phi3", "gemma-2-2b-it": "gemma2", "mixtral-8x7b-instruct-q4km": "mixtral",
            "deepseek-v3": "deepseek_v3", "qwen3.8-27b-fp8": "qwen3_5"}
 IGNORE = {"qwen3.8-27b-fp8": ("view",)}  # FP8 *_scale_inv views come from the header (D-16); full equality in 08a
+SCHEME = {"mixtral-8x7b-instruct-q4km": "gguf"}
 
 
 def rebuild(golden):
     d = load(GOLDENS[golden])
     cfg = json.loads(Path("tests/fixtures/spelled", f"{golden}.config.json").read_text())
-    return build(d, hyper_from_config(d, cfg), name=golden, cfg=cfg)[0]
+    return build(d, hyper_from_config(d, cfg), SCHEME.get(golden, "hf"), name=golden, cfg=cfg)[0]
 
 
 @pytest.mark.parametrize("golden", GOLDENS)

@@ -4,8 +4,6 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/6. Depends on: 05b, 06b. Blocks: 05c, 06e.
 
-Waiting on: 06b (must be DONE before stages that need dependencies).
-
 Next: `06c.A.P1.T1` Write 06c DESIGN.md: candidate record (descriptor, rung, evidence, score), the R1–R4 order with nested config keys, a small parser for the prose-like metadata_spec.json dims (`hidden_size | n_embd (GPT-2)`; never eval), the hyper source record, the five binding classes and the near-miss report format
 
 `[x]` done, `[~]` awaiting verification, `[-]` skipped, `[ ]` open. Boxes change only through the plan tool.

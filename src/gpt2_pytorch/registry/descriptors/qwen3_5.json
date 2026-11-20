@@ -1,0 +1,59 @@
+{
+ "id": "qwen3_5",
+ "version": "1",
+ "match": {
+  "model_type": [
+   "qwen3_5",
+   "qwen3_5_text"
+  ],
+  "architectures": [
+   "Qwen3_5ForConditionalGeneration",
+   "Qwen3_5ForCausalLM"
+  ],
+  "gguf_architecture": [
+   "qwen35"
+  ]
+ },
+ "hyperparameters": {
+  "L": [
+   "text_config.num_hidden_layers",
+   "num_hidden_layers"
+  ],
+  "D": [
+   "text_config.hidden_size",
+   "hidden_size"
+  ],
+  "V": [
+   "text_config.vocab_size",
+   "vocab_size"
+  ],
+  "Hq": [
+   "text_config.num_attention_heads",
+   "num_attention_heads"
+  ],
+  "Hkv": [
+   "text_config.num_key_value_heads",
+   "num_key_value_heads"
+  ],
+  "F": [
+   "text_config.intermediate_size",
+   "intermediate_size"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "prefix": "model.language_model."
+  }
+ },
+ "recipe": {
+  "template": "qwen3_5",
+  "note": "tensorprog/qwen3_5.py lower_qwen3_5; delta rule unrolled at T=8"
+ },
+ "ties": {},
+ "ignored": [],
+ "provenance": {
+  "ported_from": "tensorprog/qwen3_5.py via tools/model_graph.py",
+  "golden": "json/qwen3.8-27b-fp8.json",
+  "certainty": "template"
+ }
+}

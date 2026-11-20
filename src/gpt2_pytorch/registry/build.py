@@ -40,7 +40,9 @@ def decoder(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
     r = d["recipe"]
     h = {**r.get("flags", {}), **h}
     dims = {a: int(evaluate(str(e), {**EXAMPLE, **h})) for a, e in r["dims"].items()}
-    b = Builder(dims, r["root"], d["schemes"][scheme], {**h, **dims})
+    fmt = {**h, **dims}
+    fmt |= {k: evaluate(str(e), fmt) for k, e in r.get("format_values", {}).items()}
+    b = Builder(dims, r["root"], d["schemes"][scheme], fmt)
     root, L = r["root"], h["L"]
     at = lambda i: f"{root}.layers.{i}"  # noqa: E731
     slots = {s: layer_blocks(sel, cfg, L, names) for s, sel in r["layers"].items()}
@@ -97,7 +99,18 @@ def gpt2_lowering(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=())
     return g, expected(g)
 
 
-TEMPLATES = {"decoder": decoder, "gpt2_lowering": gpt2_lowering}
+def qwen3_5(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
+    """Qwen3.5 / Qwen3.6 hybrid text model through the existing tensorprog/qwen3_5.py lowering (called, not rewritten).
+    FP8 `*_scale_inv` views need the header (sidecars, 06e); from a config alone they stay empty."""
+    from ..tensorprog.qwen3_5 import ROLES as Q_ROLES, lower_qwen3_5
+
+    prog = lower_qwen3_5(cfg, batch=1, seq=EXAMPLE["T"], prefix=d["schemes"][scheme]["prefix"])
+    doc = prog.to_dict(name, {"B": 1, "T": EXAMPLE["T"]}) | {"verification": [], "roles": Q_ROLES}
+    g = viz_graph(json.loads(json.dumps(doc)), f"gpt2_pytorch.registry {d['id']}@{d['version']}")
+    return g, expected(g)
+
+
+TEMPLATES = {"decoder": decoder, "gpt2_lowering": gpt2_lowering, "qwen3_5": qwen3_5}
 
 
 def build(d: dict, hyper: dict, scheme: str = "hf", name: str = "model", cfg: dict | None = None, names=()):

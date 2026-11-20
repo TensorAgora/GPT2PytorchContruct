@@ -1,0 +1,172 @@
+{
+ "id": "deepseek_v3",
+ "version": "1",
+ "match": {
+  "model_type": [
+   "deepseek_v3",
+   "kimi_k2"
+  ],
+  "architectures": [
+   "DeepseekV3ForCausalLM"
+  ],
+  "gguf_architecture": [
+   "deepseek2"
+  ]
+ },
+ "hyperparameters": {
+  "L": [
+   "num_hidden_layers"
+  ],
+  "D": [
+   "hidden_size"
+  ],
+  "Hq": [
+   "num_attention_heads"
+  ],
+  "QR": [
+   "q_lora_rank"
+  ],
+  "KR": [
+   "kv_lora_rank"
+  ],
+  "Dn": [
+   "qk_nope_head_dim"
+  ],
+  "Dr": [
+   "qk_rope_head_dim"
+  ],
+  "Dv": [
+   "v_head_dim"
+  ],
+  "F": [
+   "intermediate_size"
+  ],
+  "Fe": [
+   "moe_intermediate_size"
+  ],
+  "E": [
+   "n_routed_experts"
+  ],
+  "K": [
+   "num_experts_per_tok"
+  ],
+  "dense": [
+   "first_k_dense_replace",
+   "=0"
+  ],
+  "route": [
+   "routed_scaling_factor",
+   "=1"
+  ],
+  "V": [
+   "vocab_size"
+  ],
+  "eps": [
+   "rms_norm_eps",
+   "=1e-6"
+  ],
+  "theta": [
+   "rope_theta",
+   "=10000"
+  ],
+  "tie": [
+   "tie_word_embeddings",
+   "=0"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "embed": "model.embed_tokens.weight",
+   "attn_norm": "model.layers.{i}.input_layernorm.weight",
+   "q_a": "model.layers.{i}.self_attn.q_a_proj.weight",
+   "q_a_norm": "model.layers.{i}.self_attn.q_a_layernorm.weight",
+   "q_b": "model.layers.{i}.self_attn.q_b_proj.weight",
+   "kv_a": "model.layers.{i}.self_attn.kv_a_proj_with_mqa.weight",
+   "kv_a_norm": "model.layers.{i}.self_attn.kv_a_layernorm.weight",
+   "kv_b": "model.layers.{i}.self_attn.kv_b_proj.weight",
+   "o": "model.layers.{i}.self_attn.o_proj.weight",
+   "ffn_norm": "model.layers.{i}.post_attention_layernorm.weight",
+   "gate": "model.layers.{i}.mlp.gate_proj.weight",
+   "up": "model.layers.{i}.mlp.up_proj.weight",
+   "down": "model.layers.{i}.mlp.down_proj.weight",
+   "router": "model.layers.{i}.mlp.gate.weight",
+   "experts_g": {
+    "view": "stack of model.layers.{i}.mlp.experts.{{0…{Em1}}}.gate_proj.weight (FP8, 128 × 128 block scales)"
+   },
+   "experts_u": {
+    "view": "stack of model.layers.{i}.mlp.experts.{{0…{Em1}}}.up_proj.weight (FP8, 128 × 128 block scales)"
+   },
+   "experts_d": {
+    "view": "stack of model.layers.{i}.mlp.experts.{{0…{Em1}}}.down_proj.weight (FP8, 128 × 128 block scales)"
+   },
+   "shared_gate": "model.layers.{i}.mlp.shared_experts.gate_proj.weight",
+   "shared_up": "model.layers.{i}.mlp.shared_experts.up_proj.weight",
+   "shared_down": "model.layers.{i}.mlp.shared_experts.down_proj.weight",
+   "norm": "model.norm.weight",
+   "head": "lm_head.weight"
+  }
+ },
+ "recipe": {
+  "template": "decoder",
+  "root": "deepseek_v3",
+  "lanes": [
+   "E",
+   "H",
+   "B"
+  ],
+  "score_dim": "Dn + Dr",
+  "constants": {
+   "c_route": "route"
+  },
+  "format_values": {
+   "Em1": "E - 1"
+  },
+  "dims": {
+   "B": "B",
+   "T": "T",
+   "q": "T",
+   "k": "T",
+   "D": "D",
+   "H": "Hq",
+   "QR": "QR",
+   "QH": "Hq * (Dn + Dr)",
+   "Dqk": "Dn + Dr",
+   "Dn": "Dn",
+   "Dr": "Dr",
+   "Dr2": "Dr",
+   "KA": "KR + Dr",
+   "KR": "KR",
+   "KH": "Hq * (Dn + Dv)",
+   "Dkvh": "Dn + Dv",
+   "Dv": "Dv",
+   "HV": "Hq * Dv",
+   "F": "F",
+   "Fe": "Fe",
+   "E": "E",
+   "V": "V"
+  },
+  "layers": {
+   "attention": {
+    "uniform": "mla"
+   },
+   "mlp": {
+    "first_k": "first_k_dense_replace",
+    "first": "swiglu",
+    "then": "moe_deepseek"
+   }
+  }
+ },
+ "ties": {
+  "head": "embed",
+  "when": "tie"
+ },
+ "ignored": [
+  "model.layers.*.self_attn.rotary_emb.inv_freq"
+ ],
+ "provenance": {
+  "ported_from": "arch.mjs deepseekGraph (254-329)",
+  "golden": "json/deepseek-v3.json",
+  "certainty": "template",
+  "note": "routed experts are stored one tensor each: stacked keyless views until 07b binds the per-expert storage form"
+ }
+}

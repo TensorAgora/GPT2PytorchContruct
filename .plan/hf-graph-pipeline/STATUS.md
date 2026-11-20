@@ -4,7 +4,7 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.3).
 
-Tasks closed: 30 of 109. Modules: DONE 4, NOT_STARTED 15, DESIGNED 1.
+Tasks closed: 35 of 109. Modules: DONE 5, NOT_STARTED 14, DESIGNED 1.
 
 ## Per module
 
@@ -14,8 +14,8 @@ Tasks closed: 30 of 109. Modules: DONE 4, NOT_STARTED 15, DESIGNED 1.
 | [05a](05a-catalog-and-discovery/TASKS.md) | Catalog jobs, HTTP client, repo discovery and small-file cache | 0 | DONE | - | 8/8 | - |
 | [05b](05b-headers-and-manifest/TASKS.md) | Safetensors and GGUF header readers, fixtures, tensor manifest v1 | 0 | DONE | - | 7/7 | - |
 | [06a](06a-block-library/TASKS.md) | Descriptor format, selectors, blocks from arch.mjs, GPT-2 and llama-family descriptors | 0 | DONE | - | 8/8 | - |
-| [06b](06b-golden-ports/TASKS.md) | mixtral, deepseek_v3 and qwen3_5 descriptors | 0 | NOT_STARTED | A | 0/5 | - |
-| [06c](06c-resolve-and-bind/TASKS.md) | Resolution ladder, hyperparameter sources, binding verifier | 0 | NOT_STARTED | A | 0/6 | 06b |
+| [06b](06b-golden-ports/TASKS.md) | mixtral, deepseek_v3 and qwen3_5 descriptors | 0 | DONE | - | 5/5 | - |
+| [06c](06c-resolve-and-bind/TASKS.md) | Resolution ladder, hyperparameter sources, binding verifier | 0 | NOT_STARTED | A | 0/6 | - |
 | [05c](05c-graph-writer-cli/TASKS.md) | run_one, graph and report writers, content store, single-URL CLI | 0 | NOT_STARTED | A | 0/6 | 06c |
 | [05d](05d-batch-and-coverage/TASKS.md) | Batch ledger, resume, coverage reports, backlog, 100-row smoke | 0 | NOT_STARTED | A | 0/5 | 05c |
 | [08a](08a-goldens-pinned/TASKS.md) | Pin the 8 goldens, diff their configs, rebuild them from headers | 0 | NOT_STARTED | A | 0/5 | 05c |
@@ -33,7 +33,6 @@ Tasks closed: 30 of 109. Modules: DONE 4, NOT_STARTED 15, DESIGNED 1.
 
 ## Next actions
 
-- 06b stage A: `06b.A.P1.T1` Write 06b DESIGN.md: per golden its descriptor id, recipe blocks, the arch.mjs or qwen3_5.py lines it follows, new blocks needed (mla, shared experts), deepseek's 174 keyless per-expert views, and which qwen3_5.py functions the recipe calls instead of rewriting
 - 06c stage A: `06c.A.P1.T1` Write 06c DESIGN.md: candidate record (descriptor, rung, evidence, score), the R1–R4 order with nested config keys, a small parser for the prose-like metadata_spec.json dims (`hidden_size | n_embd (GPT-2)`; never eval), the hyper source record, the five binding classes and the near-miss report format
 - 05c stage A: `05c.A.P1.T1` Write 05c DESIGN.md: run_one stage order S1–S12 with each side exit's status, report.json fields (status, candidates, near-misses, binding partition, hyper sources, bytes read), the §5.3 additive fields, content key = sha256(descriptor@version, resolved hyper, naming scheme), graph.ref format, §5.4 paths
 - 05d stage A: `05d.A.P1.T1` Write 05d DESIGN.md: ledger.jsonl record (repo, sha, stage, status, code, duration), resume rule (skip a repo whose latest terminal row has the same sha), concurrency model, coverage and near-miss columns, unlockable-rows ranking, backlog key choice (model_type, gguf arch, backbone class)
