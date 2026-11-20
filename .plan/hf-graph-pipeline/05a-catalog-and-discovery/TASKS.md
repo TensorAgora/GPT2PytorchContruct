@@ -4,8 +4,6 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/8. Depends on: 00a. Blocks: 05b, 05c.
 
-Waiting on: 00a (must be DONE before stages that need dependencies).
-
 Next: `05a.A.P1.T1` Write 05a DESIGN.md: Job fields, the §5.4 status vocabulary, the HTTP client contract (range GET with byte counting, small-file GET via hf_hub_url, on-disk cache keyed (repo, sha, path), backoff and Retry-After, token redaction, built on the client huggingface_hub already uses, no new HTTP dependency) and the §5.1/D2/D7 file-selection rules
 
 `[x]` done, `[~]` awaiting verification, `[-]` skipped, `[ ]` open. Boxes change only through the plan tool.

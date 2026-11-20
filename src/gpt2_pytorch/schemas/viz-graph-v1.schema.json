@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tensormorph.dev/schemas/viz-graph-v1.schema.json",
+  "title": "tensormorph-viz-graph v1",
+  "description": "Written from the 8 goldens in json/*.json (viz.py viz_graph output). Only the additive fields of the hf-graph pipeline master §5.3 (checkpoint, provenance, components, execution on ops and multiplications) are allowed beyond v1.",
+  "type": "object",
+  "required": ["format", "version", "source", "model", "example", "dims", "axes", "aliases", "elided_modules", "regions",
+               "inputs", "outputs", "totals", "tensors", "ops", "edges", "groups", "multiplications", "verification"],
+  "additionalProperties": false,
+  "properties": {
+    "format": {"const": "tensormorph-viz-graph"},
+    "version": {"const": 1},
+    "source": {"type": "string"},
+    "model": {"type": "object", "required": ["name"], "properties": {"name": {"type": "string"}}},
+    "example": {"type": "object", "additionalProperties": {"type": "integer"}},
+    "dims": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "axes": {"type": "array", "items": {
+      "type": "object", "required": ["name", "size", "symbol"], "additionalProperties": false,
+      "properties": {"name": {"type": "string"}, "size": {"type": "integer"}, "symbol": {"type": ["string", "null"]}}}},
+    "aliases": {"type": "object"},
+    "elided_modules": {"type": "array", "items": {"type": "string"}},
+    "regions": {"type": "array", "items": {
+      "type": "object", "required": ["id", "name", "input", "attrs", "ops", "output"], "additionalProperties": false,
+      "properties": {"id": {"type": "integer"}, "name": {"type": "string"}, "input": {"type": "string"}, "attrs": {"type": "object"},
+                     "ops": {"type": "array", "items": {"type": "integer"}}, "output": {"type": "string"}}}},
+    "inputs": {"type": "array", "items": {"type": "string"}},
+    "outputs": {"type": "array", "items": {"type": "string"}},
+    "roles": {"type": "object", "additionalProperties": {"type": "string"}},
+    "lanes": {"type": "array", "items": {"type": "string"}},
+    "totals": {
+      "type": "object", "required": ["tensors", "ops", "edges", "contractions", "contraction_flops", "cost"],
+      "additionalProperties": {"type": "integer"},
+      "properties": {"active_flops": {"type": "integer", "description": "§5.3 D8: FLOPs with K of E experts active"}}},
+    "tensors": {"type": "array", "items": {"$ref": "#/$defs/tensor"}},
+    "ops": {"type": "array", "items": {"$ref": "#/$defs/op"}},
+    "edges": {"type": "array", "items": {
+      "type": "object", "required": ["tensor", "from", "to", "port"], "additionalProperties": false,
+      "properties": {"tensor": {"type": "string"}, "from": {"type": ["integer", "null"]}, "to": {"type": "integer"}, "port": {"type": "integer"}}}},
+    "groups": {"$ref": "#/$defs/group"},
+    "multiplications": {"type": "array", "items": {"$ref": "#/$defs/multiplication"}},
+    "verification": {"type": "array", "items": {"type": "object"}},
+    "checkpoint": {
+      "type": "object", "required": ["files", "tensors", "bound", "unbound"],
+      "properties": {"files": {"type": "array"}, "tensors": {"type": "integer"}, "bound": {"type": "integer"}, "unbound": {"type": "object"}}},
+    "provenance": {
+      "type": "object", "required": ["certainty", "evidence", "origin"],
+      "properties": {"certainty": {"type": "string"}, "evidence": {}, "origin": {"type": "string"},
+                     "descriptor": {"type": "string", "pattern": "^[^@]+@[^@]+$"}, "rung": {"type": ["string", "null"]},
+                     "path": {"enum": ["A", "B"]}, "hyper_sources": {"type": "object"}}},
+    "components": {"type": "array", "items": {
+      "type": "object", "required": ["name", "state", "tensors", "params"],
+      "properties": {"name": {"type": "string"}, "state": {"enum": ["bound", "declared_without_graph"]},
+                     "tensors": {"type": "integer"}, "params": {"type": "integer"}}}}
+  },
+  "$defs": {
+    "tensor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "role", "axes", "dtype", "shape", "checkpoint_key", "view", "value", "produced_by", "pytorch_name", "state_dict_key", "consumers"],
+      "properties": {
+        "name": {"type": "string"},
+        "role": {"enum": ["activation", "parameter", "buffer", "constant", "input"]},
+        "axes": {"type": "array", "items": {"type": "string"}},
+        "dtype": {"type": "string"},
+        "shape": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+        "checkpoint_key": {"type": ["string", "null"]},
+        "view": {"type": ["string", "null"]},
+        "value": {"type": ["number", "array", "null"]},
+        "produced_by": {"type": ["integer", "null"]},
+        "pytorch_name": {"type": ["string", "null"]},
+        "state_dict_key": {"type": ["string", "null"]},
+        "consumers": {"type": "array", "items": {"type": "integer"}}}},
+    "op": {
+      "type": "object", "additionalProperties": false,
+      "required": ["index", "primitive", "fn", "out", "inputs", "attrs", "module", "module_type", "region", "cost", "multiplication", "equation"],
+      "properties": {
+        "index": {"type": "integer", "minimum": 0},
+        "primitive": {"enum": ["Contraction", "Elementwise", "Reduce", "Gather", "Slice", "Reshape", "Permute", "Rename"]},
+        "fn": {"type": ["string", "null"]},
+        "out": {"type": "string"},
+        "inputs": {"type": "array", "items": {"type": "string"}},
+        "attrs": {"type": "object"},
+        "module": {"type": "string"},
+        "module_type": {"type": "string"},
+        "region": {"type": ["integer", "null"]},
+        "cost": {"type": "integer", "minimum": 0},
+        "multiplication": {"type": "boolean"},
+        "equation": {"type": "string"},
+        "execution": {"$ref": "#/$defs/execution"}}},
+    "multiplication": {
+      "type": "object", "additionalProperties": false,
+      "required": ["op", "out", "left", "right", "module", "batch_axes", "free_left", "free_right", "contracted", "batch", "m", "n", "k", "macs", "flops", "equation"],
+      "properties": {
+        "op": {"type": "integer"}, "out": {"type": "string"}, "left": {"type": "string"}, "right": {"type": "string"}, "module": {"type": "string"},
+        "batch_axes": {"type": "array", "items": {"type": "string"}}, "free_left": {"type": "array", "items": {"type": "string"}},
+        "free_right": {"type": "array", "items": {"type": "string"}}, "contracted": {"type": "array", "items": {"type": "string"}},
+        "batch": {"type": "integer"}, "m": {"type": "integer"}, "n": {"type": "integer"}, "k": {"type": "integer"},
+        "macs": {"type": "integer"}, "flops": {"type": "integer"}, "equation": {"type": "string"},
+        "execution": {"$ref": "#/$defs/execution"}}},
+    "execution": {
+      "description": "§5.3 D8 annotations: routed experts or unrolled scan steps",
+      "oneOf": [
+        {"type": "object", "required": ["kind", "of", "active", "router"],
+         "properties": {"kind": {"const": "routed"}, "of": {"type": "string"}, "active": {"type": "integer"}, "router": {"type": ["integer", "string"]}}},
+        {"type": "object", "required": ["kind", "axis", "step", "body"],
+         "properties": {"kind": {"const": "scan"}, "axis": {"type": "string"}, "step": {"type": "integer"}, "body": {"type": "string"}}}]},
+    "group": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "label", "kind", "module_type", "ops", "members", "inputs", "outputs", "cost", "children"],
+      "properties": {
+        "id": {"type": "string"}, "label": {"type": "string"},
+        "kind": {"enum": ["model", "module", "block", "statement"]},
+        "module_type": {"type": ["string", "null"]},
+        "ops": {"type": "array", "items": {"type": "integer"}}, "members": {"type": "array", "items": {"type": "integer"}},
+        "inputs": {"type": "array", "items": {"type": "string"}}, "outputs": {"type": "array", "items": {"type": "string"}},
+        "cost": {"type": "integer"},
+        "children": {"type": "array", "items": {"$ref": "#/$defs/group"}}}}
+  }
+}

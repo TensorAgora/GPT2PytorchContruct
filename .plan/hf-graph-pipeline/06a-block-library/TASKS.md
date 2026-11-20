@@ -4,8 +4,6 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/8. Depends on: 00a. Blocks: 06b, 05c, 06d.
 
-Waiting on: 00a (must be DONE before stages that need dependencies).
-
 Next: `06a.A.P1.T1` Read arch.mjs (llamaGraph, mixtralGraph, deepseekGraph, the six blocks), activity_bar/shared/mock.js, tensorprog/lower.py, qwen3_5.py and program.py; write 06a DESIGN.md: block signatures on Program with the arch.mjs line each ports, descriptor JSON (§7.2 keys), selector semantics, and `build(descriptor, hyper, scheme) -> (viz_graph, expected_params)`
 
 `[x]` done, `[~]` awaiting verification, `[-]` skipped, `[ ]` open. Boxes change only through the plan tool.

@@ -1,7 +1,7 @@
 {
   "modules": {
     "00a": {
-      "state": "DESIGNED",
+      "state": "DONE",
       "stages": {
         "A": {
           "status": "done",
@@ -10,10 +10,16 @@
           "at": "2026-11-20T18:10:10+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "extras, gitignore, schema, checker, comparator",
+          "evidence": "",
+          "at": "2026-11-20T18:13:04+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "module gate passed",
+          "evidence": "",
+          "at": "2026-11-20T18:13:04+00:00"
         }
       },
       "tasks": {
@@ -34,6 +40,30 @@
           "reason": "hub/trace extras; hub synced inexact; imports ok, 91 passed",
           "evidence": "",
           "at": "2026-11-20T18:10:45+00:00"
+        },
+        "00a.B.P2.T1": {
+          "status": "done",
+          "reason": "schema validates all 8 goldens",
+          "evidence": "",
+          "at": "2026-11-20T18:13:04+00:00"
+        },
+        "00a.B.P2.T2": {
+          "status": "done",
+          "reason": "graph_check invariants; test_graph_check passes (mutated golden fails naming op 5)",
+          "evidence": "",
+          "at": "2026-11-20T18:13:04+00:00"
+        },
+        "00a.B.P2.T3": {
+          "status": "done",
+          "reason": "--against + --ignore comparator; self 0 diffs, mistral vs qwen2.5 lists dims",
+          "evidence": "",
+          "at": "2026-11-20T18:13:04+00:00"
+        },
+        "00a.C.P1.T1": {
+          "status": "done",
+          "reason": "8 PASS; pytest 104 passed 21 skipped",
+          "evidence": "",
+          "at": "2026-11-20T18:13:04+00:00"
         }
       },
       "transitions": [
@@ -48,6 +78,20 @@
           "to": "DESIGNED",
           "at": "2026-11-20T18:10:10+00:00",
           "reason": "Stage A Design complete: inputs confirmed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T18:13:04+00:00",
+          "reason": "Stage B Build complete: extras, gitignore, schema, checker, comparator",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T18:13:04+00:00",
+          "reason": "Stage C Integrate complete: module gate passed",
           "evidence": ""
         }
       ],
