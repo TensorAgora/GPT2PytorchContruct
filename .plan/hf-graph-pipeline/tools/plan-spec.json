@@ -2,7 +2,7 @@
  "plan": {
   "slug": "hf-graph-pipeline",
   "title": "HF weights → tensor manifest → graph JSON pipeline",
-  "version": "2026-11-21.2",
+  "version": "2026-11-21.3",
   "master_document": "prompts/hf-weights-to-graph-json-pipeline.md",
   "objective": "An offline Python pipeline that reads only the headers and small config files of every Hugging Face repo in the catalog, writes an Observed-only tensor manifest, and builds a verified viz-graph v1 JSON through a registered architecture library; plus the graph⇔TEL design with one round-trip proof."
  },
@@ -527,7 +527,7 @@
        "title": "Catalog",
        "tasks": [
         {
-         "text": "Create csv/goldens.csv (repo, golden, format, revision) with the 8 §8.1 goldens; mixtral = TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF (file mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf, per mock.js), revision filled in 08a",
+         "text": "Create csv/goldens.csv (repo, golden, format, revision) with the 8 §8.1 goldens; mixtral = mradermacher/Mixtral-8x7B-Instruct-v0.1-GGUF (Q4_K_M with stacked *_exps experts as mock.js spells them; TheBloke's Dec-2023 file stores per-expert tensors), revision filled in 08a",
          "verify": "csv/goldens.csv has 8 data rows and exactly one repo absent from csv/categories/all_models.csv",
          "requirements": [
           "R-01"
@@ -766,7 +766,7 @@
        "title": "Real repos",
        "tasks": [
         {
-         "text": "[network] Capture fixtures for Qwen/Qwen2.5-7B-Instruct (sharded) and TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF (Q4_K_M), then build and validate both manifests offline from them",
+         "text": "[network] Capture fixtures for Qwen/Qwen2.5-7B-Instruct (sharded) and mradermacher/Mixtral-8x7B-Instruct-v0.1-GGUF (Q4_K_M, stacked experts), then build and validate both manifests offline from them",
          "verify": "both manifests validate with payload_bytes_read == 0; Qwen2.5 tensor count == len(index weight_map); mixtral tensor count == tensor_count and blk.0.ffn_gate_exps.weight shape == [8, 14336, 4096]",
          "requirements": [
           "R-04",

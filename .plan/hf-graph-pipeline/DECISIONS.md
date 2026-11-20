@@ -28,7 +28,7 @@ Superseded and open items are kept, never deleted.
 
 | id | question | blocks | default taken |
 |---|---|---|---|
-| Q-01 | Which repo is the mixtral golden? | 05a.B.P1.T1, 08a | `TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF` (mock.js names `mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf`); confirmed in 08a.A |
+| Q-01 | Which repo is the mixtral golden? | 05a.B.P1.T1, 08a | RESOLVED 2026-11-21 (B-02): `mradermacher/Mixtral-8x7B-Instruct-v0.1-GGUF` |
 | Q-02 | TEL store name for an HF repo and how a sharded repo maps to one store (ADR-0027, bind.ts) | 09a.A | settled in 09a.A from the ADR; nothing else waits on it |
 | Q-03 | Where is the local Qwen3.8-27B-FP8 sample the master mentions? | 06b, 06e | not found at planning; fetch config.json and the header fixture from the Hub |
 | Q-04 | D8: v1 + annotations or v2 route/scan primitives? (owner) | 07b, 07c | v1 + `execution` annotations |
@@ -49,6 +49,8 @@ Superseded and open items are kept, never deleted.
 | K-06 | Upstream TensormorphDesignUI/TEL changes break tel_roundtrip | 09a records the commits it ran against in docs/GRAPH_TEL.md |
 
 ## During implementation
+
+- B-02 (2026-11-21, 05b.C, plan v2026-11-21.3): the mixtral golden repo is `mradermacher/Mixtral-8x7B-Instruct-v0.1-GGUF`. Its Q4_K_M file stores stacked `blk.N.ffn_{gate,up,down}_exps.weight` (323 tensors, the golden's 323 keyed parameters). TheBloke's and MaziyarPanahi's/second-state's Dec-2023 files store per-expert `blk.N.ffn_gate.E.weight` (995 tensors); TheBloke's fixture is kept as the per-expert storage form for 07b.
 
 - B-01 (2026-11-21, plan v2026-11-21.2): R-08 adds diffusers/timm/catalog R2 evidence; R-19 and R-25 follow the storage rule; tasks 00a.B.P1.T1, 00a.B.P2.T3, 05b.B.P1.T2, 05b.B.P2.T1, 06b.B.P1.T3, 06c.B.P1.T1, 08a.B.P1.T3, 08a.C.P1.T1 revised before any state was recorded.
 

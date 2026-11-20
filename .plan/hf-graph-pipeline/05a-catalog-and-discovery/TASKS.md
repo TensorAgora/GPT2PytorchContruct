@@ -20,7 +20,7 @@ Gate: DESIGN.md names every interface and file to change; open questions are rec
 
 ### 05a.B.P1 Catalog
 
-- [x] `05a.B.P1.T1` Create csv/goldens.csv (repo, golden, format, revision) with the 8 §8.1 goldens; mixtral = TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF (file mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf, per mock.js), revision filled in 08a (R-01)
+- [x] `05a.B.P1.T1` Create csv/goldens.csv (repo, golden, format, revision) with the 8 §8.1 goldens; mixtral = mradermacher/Mixtral-8x7B-Instruct-v0.1-GGUF (Q4_K_M with stacked *_exps experts as mock.js spells them; TheBloke's Dec-2023 file stores per-expert tensors), revision filled in 08a (R-01)
 - [x] `05a.B.P1.T2` Write src/gpt2_pytorch/hub/catalog.py `load_jobs()`: every csv/categories/<category>/<format>.csv row → Job(repo_id, category, format, row), plus csv/goldens.csv repos not already present (R-01)
 
 ### 05a.B.P2 HTTP client

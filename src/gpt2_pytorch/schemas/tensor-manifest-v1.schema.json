@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tensormorph.dev/schemas/tensor-manifest-v1.schema.json",
+  "title": "tensormorph-tensor-manifest v1",
+  "description": "Observed facts of one Hugging Face repo at one revision, read from headers and small config files only (hf-graph pipeline master §5.2). Nothing architecture-dependent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "version", "model", "files", "config", "gguf", "tensors", "safetensors_metadata", "stats", "provenance", "diagnostics"],
+  "properties": {
+    "format": {"const": "tensormorph-tensor-manifest"},
+    "version": {"const": 1},
+    "model": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "url", "revision_sha", "category", "format", "license", "gated", "library_name", "base_model", "catalog_row"],
+      "properties": {
+        "id": {"type": "string"}, "url": {"type": "string"},
+        "revision_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "category": {"type": "string"}, "format": {"enum": ["safetensors", "gguf"]},
+        "license": {"type": ["string", "null"]}, "gated": {"type": ["boolean", "string"]},
+        "library_name": {"type": ["string", "null"]}, "base_model": {"type": ["string", "null"]},
+        "catalog_row": {"type": "object"}}},
+    "files": {"type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["path", "size", "kind", "header_bytes", "shard_of"],
+      "properties": {
+        "path": {"type": "string"}, "size": {"type": "integer", "minimum": 0},
+        "kind": {"enum": ["safetensors", "gguf", "config", "index", "model_index"]},
+        "header_bytes": {"type": ["integer", "null"]}, "shard_of": {"type": ["string", "null"]}}}},
+    "config": {"type": "object", "description": "small JSON files verbatim, keyed by repo path"},
+    "gguf": {
+      "type": ["object", "null"],
+      "required": ["version", "kv", "alignment"],
+      "properties": {"version": {"type": "integer"}, "kv": {"type": "object"}, "alignment": {"type": "integer"}}},
+    "tensors": {"type": "array", "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["key", "file", "dtype", "shape", "numel", "nbytes", "offset_begin", "offset_end"],
+      "properties": {
+        "key": {"type": "string"}, "file": {"type": "string"}, "dtype": {"type": "string"},
+        "shape": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+        "ne": {"type": "array", "items": {"type": "integer", "minimum": 0}, "description": "GGUF only: dims as stored, innermost first"},
+        "numel": {"type": "integer", "minimum": 0}, "nbytes": {"type": "integer", "minimum": 0},
+        "offset_begin": {"type": "integer", "minimum": 0}, "offset_end": {"type": "integer", "minimum": 0}}}},
+    "safetensors_metadata": {"type": "object", "additionalProperties": {"type": "object"}},
+    "stats": {
+      "type": "object", "additionalProperties": false,
+      "required": ["tensor_count", "params_by_dtype", "weight_bytes", "header_bytes_read", "payload_bytes_read"],
+      "properties": {
+        "tensor_count": {"type": "integer"}, "params_by_dtype": {"type": "object", "additionalProperties": {"type": "integer"}},
+        "weight_bytes": {"type": "integer"}, "header_bytes_read": {"type": "integer"}, "payload_bytes_read": {"const": 0}}},
+    "provenance": {
+      "type": "object", "additionalProperties": false, "required": ["fetched_at", "tool_version", "urls", "catalog_sources"],
+      "properties": {
+        "fetched_at": {"type": "string"}, "tool_version": {"type": "string"},
+        "urls": {"type": "array", "items": {"type": "string"}}, "catalog_sources": {"type": "array", "items": {"type": "string"}}}},
+    "diagnostics": {"type": "array", "items": {
+      "type": "object", "required": ["code", "message"],
+      "properties": {"code": {"type": "string"}, "message": {"type": "string"}, "tensor": {"type": "string"}}}}
+  }
+}

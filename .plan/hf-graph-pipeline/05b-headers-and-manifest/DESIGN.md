@@ -1,36 +1,59 @@
 # 05b DESIGN
 
-Drafted at plan time; completed in Stage A.
-
 ## Current state
 
-`checkpoint/safetensors_loader.py:9` `read_safetensors_header(path)` parses a local file's header. No GGUF reader exists; the `gguf` package (0.19.0) is not in .venv until 00a. huggingface_hub has `get_safetensors_metadata` and `parse_safetensors_file_metadata` (no byte count, root files only).
+`checkpoint/safetensors_loader.py:9` parses a local safetensors header. No GGUF reader exists; `gguf` 0.19.0 is in the
+`hub` extra (constants only). huggingface_hub has `get_safetensors_metadata` / `parse_safetensors_file_metadata`.
 
-## Interfaces
+## Readers
 
-- `read_safetensors_header(get_range) -> (header: dict, bytes_read: int)`.
-- `read_gguf_header(get_range, budget) -> (gguf: dict, tensors: list, bytes_read)`, raises `HeaderError(code)` with code truncated|corrupt|over_budget.
-- `build_manifest(job, discovery, small_files, headers) -> dict`; `validate_manifest(m)`; `dump(obj) -> bytes` (canonical).
-- `capture(repo, sha)`; `fixture_reader(dir) -> get_range`.
+**Safetensors: own 2-range reader** (D-08). `get_range(0, 7)` → N (u64 LE, sanity cap 100 MB), `get_range(8, 7 + N)` →
+JSON. `bytes_read = 8 + N`, payload 0 by construction. The hub helpers expose no byte count, read no component
+subfolders, and buy nothing over two range calls; 05b.C cross-checks one repo against `get_safetensors_metadata`.
 
-## Files to change
+**GGUF: lower-bound windows.** Layout: magic `GGUF`, u32 version (2 or 3; else `failed:unsupported_version`), u64
+tensor_count, u64 kv_count, KV pairs (string key, u32 type, value; arrays = u32 type, u64 count, items), tensor infos
+(string name, u32 n_dims, u64 × n_dims `ne`, u32 ggml type, u64 offset), padding to `general.alignment` (default 32),
+data. The parser keeps a provable lower bound on the bytes left before the end of the tensor-info table (14 B per
+remaining KV, 33 B per remaining tensor info, 8 B per remaining string-array item, the exact size of fixed-width items).
+Each fetch is `min(window, lower bound)`, window 1 MiB doubling, so no request ever crosses into tensor data:
+`bytes_read == header_bytes`, payload 0. Over the budget → `failed:over_budget`; a short read → `failed:truncated`;
+bad magic or type → `failed:corrupt`. Arrays with more than 64 items are stored as `{type, count, head}` (head = first 8).
+Type names come from `gguf.constants` (GGUFValueType, GGMLQuantizationType, GGML_QUANT_SIZES). Multi-part GGUF: every
+part's header is read. Never GGUFReader.
 
-| path | change | requirement |
-|---|---|---|
-| `src/gpt2_pytorch/hub/headers.py` | new | R-04, R-05 |
-| `src/gpt2_pytorch/hub/manifest.py` | new | R-06 |
-| `src/gpt2_pytorch/hub/fixtures.py` | new | R-25 |
-| `src/gpt2_pytorch/schemas/tensor-manifest-v1.schema.json` | new | R-06 |
-| `tests/test_headers.py` | new | R-04, R-05 |
-| `tests/test_manifest.py` | new | R-06 |
-| `tests/fixtures/headers/` | captured fixtures | R-25 |
+Provisional budget: 64 MiB per file (D-12) until 05d sets D3.
 
-## Approach
+## Header record
 
-Safetensors (§5.1): range 0-7 → u64 LE N; range 8..7+N → JSON. GGUF (§5.1): read magic/version/counts, then KV in 1 MiB windows doubling up to the budget, then tensor infos; arrays longer than 64 entries stored as {type, count, head (first 8)}. Manifest (§5.2): Observed only; `ne` as read, `shape = ne[::-1]`; tensors sorted (file, key).
-Fixtures (D-15): JSON only; the GGUF byte reader is tested on a synthetic header from gguf.GGUFWriter in tmp_path.
-Rejected: GGUFReader (memory-maps a whole local file); raw header bytes in git (storage rule).
+`read_header(client, repo, sha, weight_part) -> dict`:
+`{kind: "safetensors", header: {...verbatim}, bytes_read}` or
+`{kind: "gguf", version, kv, alignment, tensors: [{name, ne, type, offset}], header_bytes, bytes_read}`.
 
-## Likely blockers
+## Manifest
 
-- D3 not yet measured: provisional 64 MiB GGUF budget (DECISIONS D-12).
+| field | source |
+|---|---|
+| format, version | constants `tensormorph-tensor-manifest`, 1 |
+| model.id, url, category, format, catalog_row | Job |
+| model.revision_sha, gated, library_name | model_info |
+| model.license, base_model | catalog row (`license`, `base_model`) |
+| files[] path, size | model_info siblings (weights read + small files) |
+| files[] kind | safetensors, gguf, config (config.json, params.json), index, model_index |
+| files[] header_bytes, shard_of | header record; index path or logical GGUF name |
+| config | small files verbatim, keyed by path |
+| gguf | first part's version, kv, alignment |
+| tensors[] key, file, dtype, shape, ne, numel, nbytes, offset_begin, offset_end | header record; GGUF `shape = ne[::-1]`, nbytes from GGML_QUANT_SIZES, offsets absolute |
+| safetensors_metadata | each file's `__metadata__` |
+| stats | counts and sums over tensors; header_bytes_read = Σ bytes_read; payload_bytes_read = 0 (asserted) |
+| provenance | fetched_at (UTC ISO, the only volatile field), tool_version, urls (resolve/<sha>), catalog_sources (row `sources`) |
+| diagnostics | e.g. duplicate tensor key across shards, unread index shard |
+
+`dump(obj) -> bytes`: `json.dumps(sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n"`.
+
+## Fixtures
+
+`tests/fixtures/headers/<org>__<repo>@<sha>/` (D-15, JSON only, never weight bytes): `model_info.json` (sha, gated,
+siblings, library_name, pipeline_tag, tags), the small files at their repo paths, `headers/<part>.json` (the header record;
+`.json.gz` when over 256 KiB) and `provenance.json`. `FixtureClient(dir)` serves `model_info`, `get_small` and `header`,
+so the whole pipeline runs offline; `fixture_reader(dir)` rebuilds safetensors header bytes for range tests.

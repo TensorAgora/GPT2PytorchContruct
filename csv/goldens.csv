@@ -5,5 +5,5 @@ mistralai/Mistral-7B-Instruct-v0.3,json/mistral-7b-instruct-v0.3.json,decoder_de
 microsoft/Phi-3.5-mini-instruct,json/phi-3.5-mini-instruct.json,decoder_dense,safetensors,
 google/gemma-2-2b-it,json/gemma-2-2b-it.json,decoder_dense,safetensors,
 deepseek-ai/DeepSeek-V3,json/deepseek-v3.json,decoder_moe,safetensors,
-TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF,json/mixtral-8x7b-instruct-q4km.json,decoder_moe,gguf,
+mradermacher/Mixtral-8x7B-Instruct-v0.1-GGUF,json/mixtral-8x7b-instruct-q4km.json,decoder_moe,gguf,
 Qwen/Qwen3.8-27B-FP8,json/qwen3.8-27b-fp8.json,multimodal_vlm,safetensors,

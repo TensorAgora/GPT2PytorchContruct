@@ -1,0 +1,1 @@
+{"captured_at":"2026-11-20T18:22:24+00:00","category":"decoder_dense","format":"safetensors","header_bytes_read":8285,"repo":"distilbert/distilgpt2","requests":4,"sha":"2290a62682d06624634c1f46a6ad5be0f47f38aa","tool":"gpt2_pytorch.hub.fixtures"}

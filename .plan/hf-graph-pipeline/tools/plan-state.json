@@ -201,20 +201,100 @@
       "blocked": null
     },
     "05b": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T18:19:57+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T18:24:00+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "real repos read header-only",
+          "evidence": "",
+          "at": "2026-11-20T18:26:20+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "05b.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: own 2-range safetensors reader (reason), GGUF lower-bound windows, every manifest field with source",
+          "evidence": "",
+          "at": "2026-11-20T18:19:57+00:00"
+        },
+        "05b.B.P1.T1": {
+          "status": "done",
+          "reason": "safetensors range reader via shared parse_safetensors_header; 2 calls, max byte 7+N",
+          "evidence": "",
+          "at": "2026-11-20T18:21:53+00:00"
+        },
+        "05b.B.P1.T2": {
+          "status": "done",
+          "reason": "GGUF lower-bound reader; synthetic GGUFWriter test: bytes_read == header_bytes, tokens summarized, truncated/corrupt/over_budget",
+          "evidence": "",
+          "at": "2026-11-20T18:21:53+00:00"
+        },
+        "05b.B.P2.T1": {
+          "status": "done",
+          "reason": "[network] distilgpt2 fixture: 4 json files, 13 KB, header bytes 8+N",
+          "evidence": "",
+          "at": "2026-11-20T18:22:55+00:00"
+        },
+        "05b.B.P3.T1": {
+          "status": "done",
+          "reason": "manifest v1 schema passes check_schema",
+          "evidence": "",
+          "at": "2026-11-20T18:22:55+00:00"
+        },
+        "05b.B.P3.T2": {
+          "status": "done",
+          "reason": "manifest.py; test_manifest 3 passed (validates, deterministic, ne reversed, payload refused)",
+          "evidence": "",
+          "at": "2026-11-20T18:24:00+00:00"
+        },
+        "05b.C.P1.T1": {
+          "status": "done",
+          "reason": "[network] Qwen2.5 339==weight_map, mixtral (mradermacher, B-02) 323==tensor_count, exps [8,14336,4096], payload 0; matches get_safetensors_metadata",
+          "evidence": "",
+          "at": "2026-11-20T18:26:20+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T18:19:57+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T18:19:57+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T18:24:00+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T18:26:20+00:00",
+          "reason": "Stage C Integrate complete: real repos read header-only",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "06a": {
