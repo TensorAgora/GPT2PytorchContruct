@@ -192,8 +192,78 @@ def check(did: str) -> dict:
     return out
 
 
+LAYER_KEYS = ("num_hidden_layers", "n_layer", "n_layers", "num_layers", "num_decoder_layers", "encoder_layers", "decoder_layers")
+KIND = {"decoder": "causal", "gpt2_lowering": "causal", "qwen3_5": "causal", "encoder": "base", "seq2seq": "seq2seq"}
+
+
+def _tiny(cfg: dict, layers: int = 2) -> dict:
+    """The fixture's config with `layers` layers (per-layer lists cut to match), every other size kept."""
+    out = copy.deepcopy(cfg)
+    out.pop("rope_scaling", None)  # long-context rope variants branch on the sequence length; rope has no weights
+    for c in [out] + [v for v in out.values() if isinstance(v, dict)]:
+        for k in LAYER_KEYS:
+            if isinstance(c.get(k), int):
+                c[k] = min(c[k], layers)
+        for k in ("layer_types", "mlp_only_layers"):
+            if isinstance(c.get(k), list) and k == "layer_types":
+                c[k] = c[k][:layers]
+        if isinstance(c.get("first_k_dense_replace"), int):
+            c["first_k_dense_replace"] = min(c["first_k_dense_replace"], 1)
+    return out
+
+
+def weight_flops_per_token(g: dict) -> int:
+    """C2's signature: FLOPs of contractions with a parameter operand, routed experts and poolers left out."""
+    params = {t["name"] for t in g["tensors"] if t["role"] == "parameter"}
+    for o in g["ops"]:  # a Rename / Permute / Reshape view of a weight is the weight (path B aligns names this way)
+        if o["primitive"] in ("Rename", "Permute", "Reshape") and o["inputs"][0] in params:
+            params.add(o["out"])
+    bt = g["dims"].get("B", 1) * g["dims"].get("T", 8)
+    return sum(m["flops"] for m in g["multiplications"] if (m["right"] in params or m["left"] in params)
+               and "experts" not in m["module"] and "pooler" not in m["module"]) // bt
+
+
+def c2(did: str) -> str:
+    """Conformance C2: path A and path B (the upstream transformers class on the same tiny config) spend the same
+    weight-contraction FLOPs per token."""
+    from gpt2_pytorch.registry.trace import TraceError, trace_graph, transformers_has
+    d = load(did)
+    if "text" in d["provenance"] or d["recipe"]["template"] not in KIND:
+        return "n/a"
+    job, m, _ = _fixture(d)
+    if m is None:
+        return "n/a"
+    cfg = m["config"].get("config.json") or {}
+    golden = d["provenance"].get("golden")
+    if not cfg and golden and (SPELLED / f"{Path(golden).stem}.config.json").exists():  # a GGUF fixture: the spelled HF config
+        cfg = json.loads((SPELLED / f"{Path(golden).stem}.config.json").read_text())
+    mt = cfg.get("model_type")
+    if not transformers_has(mt):
+        return "n/a"  # no class in transformers (auto_map alone runs nothing here: the native class is built)
+    tiny = _tiny(cfg)
+    mm = {**m, "config": {**m["config"], "config.json": tiny}}
+    scheme = "hf"
+    m = {**m, "model": {**m["model"], "format": "safetensors"}} if m["model"]["format"] == "gguf" else m
+    h = resolve_hyper(d, mm, job.row) if m["model"]["format"] != "gguf" and mm["config"].get("config.json") else hyper_from_config(d, tiny)
+    a, _ = build(d, h, scheme, cfg=tiny, names=[t["key"] for t in m["tensors"]])
+    try:
+        b, _ = trace_graph("transformers", mt, tiny, did, KIND[d["recipe"]["template"]])
+    except (TraceError, Exception) as e:  # noqa: BLE001
+        return f"FAIL path B {type(e).__name__}: {str(e)[:120]}"
+    fa, fb = weight_flops_per_token(a), weight_flops_per_token(b)
+    return "PASS" if fa == fb else f"FAIL path A {fa} vs path B {fb} weight FLOPs/token"
+
+
 def main(argv=None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
+    if argv[:1] == ["--c2"]:
+        todo = ids() if argv[1:] in ([], ["all"]) else argv[1:]
+        failed = 0
+        for did in todo:
+            r = c2(did)
+            print(did, "C2", r)
+            failed += r.startswith("FAIL")
+        return 1 if failed else 0
     todo = ids() if argv == ["--all"] else argv
     failed = 0
     for did in todo:

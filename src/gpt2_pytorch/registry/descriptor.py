@@ -189,7 +189,8 @@ def layer_blocks(sel: dict, cfg: dict, n_layers: int, names=()) -> list[str]:
         out = [sel["default"]] * n_layers
         for block, members in sel["index_sets"].items():
             for i in (members if isinstance(members, list) else config_value(cfg, members) or []):
-                out[i] = block
+                if 0 <= i < n_layers:
+                    out[i] = block
         return out
     if "per_layer_config" in sel:
         layers = config_value(cfg, sel["per_layer_config"])

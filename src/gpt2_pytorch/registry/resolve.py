@@ -38,6 +38,7 @@ class Resolution:
     near_misses: list = field(default_factory=list)
     candidates: list = field(default_factory=list)
     overrides: dict = field(default_factory=dict)  # param -> {checkpoint_key?, view} the binding sets
+    components: list | None = None  # path B diffusers: the other pipeline folders
     transforms: list = field(default_factory=list)  # storage transforms of the overlay that apply
 
 
@@ -143,6 +144,54 @@ def resolve_and_bind(manifest: dict, row: dict | None = None, name: str | None =
         res.candidate, res.descriptor, res.hyper, res.graph, res.expected, res.binding = c, d, hyper, graph, expected, binding
         res.overrides = {**overrides, **{n: {**overrides.get(n, {}), "view": v} for n, v in binding.views.items()}}
         res.transforms = transforms
+        return res
+    return res if only else _path_b(manifest, row, name, cfg, cands, res)  # a forced descriptor never falls back
+
+
+def _trace_descriptor(lib: str, cls: str) -> dict:
+    import importlib.metadata as md
+    version = md.version({"timm": "timm", "diffusers": "diffusers", "transformers": "transformers"}[lib])
+    return {"id": f"trace_{lib}_{cls}", "version": version, "match": {}, "hyperparameters": {}, "schemes": {"hf": {}},
+            "recipe": {"template": "trace"}, "ties": {}, "ignored": ["*.num_batches_tracked", "*.position_ids"], "components": [],
+            "provenance": {"certainty": "traced", "path": "B", "ported_from": f"{lib} {version} class {cls}, torch.export on meta"}}
+
+
+def _path_b(manifest, row, name, cfg, cands, res):
+    """Path B (06f): when no descriptor binds, trace a library class the files name; the denoiser first for diffusers."""
+    from .trace import TraceError, trace_graph, transformers_has
+    libs = [c for c in cands if c.library_class and c.library_class.split(":", 1)[0] in ("timm", "diffusers")]
+    libs.sort(key=lambda c: (not any(w in c.library_class for w in ("UNet", "Transformer")), c.library_class))
+    mt = cfg.get("model_type")
+    if not libs and transformers_has(mt) and not needs_remote_code(cfg, row):
+        libs.append(Candidate(None, "R2", f"model_type={mt} (transformers class)", 0.4, f"transformers:{mt}"))
+    small = manifest.get("config") or {}
+    for c in libs:
+        lib, cls = c.library_class.split(":", 1)
+        sub, ccfg, comps = manifest, cfg, None
+        if lib == "diffusers":
+            path = next((p for p, v in small.items() if isinstance(v, dict) and v.get("_class_name") == cls and "/" in p), None)
+            if path is None:
+                continue  # a pipeline class names no weights of its own
+            folder = path.rsplit("/", 1)[0] + "/"
+            ccfg = small[path]
+            sub = {**manifest, "tensors": [t for t in manifest["tensors"] if t["file"].startswith(folder)]}
+            comps = []
+            for f in sorted({t["file"].split("/", 1)[0] for t in manifest["tensors"] if "/" in t["file"]} - {folder.rstrip("/")}):
+                ts = [t for t in manifest["tensors"] if t["file"].startswith(f + "/")]
+                comps.append({"name": f, "state": "declared_without_graph", "tensors": len(ts), "params": sum(t["numel"] for t in ts)})
+        d = _trace_descriptor(lib, cls)
+        miss = {"descriptor": f"{d['id']}@{d['version']}", "rung": c.rung, "evidence": c.evidence}
+        try:
+            graph, expected = trace_graph(lib, cls, ccfg, name)
+        except (TraceError, Exception) as e:  # noqa: BLE001 - a class that cannot be built or exported is a near-miss
+            res.near_misses.append(miss | {"reason": f"path B: {type(e).__name__}: {e}"[:300]})
+            continue
+        binding = verify(expected, sub, d, graph.get("aliases"))
+        if not binding.ok:
+            res.near_misses.append(miss | {"reason": "path B binding failed", **binding.near_miss()})
+            continue
+        res.status, res.candidate, res.descriptor, res.graph, res.expected, res.binding = "ok", c, d, graph, expected, binding
+        res.components = comps
         return res
     return res
 

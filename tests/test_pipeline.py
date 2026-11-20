@@ -63,3 +63,15 @@ def test_deterministic(tmp_path):
         return {p.relative_to(out): p.read_bytes() for p in out.rglob("*") if p.is_file()}, r
     (x, _), (y, _) = files(tmp_path / "a"), files(tmp_path / "b")
     assert x == y  # fetched_at is fixed here; nothing else varies
+
+
+def test_path_b_timm_fixture(tmp_path):
+    """no descriptor covers convnext: the timm class traced on meta binds every stored tensor (path B)"""
+    pytest.importorskip("timm")
+    fx = find("timm/test_convnext.r160_in1k")
+    if fx is None:
+        pytest.skip("timm fixture missing")
+    c = FixtureClient(fx)
+    r = run_one(c.job(), tmp_path, c, fetched_at="t")
+    rep = json.loads((r.dir / "report.json").read_text())
+    assert r.status == "ok" and rep["winner"]["path"] == "B" and rep["binding"]["unclaimed"] == 0

@@ -178,6 +178,8 @@ class Program:
             return f"{out} = permute({a[0]})"
         if op.primitive == "Rename":
             return f"{out} = rename({a[0]}, {op.attrs['from']}→{op.attrs['to']})"
+        if op.primitive == "Opaque":
+            return f"{out} = {op.fn}({', '.join(a)})"
         return f"{out} = reshape({a[0]})"
 
     def cost(self, op: Op) -> int:

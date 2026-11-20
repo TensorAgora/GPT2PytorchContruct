@@ -1459,10 +1459,13 @@
       "blocked": null
     },
     "06f": {
-      "state": "NOT_STARTED",
+      "state": "DESIGNED",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "design written",
+          "evidence": "",
+          "at": "2026-11-20T20:48:29+00:00"
         },
         "B": {
           "status": "pending"
@@ -1471,8 +1474,53 @@
           "status": "pending"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "06f.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN.md has the ATen mapping for tiny resnet18 + UNet ops, meta build, export, D5 opaque, C2",
+          "evidence": "",
+          "at": "2026-11-20T20:48:25+00:00"
+        },
+        "06f.B.P1.T1": {
+          "status": "done",
+          "reason": "trace extra installed: timm 1.0.31, diffusers 0.43.0, transformers 5.20.2 import",
+          "evidence": "",
+          "at": "2026-11-20T20:48:29+00:00"
+        },
+        "06f.B.P1.T2": {
+          "status": "done",
+          "reason": "trace.py: meta build, torch.export, ATen->Program + Opaque; tiny convnext/sd-turbo UNet bind fully (test_trace 8 pass)",
+          "evidence": "",
+          "at": "2026-11-20T20:48:39+00:00"
+        },
+        "06f.B.P1.T3": {
+          "status": "done",
+          "reason": "resolve_and_bind falls back to path B when no descriptor binds; test_pipeline -k path_b passes",
+          "evidence": "",
+          "at": "2026-11-20T20:48:39+00:00"
+        },
+        "06f.B.P1.T4": {
+          "status": "done",
+          "reason": "conformance --c2: 19 PASS, 11 n/a (no upstream class/fixture config), 0 FAIL",
+          "evidence": "",
+          "at": "2026-11-20T20:48:39+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T20:48:25+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T20:48:29+00:00",
+          "reason": "Stage A Design complete: design written",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "07f": {

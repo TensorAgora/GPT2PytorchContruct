@@ -139,14 +139,14 @@ def run_one(job: Job, out, client=None, revision: str | None = None, fetched_at:
 
     d_id = f"{r.descriptor['id']}@{r.descriptor['version']}"
     b, g = r.binding, r.graph
-    components = _components(r.descriptor, manifest, {k: v for k, (v, _) in r.hyper.items()})
+    components = r.components if r.components is not None else _components(r.descriptor, manifest, {k: v for k, (v, _) in r.hyper.items()})
     status = "partial" if r.status == "ok" and any(c["state"] == "declared_without_graph" for c in components) else r.status
     shared = copy.deepcopy(g)
     shared["model"] = {"name": r.descriptor["id"]}
     shared["groups"]["label"] = r.descriptor["id"]  # viz_graph labels the root group with the model name
     shared["provenance"] = {"certainty": r.descriptor["provenance"].get("certainty", "template"),
                             "evidence": f"descriptor {d_id} over resolved hyperparameters", "origin": "gpt2_pytorch.registry",
-                            "descriptor": d_id, "path": "A", "registry": registry_version()}
+                            "descriptor": d_id, "path": r.descriptor["provenance"].get("path", "A"), "registry": registry_version()}
     key = hashlib.sha256(dump(shared)).hexdigest()[:24]
     gpath = out / "graphs" / f"{key}.json.gz"
     if not gpath.exists():
@@ -159,7 +159,8 @@ def run_one(job: Job, out, client=None, revision: str | None = None, fetched_at:
                           "evidence": r.candidate.evidence, "rung": r.candidate.rung, "hyper_sources": hyper_sources}}
     paths.append(_write(folder / "graph.ref", ref))
     report |= {"status": status, "content_key": key, "graph": str(gpath.relative_to(out)),
-               "winner": {"descriptor": d_id, "rung": r.candidate.rung, "evidence": r.candidate.evidence, "path": "A"},
+               "winner": {"descriptor": d_id, "rung": r.candidate.rung, "evidence": r.candidate.evidence,
+                          "path": r.descriptor["provenance"].get("path", "A")},
                "hyper": {k: {"value": v, "source": s} for k, (v, s) in r.hyper.items()},
                "dims": {k: {"value": g["dims"][k], "source": s} for k, s in dim_sources(r.descriptor, r.hyper, g).items()},
                "binding": {c: len(v) for c, v in b.partition.items()} | {"unclaimed": len(b.unclaimed)},

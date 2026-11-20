@@ -47,8 +47,11 @@ def test_submodule_layout(tiny_model):
 
 def test_src_never_imports_transformers():
     src = Path(gpt2_pytorch.__file__).parent
+    # the one exception: path B of the hf-graph registry traces upstream library classes (master §6, the `trace` extra)
+    allowed = {src / "registry" / "trace.py"}
     for path in src.rglob("*.py"):
-        assert not re.search(r"^\s*(from|import)\s+transformers", path.read_text(), re.M), path
+        if path not in allowed:
+            assert not re.search(r"^\s*(from|import)\s+transformers", path.read_text(), re.M), path
 
 
 @needs_checkpoint

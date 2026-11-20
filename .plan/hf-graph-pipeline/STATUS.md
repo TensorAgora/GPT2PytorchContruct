@@ -4,7 +4,7 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.3).
 
-Tasks closed: 93 of 109. Modules: DONE 13, BUILT 1, DESIGNED 5, NOT_STARTED 1.
+Tasks closed: 98 of 109. Modules: DONE 13, BUILT 1, DESIGNED 6.
 
 ## Per module
 
@@ -28,10 +28,9 @@ Tasks closed: 93 of 109. Modules: DONE 13, BUILT 1, DESIGNED 5, NOT_STARTED 1.
 | [07c](07c-hybrid-state/TASKS.md) | Delta rule, Mamba, layer selectors, scan annotation, hybrid descriptors | 3 | DESIGNED | B | 4/5 | 07a, 07b |
 | [07d](07d-assemblies/TASKS.md) | VLM assemblies, MTP and draft heads | 4 | DESIGNED | B | 3/4 | 07c, 07b |
 | [07e](07e-encoders/TASKS.md) | BERT family and T5/BART descriptors | 5 | DESIGNED | B | 3/4 | 07a |
-| [06f](06f-library-trace/TASKS.md) | Path B library trace and the C2 signature check | 6 | NOT_STARTED | A | 0/6 | 07b, 07c, 07d, 07e |
+| [06f](06f-library-trace/TASKS.md) | Path B library trace and the C2 signature check | 6 | DESIGNED | B | 5/6 | 07b, 07c, 07d, 07e |
 | [07f](07f-full-run/TASKS.md) | Full catalog run, category READMEs, TEL round trip over all graphs | 7 | DESIGNED | B | 0/4 | 06f |
 
 ## Next actions
 
 - 07a stage C: `07a.C.P1.T1` [network] Re-run decoder_dense rows (`tools.hf_graph --all --category decoder_dense`, sized by the D3 throughput) and `--coverage`
-- 06f stage A: `06f.A.P1.T1` Write 06f DESIGN.md: building a library class from config.json on the `meta` device (never trust_remote_code), torch.export vs torch.fx, the ATen → Program mapping taken from OPS/generated/pytorch-tel-mapping.md, typed opaque ops (D5), parameter-name binding through bind.py, certainty 'traced'
