@@ -163,6 +163,10 @@ def _path_b(manifest, row, name, cfg, cands, res):
     libs.sort(key=lambda c: (not any(w in c.library_class for w in ("UNet", "Transformer")), c.library_class))
     mt = cfg.get("model_type")
     if not libs and transformers_has(mt) and not needs_remote_code(cfg, row):
+        if routed(cfg):  # an export unrolls every expert of every layer for minutes and its routing does not bind: path A only
+            res.near_misses.append({"descriptor": f"trace_transformers_{mt}", "rung": "R2", "evidence": f"model_type={mt}",
+                                    "reason": "path B skipped: routed experts (MoE stays on path A)"})
+            return res
         libs.append(Candidate(None, "R2", f"model_type={mt} (transformers class)", 0.4, f"transformers:{mt}"))
     small = manifest.get("config") or {}
     for c in libs:
@@ -201,6 +205,14 @@ def _path_b(manifest, row, name, cfg, cands, res):
             res.components = comps
             return res
     return res
+
+
+EXPERT_KEYS = ("num_local_experts", "num_experts", "n_routed_experts", "moe_num_experts")
+
+
+def routed(cfg: dict) -> bool:
+    return any(isinstance(c.get(k), int) and c[k] > 1 for c in [cfg] + [v for v in cfg.values() if isinstance(v, dict)]
+               for k in EXPERT_KEYS)
 
 
 def _ties(graph: dict, expected: list, ties: dict, fix, stored: set) -> dict:
