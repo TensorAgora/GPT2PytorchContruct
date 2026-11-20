@@ -1,0 +1,59 @@
+{
+ "id": "gemma3_text",
+ "version": "1",
+ "extends": "gemma2",
+ "match": {
+  "model_type": [
+   "gemma3_text"
+  ],
+  "architectures": [
+   "Gemma3ForCausalLM"
+  ],
+  "gguf_architecture": [
+   "gemma3"
+  ]
+ },
+ "hyperparameters": {
+  "theta_local": [
+   "rope_local_base_freq",
+   "gguf:<arch>.rope.freq_base_swa",
+   "=10000"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "q_norm": "model.layers.{i}.self_attn.q_norm.weight",
+   "k_norm": "model.layers.{i}.self_attn.k_norm.weight"
+  }
+ },
+ "recipe": {
+  "root": "gemma3_text",
+  "flags": {
+   "qkv_bias": false,
+   "norm_plus_one": true,
+   "embed_scale": true,
+   "act": "gelu_tanh",
+   "qk_norm": true
+  },
+  "constants": {
+   "c_emb": "D ** 0.5"
+  },
+  "layers": {
+   "attention": {
+    "period": "sliding_window_pattern",
+    "default_period": 6,
+    "phase": "last",
+    "on": "gqa",
+    "off": "gqa_local"
+   },
+   "mlp": {
+    "uniform": "swiglu"
+   }
+  }
+ },
+ "provenance": {
+  "ported_from": "gemma2 recipe + q/k norms, no soft-capping; every sliding_window_pattern-th layer global (rope_theta), the rest local (rope_local_base_freq)",
+  "fixture": "unsloth/gemma-3-1b-it",
+  "certainty": "template"
+ }
+}

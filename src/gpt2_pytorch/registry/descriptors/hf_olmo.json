@@ -1,0 +1,91 @@
+{
+ "id": "hf_olmo",
+ "version": "1",
+ "extends": "llama",
+ "match": {
+  "model_type": [
+   "hf_olmo"
+  ],
+  "architectures": [
+   "OLMoForCausalLM"
+  ],
+  "gguf_architecture": []
+ },
+ "hyperparameters": {
+  "L": [
+   "n_layers"
+  ],
+  "D": [
+   "d_model"
+  ],
+  "Hq": [
+   "n_heads"
+  ],
+  "Hkv": [
+   "n_kv_heads",
+   "=Hq"
+  ],
+  "Dh": [
+   "=D // Hq"
+  ],
+  "ratio": [
+   "mlp_ratio",
+   "=4"
+  ],
+  "Fh": [
+   "mlp_hidden_size",
+   "=ratio * D"
+  ],
+  "F": [
+   "=Fh // 2"
+  ],
+  "V": [
+   "embedding_size",
+   "vocab_size"
+  ],
+  "eps": [
+   "layer_norm_eps",
+   "=1e-5"
+  ],
+  "theta": [
+   "rope_theta",
+   "=10000"
+  ],
+  "tie": [
+   "weight_tying",
+   "=0"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "embed": "model.transformer.wte.weight",
+   "attn_norm": "model.transformer.blocks.{i}.attn_norm.weight",
+   "q": "model.transformer.blocks.{i}.q.{what}",
+   "k": "model.transformer.blocks.{i}.k.{what}",
+   "v": "model.transformer.blocks.{i}.v.{what}",
+   "o": "model.transformer.blocks.{i}.attn_out.weight",
+   "ffn_norm": "model.transformer.blocks.{i}.ff_norm.weight",
+   "gate": "model.transformer.blocks.{i}.ff_gate.weight",
+   "up": "model.transformer.blocks.{i}.ff_up.weight",
+   "down": "model.transformer.blocks.{i}.ff_out.weight",
+   "norm": "model.transformer.ln_f.weight",
+   "head": "model.transformer.ff_out.weight"
+  }
+ },
+ "recipe": {
+  "root": "model.transformer",
+  "flags": {
+   "qkv_bias": false
+  }
+ },
+ "ties": {
+  "head": "embed",
+  "when": "tie"
+ },
+ "provenance": {
+  "ported_from": "AI2 OLMo (hf_olmo, OLMoForCausalLM): RMS norms with affine, rope, SwiGLU; att_proj and ff_proj are fused (bound through the overlay split; ff_proj stores up then gate)",
+  "fixture": "allenai/DataDecide-c4-10M",
+  "certainty": "template",
+  "note": "the q/k/v and ff_gate/ff_up keys name roles of the fused tensors; layer_norm_type 'default' (LayerNorm) variants do not bind"
+ }
+}

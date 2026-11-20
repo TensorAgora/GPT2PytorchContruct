@@ -12,7 +12,7 @@ from decimal import Decimal
 from pathlib import Path
 
 from ..tensorprog.viz import viz_graph
-from .blocks import ATTENTION, EXAMPLE, MLP, ROLES, Builder, rms
+from .blocks import ATTENTION, EXAMPLE, MLP, ROLES, Builder, rms, softcap
 from .descriptor import DescriptorError, evaluate, hyper_from_config, layer_blocks, load
 
 MAX_LAYERS, MAX_DIM = 1024, 1 << 31
@@ -41,6 +41,9 @@ def decoder(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
     final norm; head (tied to the embedding when `tie`)."""
     r = d["recipe"]
     h = {**r.get("flags", {}), **h}
+    h["plus_one"] = bool(h.get("norm_plus_one")) and scheme != "gguf"  # GGUF stores Gemma norms with the +1 folded in
+    one = h["plus_one"]
+    mods = {"ffn_norm": "post_attention_layernorm", **r.get("modules", {})}
     dims = {a: int(evaluate(str(e), {**EXAMPLE, **h})) for a, e in r["dims"].items()}
     if not 0 < int(h["L"]) <= MAX_LAYERS or any(not 0 < n < MAX_DIM for n in dims.values()):  # hostile configs (C5)
         raise DescriptorError(f"{d['id']}: implausible sizes L={h['L']} {dims}")
@@ -55,29 +58,42 @@ def decoder(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
     b.constant("c_sqrt_dh", math.sqrt(evaluate(r.get("score_dim", "Dh"), {**h, **dims})))
     b.constant("M01", [[1 if k <= q else 0 for k in range(EXAMPLE["T"])] for q in range(EXAMPLE["T"])], ["q", "k"])
     for c, v in r.get("constants", {}).items():
-        b.constant(c, evaluate(str(v), h))
+        b.constant(c, evaluate(str(v), {**h, **dims}))
     E = b.param("E", ["V", "D"], "embed")
     with b.within(f"{root}.embed_tokens", "Embedding"):
-        b.gather("X_0", E, "ids", "V")
+        if h.get("embed_scale"):  # Gemma: the embedding times sqrt(D)
+            b.gather("X_0.emb", E, "ids", "V")
+            b.E("mul", "X_0", "X_0.emb", "c_emb")
+        else:
+            b.gather("X_0", E, "ids", "V")
     for i in range(L):
         with b.within(f"{at(i)}.input_layernorm", "RMSNorm"):
-            rms(b, f"N1_{i}", f"X_{i}", b.param(f"g1_{i}", ["D"], "attn_norm", i=i), "D")
-        ATTENTION[slots["attention"][i]](b, h, i, f"{at(i)}.self_attn")
+            rms(b, f"N1_{i}", f"X_{i}", b.param(f"g1_{i}", ["D"], "attn_norm", i=i), "D", one)
+        o = ATTENTION[slots["attention"][i]](b, h, i, f"{at(i)}.self_attn")
+        if "post_attn_norm" in d["schemes"][scheme]:  # Gemma 2/3: a norm on the attention output
+            with b.within(f"{at(i)}.post_attention_layernorm", "RMSNorm"):
+                o = rms(b, f"Oa_{i}", o, b.param(f"gpa_{i}", ["D"], "post_attn_norm", i=i), "D", one)
         with b.within(at(i), "DecoderLayer"):
-            b.E("add", f"Xm_{i}", f"X_{i}", f"O_{i}")
-        with b.within(f"{at(i)}.post_attention_layernorm", "RMSNorm"):
-            rms(b, f"N2_{i}", f"Xm_{i}", b.param(f"g2_{i}", ["D"], "ffn_norm", i=i), "D")
-        MLP[slots["mlp"][i]](b, h, i, at(i))
+            b.E("add", f"Xm_{i}", f"X_{i}", o)
+        with b.within(f"{at(i)}.{mods['ffn_norm']}", "RMSNorm"):
+            rms(b, f"N2_{i}", f"Xm_{i}", b.param(f"g2_{i}", ["D"], "ffn_norm", i=i), "D", one)
+        m = MLP[slots["mlp"][i]](b, h, i, at(i))
+        if "post_ffn_norm" in d["schemes"][scheme]:
+            with b.within(f"{at(i)}.post_feedforward_layernorm", "RMSNorm"):
+                m = rms(b, f"Mf_{i}", m, b.param(f"gpf_{i}", ["D"], "post_ffn_norm", i=i), "D", one)
         with b.within(at(i), "DecoderLayer"):
-            b.E("add", f"X_{i + 1}", f"Xm_{i}", f"M_{i}")
+            b.E("add", f"X_{i + 1}", f"Xm_{i}", m)
     with b.within(f"{root}.norm", "RMSNorm"):
-        rms(b, "Xf", f"X_{L}", b.param("gf", ["D"], "norm"), "D")
+        rms(b, "Xf", f"X_{L}", b.param("gf", ["D"], "norm"), "D", one)
     tie = bool(h.get("tie")) and d.get("ties", {}).get("head") == "embed"
     head = E if tie else b.param("Wlm", ["V", "D"], "head")
     if tie:
         b.p.aliases[b.key("head")[0]] = E
     with b.within("lm_head", "Linear"):
-        b.C("L", "Xf", head, "D")
+        if h.get("final_cap"):  # Gemma 2: logits soft-capped
+            softcap(b, "L", b.C("L.raw", "Xf", head, "D"), "c_final_cap")
+        else:
+            b.C("L", "Xf", head, "D")
     extra = {"lanes": r["lanes"]} if r.get("lanes") else {}
     return _finish(b.p, d, name, EXAMPLE, extra)
 

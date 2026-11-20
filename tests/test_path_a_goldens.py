@@ -11,7 +11,7 @@ from gpt2_pytorch.registry.namemaps import gguf_scheme  # noqa: E402
 from tools.graph_check import check, compare  # noqa: E402
 
 GOLDENS = {"distilgpt2": "gpt2", "qwen2.5-7b-instruct": "qwen2", "mistral-7b-instruct-v0.3": "mistral",
-           "phi-3.5-mini-instruct": "phi3", "gemma-2-2b-it": "gemma2", "mixtral-8x7b-instruct-q4km": "mixtral",
+           "phi-3.5-mini-instruct": "phi3", "gemma-2-2b-it": "gemma2_arch", "mixtral-8x7b-instruct-q4km": "mixtral",
            "deepseek-v3": "deepseek_v3", "qwen3.8-27b-fp8": "qwen3_5"}
 IGNORE = {"qwen3.8-27b-fp8": ("view",)}  # FP8 *_scale_inv views come from the header (D-16); full equality in 08a
 SCHEME = {"mixtral-8x7b-instruct-q4km": "gguf"}

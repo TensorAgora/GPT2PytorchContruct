@@ -19,7 +19,7 @@ from gpt2_pytorch.hub.manifest import dump, read_manifest
 from gpt2_pytorch.registry.build import build
 from gpt2_pytorch.registry.descriptor import DescriptorError, hyper_from_config, ids, load
 from gpt2_pytorch.registry.hyper import resolve_hyper
-from gpt2_pytorch.registry.namemaps import c3, gguf_scheme
+from gpt2_pytorch.registry.namemaps import c3, gguf_scheme, split_roles
 from gpt2_pytorch.registry.resolve import resolve_and_bind
 
 SPELLED = Path("tests/fixtures/spelled")
@@ -67,7 +67,8 @@ def check(did: str) -> dict:
         r = resolve_and_bind(m, job.row, only=did)
         out["C1"] = "PASS" if r.binding and r.binding.ok else f"FAIL {r.near_misses[:1]}"
     # C3
-    out["C3"] = "PASS" if not c3(d["schemes"].get("hf", {})) else f"FAIL {c3(d['schemes']['hf'])[:2]}"
+    bad3 = c3(d["schemes"].get("hf", {}), skip=split_roles(did))
+    out["C3"] = "PASS" if not bad3 else f"FAIL {bad3[:2]}"
     # C4
     golden = d["provenance"].get("golden")
     if golden and (SPELLED / f"{Path(golden).stem}.config.json").exists():
@@ -77,7 +78,7 @@ def check(did: str) -> dict:
         want = json.loads(Path(golden).read_text())["totals"]
         keys = ("contractions", "contraction_flops", "edges", "ops")
         out["C4"] = "PASS" if all(g["totals"][k] == want[k] for k in keys) else f"FAIL {[(k, g['totals'][k], want[k]) for k in keys]}"
-    elif m is not None and d["recipe"]["template"] == "decoder" and _blocks(d) <= {"gqa", "swiglu"}:
+    elif m is not None and d["recipe"]["template"] == "decoder" and _blocks(d) <= {"gqa", "gqa_local", "swiglu"}:
         h = resolve_hyper(d, m, job.row)
         g, _ = build(_with_gguf(d) if scheme == "gguf" else d, h, scheme, cfg=m["config"].get("config.json") or {})
         want = decoder_counts(g["dims"], h["L"][0])
@@ -97,7 +98,7 @@ def check(did: str) -> dict:
         huge = copy.deepcopy(m)
         cfg = huge["config"].setdefault("config.json", {}) or {}
         for c in [cfg] + [v for v in cfg.values() if isinstance(v, dict)]:  # nested text_config too
-            for k in ("num_hidden_layers", "n_layer"):
+            for k in ("num_hidden_layers", "n_layer", "n_layers", "num_layers"):
                 if k in c:
                     c[k] = 10 ** 7
         if "gguf" in huge and huge["gguf"]:

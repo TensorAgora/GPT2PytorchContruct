@@ -67,8 +67,11 @@ def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None =
                     b.misshaped.append([e["name"], k, e["shape"][1:], t["shape"]])
                 else:
                     claim[k] = "bound"
-    for key in (aliases or {}):
+    shapes = {e["name"]: e["shape"] for e in expected}
+    for key, target in (aliases or {}).items():
         if key in stored and key not in claim:
+            if target in shapes and list(stored[key]["shape"]) != list(shapes[target]):  # a tied copy must match what it ties to
+                b.misshaped.append([target, key, shapes[target], stored[key]["shape"]])
             claim[key] = "tied"
     prefixes = [c["prefix"].format(**(fmt or {})) for c in d.get("components", [])]
     for key, t in stored.items():

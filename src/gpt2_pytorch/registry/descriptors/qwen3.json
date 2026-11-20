@@ -1,0 +1,34 @@
+{
+ "id": "qwen3",
+ "version": "1",
+ "extends": "llama",
+ "match": {
+  "model_type": [
+   "qwen3"
+  ],
+  "architectures": [
+   "Qwen3ForCausalLM"
+  ],
+  "gguf_architecture": [
+   "qwen3"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "q_norm": "model.layers.{i}.self_attn.q_norm.weight",
+   "k_norm": "model.layers.{i}.self_attn.k_norm.weight"
+  }
+ },
+ "recipe": {
+  "root": "qwen3",
+  "flags": {
+   "qkv_bias": false,
+   "qk_norm": true
+  }
+ },
+ "provenance": {
+  "ported_from": "llama recipe + per-head q_norm / k_norm (HF Qwen3Attention)",
+  "fixture": "Qwen/Qwen3-0.6B",
+  "certainty": "template"
+ }
+}

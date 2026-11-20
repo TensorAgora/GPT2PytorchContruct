@@ -1,0 +1,25 @@
+{
+ "id": "gemma2_arch",
+ "version": "1",
+ "extends": "llama",
+ "match": {
+  "model_type": [],
+  "architectures": [],
+  "gguf_architecture": []
+ },
+ "hyperparameters": {
+  "tie": [
+   "tie_word_embeddings",
+   "=1"
+  ]
+ },
+ "recipe": {
+  "root": "gemma2"
+ },
+ "provenance": {
+  "ported_from": "arch.mjs llamaGraph, family gemma2 (llama layout)",
+  "golden": "json/gemma-2-2b-it.json",
+  "certainty": "template",
+  "note": "the arch.mjs llama-layout spelling of Gemma 2, kept only to rebuild json/gemma-2-2b-it.json (tests/test_path_a_goldens.py); never proposed by the ladder (empty match). Real checkpoints bind to `gemma2`."
+ }
+}

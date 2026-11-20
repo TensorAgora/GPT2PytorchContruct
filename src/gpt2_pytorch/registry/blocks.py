@@ -84,21 +84,45 @@ class Builder:
 
 
 # ---- the pieces --------------------------------------------------------------------------------------------------
-def rms(b: Builder, out, x, g, axis):
-    """RMSNorm: x · rsqrt(mean_axis(x²) + eps) · g"""
+def rms(b: Builder, out, x, g, axis, plus_one=False):
+    """RMSNorm: x · rsqrt(mean_axis(x²) + eps) · g; Gemma scales by (1 + g)"""
     b.E("mul", f"{out}.sq", x, x)
     b.R("mean", f"{out}.ms", f"{out}.sq", axis)
     b.E("add", f"{out}.ms_eps", f"{out}.ms", "c_eps")
     b.E("rsqrt", f"{out}.rstd", f"{out}.ms_eps")
     b.E("mul", f"{out}.normalized", x, f"{out}.rstd")
+    if plus_one:
+        g = b.E("add", f"{out}.g1", g, b.constant("c_one", 1.0))
     return b.E("mul", out, f"{out}.normalized", g)
+
+
+def gelu_tanh(b: Builder, out, x):
+    """0.5 x (1 + tanh(sqrt(2/pi) (x + 0.044715 x³))): the op order of tensorprog/lower.py lower_gelu"""
+    a, c = b.constant("c_gelu_a", 0.044715), b.constant("c_gelu_b", math.sqrt(2.0 / math.pi))
+    half, one = b.constant("c_half", 0.5), b.constant("c_one", 1.0)
+    b.E("mul", f"{out}.squared", x, x)
+    b.E("mul", f"{out}.cubic", f"{out}.squared", x)
+    b.E("mul", f"{out}.cubic_a", f"{out}.cubic", a)
+    b.E("add", f"{out}.inner_sum", x, f"{out}.cubic_a")
+    b.E("mul", f"{out}.inner", f"{out}.inner_sum", c)
+    b.E("tanh", f"{out}.tanh", f"{out}.inner")
+    b.E("add", f"{out}.one_plus", f"{out}.tanh", one)
+    b.E("mul", f"{out}.half_x", x, half)
+    return b.E("mul", out, f"{out}.half_x", f"{out}.one_plus")
+
+
+def softcap(b: Builder, out, x, cap):
+    """cap · tanh(x / cap) (Gemma 2 attention and final logits)"""
+    b.E("div", f"{out}.scaled", x, cap)
+    b.E("tanh", f"{out}.tanh", f"{out}.scaled")
+    return b.E("mul", out, f"{out}.tanh", cap)
 
 
 def _p7(v: float) -> float:
     return float(f"{v:.7g}")  # JS +v.toPrecision(7)
 
 
-def rope(b: Builder, out, x, pos, dim, theta):
+def rope(b: Builder, out, x, pos, dim, theta, tag=""):
     """Rotary embedding on x [..., pos, dim]: x·cos + rotate_half(x)·sin, rotate_half a fixed map [dim, dim2]
     (HF layout: dimension d pairs with d ± dim/2; frequency θ^(−2(d mod dim/2)/dim) at position t)."""
     n, T = b.size(dim), b.size(pos)
@@ -107,8 +131,8 @@ def rope(b: Builder, out, x, pos, dim, theta):
                                 for d in range(n)], [dim, dim + "2"])
     ang = lambda t, d: t * theta ** (-2 * (d % half) / n)  # noqa: E731
     table = lambda f: [[_p7(f(ang(t, d))) for d in range(n)] for t in range(T)]  # noqa: E731
-    cos = b.constant(f"cos_{pos}_{dim}", table(math.cos), [pos, dim])
-    sin = b.constant(f"sin_{pos}_{dim}", table(math.sin), [pos, dim])
+    cos = b.constant(f"cos_{pos}_{dim}{tag}", table(math.cos), [pos, dim])
+    sin = b.constant(f"sin_{pos}_{dim}{tag}", table(math.sin), [pos, dim])
     b.C(f"{out}.rot", x, R, dim)
     b.rename(f"{out}.rot_r", f"{out}.rot", dim + "2", dim)
     b.E("mul", f"{out}.cos", x, cos)
@@ -137,9 +161,12 @@ def mask(b: Builder, i):
     return b.E("log", f"Mask_{i}", "M01")
 
 
-def gqa(b: Builder, h: dict, i: int, at: str):
-    """grouped-query attention: q heads grouped by the kv head they share (Llama, Qwen2, Mistral, Phi-3, Gemma 2, Mixtral)"""
+def gqa(b: Builder, h: dict, i: int, at: str, theta_key="theta", tag=""):
+    """grouped-query attention: q heads grouped by the kv head they share (Llama, Qwen2/3, Mistral, Phi-3, Gemma, Mixtral).
+    Flags: qk_norm (RMSNorm over Dh after the head split, Qwen3 / Gemma 3), attn_cap (Gemma 2 soft-capping)."""
     n = f"N1_{i}"
+    theta = h[theta_key]
+    one = bool(h.get("plus_one"))
 
     def proj(sym, w, axis, part):
         with b.within(f"{at}.{part}", "Linear"):
@@ -151,20 +178,28 @@ def gqa(b: Builder, h: dict, i: int, at: str):
 
     q, k, v = proj("Q", "q", "Dq", "q_proj"), proj("K", "k", "Dkv", "k_proj"), proj("V", "v", "Dkv", "v_proj")
     with b.within(at, "Attention"):
-        b.reshape(f"Q_{i}.heads", q, ["B", "T", "Hkv", "H", "Dh"])
-        b.permute(f"Q_{i}.perm", f"Q_{i}.heads", [0, 2, 3, 1, 4])
+        qh = b.reshape(f"Q_{i}.heads", q, ["B", "T", "Hkv", "H", "Dh"])
+        if h.get("qk_norm"):
+            with b.within(f"{at}.q_norm", "RMSNorm"):
+                qh = rms(b, f"Q_{i}.normed", qh, b.param(f"gqn_{i}", ["Dh"], "q_norm", i=i), "Dh", one)
+        b.permute(f"Q_{i}.perm", qh, [0, 2, 3, 1, 4])
         b.rename(f"Q_{i}.q", f"Q_{i}.perm", "T", "q")
-        rope(b, f"Q_{i}", f"Q_{i}.q", "q", "Dh", h["theta"])
-        b.reshape(f"K_{i}.heads", k, ["B", "T", "Hkv", "Dh"])
-        b.permute(f"K_{i}.perm", f"K_{i}.heads", [0, 2, 1, 3])
+        rope(b, f"Q_{i}", f"Q_{i}.q", "q", "Dh", theta, tag)
+        kh = b.reshape(f"K_{i}.heads", k, ["B", "T", "Hkv", "Dh"])
+        if h.get("qk_norm"):
+            with b.within(f"{at}.k_norm", "RMSNorm"):
+                kh = rms(b, f"K_{i}.normed", kh, b.param(f"gkn_{i}", ["Dh"], "k_norm", i=i), "Dh", one)
+        b.permute(f"K_{i}.perm", kh, [0, 2, 1, 3])
         b.rename(f"K_{i}.k", f"K_{i}.perm", "T", "k")
-        rope(b, f"K_{i}", f"K_{i}.k", "k", "Dh", h["theta"])
+        rope(b, f"K_{i}", f"K_{i}.k", "k", "Dh", theta, tag)
         b.reshape(f"V_{i}.heads", v, ["B", "T", "Hkv", "Dh"])
         b.permute(f"V_{i}.perm", f"V_{i}.heads", [0, 2, 1, 3])
         b.rename(f"V_{i}", f"V_{i}.perm", "T", "k")
         b.C(f"S_{i}.qk", f"Q_{i}", f"K_{i}", "Dh")
-        b.E("div", f"S_{i}", f"S_{i}.qk", "c_sqrt_dh")
-        b.E("add", f"S_{i}.masked", f"S_{i}", mask(b, i))
+        s = b.E("div", f"S_{i}", f"S_{i}.qk", "c_sqrt_dh")
+        if h.get("attn_cap"):
+            s = softcap(b, f"S_{i}.capped", s, "c_attn_cap")
+        b.E("add", f"S_{i}.masked", s, mask(b, i))
         softmax(b, f"A_{i}", f"S_{i}.masked")
         b.C(f"C_{i}", f"A_{i}", f"V_{i}", "k")
         b.rename(f"C_{i}.rename", f"C_{i}", "q", "T")
@@ -185,8 +220,12 @@ def swiglu(b: Builder, h: dict, i: int, at: str, F="F", prefix="", roles=("gate"
             return b.C(sym, x, b.param(f"W{prefix}{part[0]}_{i}", axes, role, i=i), over)
 
     lin(gate, "gate_proj", [F, "D"], f"N2_{i}", "D", roles[0])
-    with b.within(f"{at}.act_fn", "SiLU"):
-        silu(b, act, gate)
+    if h.get("act") == "gelu_tanh":
+        with b.within(f"{at}.act_fn", "GELUTanh"):
+            gelu_tanh(b, act, gate)
+    else:
+        with b.within(f"{at}.act_fn", "SiLU"):
+            silu(b, act, gate)
     lin(up, "up_proj", [F, "D"], f"N2_{i}", "D", roles[1])
     with b.within(at, "MLP"):
         b.E("mul", prod, act, up)
@@ -299,5 +338,10 @@ def mla(b: Builder, h: dict, i: int, at: str):
     return lin(f"O_{i}", "self_attn.o_proj", ["D", "HV"], f"C_{i}.merged", "HV", "o")
 
 
-ATTENTION = {"gqa": gqa, "mla": mla}
+def gqa_local(b, h, i, at):
+    """Gemma 3's sliding-window layers: the local rotary base (`theta_local`), its own rope tables"""
+    return gqa(b, h, i, at, "theta_local", "_local")
+
+
+ATTENTION = {"gqa": gqa, "gqa_local": gqa_local, "mla": mla}
 MLP = {"swiglu": mlp_swiglu, "moe_mixtral": moe_mixtral, "moe_deepseek": moe_deepseek}

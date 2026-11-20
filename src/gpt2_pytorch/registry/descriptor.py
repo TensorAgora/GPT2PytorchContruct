@@ -73,7 +73,7 @@ def validate(d: dict) -> None:
 
 # ---- default expressions: arithmetic over resolved names, parsed, never eval'd ----------------------------------
 _OPS = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul, ast.Div: operator.truediv,
-        ast.FloorDiv: operator.floordiv, ast.Mod: operator.mod}
+        ast.FloorDiv: operator.floordiv, ast.Mod: operator.mod, ast.Pow: operator.pow}
 
 
 def evaluate(expr: str, env: dict):
@@ -106,20 +106,26 @@ def config_value(cfg: dict, key: str):
 
 def hyper_from_config(d: dict, cfg: dict) -> dict:
     """{name: (value, source)} from the descriptor's ordered sources: config keys, then `=expr` defaults."""
-    out = {}
-    for name, sources in d["hyperparameters"].items():
-        for s in sources:
-            if s.startswith("="):
-                try:
-                    out[name] = (evaluate(s[1:], {k: v for k, (v, _) in out.items()}), f"default:{s[1:]}")
+    out, pending = {}, list(d["hyperparameters"])
+    while pending:  # defaults may name later hyperparameters: retry until no progress
+        left = []
+        for name in pending:
+            for s in d["hyperparameters"][name]:
+                if s.startswith("="):
+                    try:
+                        out[name] = (evaluate(s[1:], {k: v for k, (v, _) in out.items()}), f"default:{s[1:]}")
+                        break
+                    except KeyError:
+                        continue
+                if (v := config_value(cfg, s)) is not None:
+                    out[name] = (v, f"config:{s}")
                     break
-                except KeyError:
-                    continue
-            if (v := config_value(cfg, s)) is not None:
-                out[name] = (v, f"config:{s}")
-                break
-        else:
-            raise DescriptorError(f"{d['id']}: no source for hyperparameter {name} (tried {sources})")
+            else:
+                left.append(name)
+        if len(left) == len(pending):
+            raise DescriptorError(f"{d['id']}: no source for hyperparameter {left[0]} (tried {d['hyperparameters'][left[0]]})")
+        pending = left
+    out = {k: out[k] for k in d["hyperparameters"]}
     return out
 
 
@@ -141,7 +147,8 @@ def layer_blocks(sel: dict, cfg: dict, n_layers: int, names=()) -> list[str]:
         k = _num(sel["first_k"], cfg) or 0
         return [sel["first"] if i < k else sel["then"] for i in range(n_layers)]
     if "period" in sel:
-        n, phase = _num(sel["period"], cfg), _num(sel.get("phase", 0), cfg) or 0
+        n = _num(sel["period"], cfg) or sel.get("default_period")
+        phase = n - 1 if sel.get("phase") == "last" else _num(sel.get("phase", 0), cfg) or 0
         return [sel["on"] if i % n == phase else sel["off"] for i in range(n_layers)]
     if "pattern" in sel:
         pattern = config_value(cfg, sel["pattern"])

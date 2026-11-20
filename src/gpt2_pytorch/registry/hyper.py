@@ -102,22 +102,28 @@ def resolve_hyper(d: dict, manifest: dict | None = None, row: dict | None = None
     tensors = {t["key"]: t for t in manifest.get("tensors", [])}
     fmt = (manifest.get("model") or {}).get("format", "safetensors")
     category = category or (manifest.get("model") or {}).get("category", "")
-    out = {}
-    for name in d["hyperparameters"]:
-        tried = sources_for(name, d, category)
-        for src in tried:
-            if src.startswith("="):
-                try:
-                    out[name] = (evaluate(src[1:], {k: v for k, (v, _) in out.items()}), f"default:{src[1:]}")
+    out, pending = {}, list(d["hyperparameters"])
+    while pending:  # a default may name a hyperparameter declared after it: retry until no progress
+        left = []
+        for name in pending:
+            tried = sources_for(name, d, category)
+            for src in tried:
+                if src.startswith("="):
+                    try:
+                        out[name] = (evaluate(src[1:], {k: v for k, (v, _) in out.items()}), f"default:{src[1:]}")
+                        break
+                    except KeyError:
+                        continue
+                v, label = _lookup(src, cfg, kv, tensors, fmt, row or {})
+                if v is not None:
+                    out[name] = (_number(v), label)
                     break
-                except KeyError:
-                    continue
-            v, label = _lookup(src, cfg, kv, tensors, fmt, row or {})
-            if v is not None:
-                out[name] = (_number(v), label)
-                break
-        else:
-            raise HyperError(f"{d['id']}: no source for {name} (tried {', '.join(tried)})")
+            else:
+                left.append(name)
+        if len(left) == len(pending):
+            raise HyperError(f"{d['id']}: no source for {left[0]} (tried {', '.join(sources_for(left[0], d, category))})")
+        pending = left
+    out = {k: out[k] for k in d["hyperparameters"]}  # descriptor order
     return out
 
 

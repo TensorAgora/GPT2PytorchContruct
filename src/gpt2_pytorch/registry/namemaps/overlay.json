@@ -1,15 +1,130 @@
 {
  "_note": "Storage transforms between a checkpoint as stored and the graph's parameters (06d DESIGN). rope_permute: llama.cpp conversion/llama.py:262-265 (permute 176-181) at a83d68b; offset: conversion/gemma.py:119-120; split: fused storage bound as row slices.",
  "gguf": {
-  "llama": {"rope_permute": {"blk.{i}.attn_q.weight": "Hq", "blk.{i}.attn_k.weight": "Hkv"}},
-  "gemma": {"offset": {"*norm.weight": 1}},
-  "gemma2": {"offset": {"*norm.weight": 1}},
-  "gemma3": {"offset": {"*norm.weight": 1}},
-  "phi3": {"split": {"blk.{i}.attn_qkv.weight": {"axis": 0, "parts": [["q", "Dq"], ["k", "Dkv"], ["v", "Dkv"]]},
-                     "blk.{i}.ffn_up.weight": {"axis": 0, "parts": [["gate", "F"], ["up", "F"]]}}}
+  "llama": {
+   "rope_permute": {
+    "blk.{i}.attn_q.weight": "Hq",
+    "blk.{i}.attn_k.weight": "Hkv"
+   }
+  },
+  "gemma": {
+   "offset": {
+    "*norm.weight": 1
+   }
+  },
+  "gemma2": {
+   "offset": {
+    "*norm.weight": 1
+   }
+  },
+  "gemma3": {
+   "offset": {
+    "*norm.weight": 1
+   }
+  },
+  "phi3": {
+   "split": {
+    "blk.{i}.attn_qkv.weight": {
+     "axis": 0,
+     "parts": [
+      [
+       "q",
+       "Dq"
+      ],
+      [
+       "k",
+       "Dkv"
+      ],
+      [
+       "v",
+       "Dkv"
+      ]
+     ]
+    },
+    "blk.{i}.ffn_up.weight": {
+     "axis": 0,
+     "parts": [
+      [
+       "gate",
+       "F"
+      ],
+      [
+       "up",
+       "F"
+      ]
+     ]
+    }
+   }
+  }
  },
  "hf": {
-  "phi3": {"split": {"model.layers.{i}.self_attn.qkv_proj.weight": {"axis": 0, "parts": [["q", "Dq"], ["k", "Dkv"], ["v", "Dkv"]]},
-                     "model.layers.{i}.mlp.gate_up_proj.weight": {"axis": 0, "parts": [["gate", "F"], ["up", "F"]]}}}
+  "phi3": {
+   "split": {
+    "model.layers.{i}.self_attn.qkv_proj.weight": {
+     "axis": 0,
+     "parts": [
+      [
+       "q",
+       "Dq"
+      ],
+      [
+       "k",
+       "Dkv"
+      ],
+      [
+       "v",
+       "Dkv"
+      ]
+     ]
+    },
+    "model.layers.{i}.mlp.gate_up_proj.weight": {
+     "axis": 0,
+     "parts": [
+      [
+       "gate",
+       "F"
+      ],
+      [
+       "up",
+       "F"
+      ]
+     ]
+    }
+   }
+  },
+  "hf_olmo": {
+   "split": {
+    "model.transformer.blocks.{i}.att_proj.weight": {
+     "axis": 0,
+     "parts": [
+      [
+       "q",
+       "Dq"
+      ],
+      [
+       "k",
+       "Dkv"
+      ],
+      [
+       "v",
+       "Dkv"
+      ]
+     ]
+    },
+    "model.transformer.blocks.{i}.ff_proj.weight": {
+     "axis": 0,
+     "parts": [
+      [
+       "up",
+       "F"
+      ],
+      [
+       "gate",
+       "F"
+      ]
+     ]
+    }
+   }
+  }
  }
 }

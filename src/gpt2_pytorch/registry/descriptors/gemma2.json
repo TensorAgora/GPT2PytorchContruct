@@ -14,18 +14,49 @@
   ]
  },
  "hyperparameters": {
-  "tie": [
-   "tie_word_embeddings",
-   "=1"
+  "Qs": [
+   "query_pre_attn_scalar",
+   "=Dh"
+  ],
+  "attn_cap": [
+   "attn_logit_softcapping",
+   "gguf:<arch>.attn_logit_softcapping",
+   "=0"
+  ],
+  "final_cap": [
+   "final_logit_softcapping",
+   "gguf:<arch>.final_logit_softcapping",
+   "=0"
   ]
  },
+ "schemes": {
+  "hf": {
+   "post_attn_norm": "model.layers.{i}.post_attention_layernorm.weight",
+   "ffn_norm": "model.layers.{i}.pre_feedforward_layernorm.weight",
+   "post_ffn_norm": "model.layers.{i}.post_feedforward_layernorm.weight"
+  }
+ },
  "recipe": {
-  "root": "gemma2"
+  "root": "gemma2",
+  "flags": {
+   "qkv_bias": false,
+   "norm_plus_one": true,
+   "embed_scale": true,
+   "act": "gelu_tanh"
+  },
+  "modules": {
+   "ffn_norm": "pre_feedforward_layernorm"
+  },
+  "score_dim": "Qs",
+  "constants": {
+   "c_emb": "D ** 0.5",
+   "c_attn_cap": "attn_cap",
+   "c_final_cap": "final_cap"
+  }
  },
  "provenance": {
-  "ported_from": "arch.mjs llamaGraph, family gemma2 (llama layout)",
-  "golden": "json/gemma-2-2b-it.json",
-  "certainty": "template",
-  "note": "llama layout as arch.mjs spells it: no pre/post feed-forward norms, GeGLU, logit soft-capping or +1 norms (07a)"
+  "ported_from": "HF Gemma2DecoderLayer: (1+w) RMSNorms, post-attention / pre- and post-feed-forward norms, GeGLU (gelu_tanh), embedding x sqrt(D), attention and final soft-capping; sliding windows exceed the example T",
+  "fixture": "unsloth/gemma-2-2b-it",
+  "certainty": "template"
  }
 }

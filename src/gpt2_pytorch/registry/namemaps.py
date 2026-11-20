@@ -12,7 +12,8 @@ DIR = Path(__file__).resolve().parent / "namemaps"
 # descriptor scheme role -> gguf MODEL_TENSOR
 ROLE_TENSOR = {
     "embed": "TOKEN_EMBD", "attn_norm": "ATTN_NORM", "q": "ATTN_Q", "k": "ATTN_K", "v": "ATTN_V", "o": "ATTN_OUT",
-    "ffn_norm": "FFN_NORM", "gate": "FFN_GATE", "up": "FFN_UP", "down": "FFN_DOWN", "norm": "OUTPUT_NORM", "head": "OUTPUT",
+    "ffn_norm": ("FFN_NORM", "FFN_PRE_NORM"),  # Gemma's pre_feedforward_layernorm; both are blk.{i}.ffn_norm
+    "gate": "FFN_GATE", "up": "FFN_UP", "down": "FFN_DOWN", "norm": "OUTPUT_NORM", "head": "OUTPUT",
     "router": "FFN_GATE_INP", "experts_g": "FFN_GATE_EXP", "experts_u": "FFN_UP_EXP", "experts_d": "FFN_DOWN_EXP",
     "q_a": "ATTN_Q_A", "q_a_norm": "ATTN_Q_A_NORM", "q_b": "ATTN_Q_B", "kv_a": "ATTN_KV_A_MQA", "kv_a_norm": "ATTN_KV_A_NORM",
     "kv_b": "ATTN_KV_B", "shared_gate": "FFN_GATE_SHEXP", "shared_up": "FFN_UP_SHEXP", "shared_down": "FFN_DOWN_SHEXP",
@@ -34,7 +35,12 @@ def gguf_scheme(hf_scheme: dict) -> dict:
     """The GGUF scheme for a descriptor's roles. Every mapped role gets a name, even when an arch lacks that tensor,
     so an unmapped parameter shows up as missing instead of passing silently."""
     names = table()["tensor_names"]
-    return {role: names[ROLE_TENSOR[role]] + ".{what}" for role in hf_scheme if role in ROLE_TENSOR}
+    return {role: names[_types(role)[0]] + ".{what}" for role in hf_scheme if role in ROLE_TENSOR}
+
+
+def _types(role: str) -> tuple:
+    t = ROLE_TENSOR[role]
+    return t if isinstance(t, tuple) else (t,)
 
 
 def hf_tensor(hf_key: str, arch: str | None = None) -> list[str]:
@@ -44,12 +50,20 @@ def hf_tensor(hf_key: str, arch: str | None = None) -> list[str]:
     return (t["arch_hf_to_tensor"].get(arch or "", {}).get(k) or []) + t["hf_to_tensor"].get(k, [])
 
 
-def c3(hf_scheme: dict, arch: str | None = None) -> list[str]:
+def split_roles(descriptor_id: str) -> set:
+    """Roles the hf overlay binds as slices of a fused tensor (their scheme keys name roles, not stored tensors)."""
+    rules = overlay().get("hf", {}).get(descriptor_id, {}).get("split", {})
+    return {role for r in rules.values() for role, _ in r["parts"]}
+
+
+def c3(hf_scheme: dict, arch: str | None = None, skip=()) -> list[str]:
     """Conformance C3: every HF scheme name maps (through gguf-py) to the MODEL_TENSOR its role names in GGUF."""
     bad = []
     for role, key in hf_scheme.items():
-        if isinstance(key, str) and role in ROLE_TENSOR and ROLE_TENSOR[role] not in hf_tensor(key, arch):
-            bad.append(f"{role}: {key} -> {hf_tensor(key, arch) or 'unmapped'}, GGUF says {ROLE_TENSOR[role]}")
+        if role in skip:
+            continue
+        if isinstance(key, str) and role in ROLE_TENSOR and not set(_types(role)) & set(hf_tensor(key, arch)):
+            bad.append(f"{role}: {key} -> {hf_tensor(key, arch) or 'unmapped'}, GGUF says {'/'.join(_types(role))}")
     return bad
 
 
