@@ -1,0 +1,34 @@
+{
+ "id": "qwen2_5_vl_v2",
+ "version": "1",
+ "assembly": {
+  "text": "qwen2",
+  "prefix": {
+   "model.": "model.language_model."
+  },
+  "config": "text_config"
+ },
+ "match": {
+  "model_type": [
+   "qwen2_5_vl",
+   "qwen2_vl"
+  ],
+  "architectures": [
+   "Qwen2_5_VLForConditionalGeneration",
+   "Qwen2VLForConditionalGeneration"
+  ],
+  "gguf_architecture": []
+ },
+ "components": [
+  {
+   "name": "visual",
+   "prefix": "model.visual.",
+   "state": "declared_without_graph"
+  }
+ ],
+ "provenance": {
+  "fixture": null,
+  "certainty": "template",
+  "note": "transformers >= 4.52 layout: model.language_model.* and model.visual.*"
+ }
+}

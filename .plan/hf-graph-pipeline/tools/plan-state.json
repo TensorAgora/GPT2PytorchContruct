@@ -1353,10 +1353,13 @@
       "blocked": null
     },
     "07d": {
-      "state": "NOT_STARTED",
+      "state": "DESIGNED",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T20:12:11+00:00"
         },
         "B": {
           "status": "pending"
@@ -1365,8 +1368,41 @@
           "status": "pending"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "07d.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: assembly descriptor, partial rule, Qwen3.8 components, chosen VLM keys",
+          "evidence": "",
+          "at": "2026-11-20T20:12:11+00:00"
+        },
+        "07d.B.P1.T1": {
+          "status": "done",
+          "reason": "assembly load + components; test_assemblies: Qwen3.8 visual 333 + mtp 22, 0 unclaimed, partial",
+          "evidence": "",
+          "at": "2026-11-20T20:12:11+00:00"
+        },
+        "07d.B.P1.T2": {
+          "status": "done",
+          "reason": "qwen3_vl, qwen2_5_vl(+v2), gemma3(+v2) wrappers; C1 PASS on fixtures (draft heads deferred, DESIGN)",
+          "evidence": "",
+          "at": "2026-11-20T20:12:11+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T20:12:11+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T20:12:11+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "07e": {

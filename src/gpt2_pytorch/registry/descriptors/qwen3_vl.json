@@ -1,0 +1,32 @@
+{
+ "id": "qwen3_vl",
+ "version": "1",
+ "assembly": {
+  "text": "qwen3",
+  "prefix": {
+   "model.": "model.language_model."
+  },
+  "config": "text_config"
+ },
+ "match": {
+  "model_type": [
+   "qwen3_vl"
+  ],
+  "architectures": [
+   "Qwen3VLForConditionalGeneration"
+  ],
+  "gguf_architecture": []
+ },
+ "components": [
+  {
+   "name": "visual",
+   "prefix": "model.visual.",
+   "state": "declared_without_graph"
+  }
+ ],
+ "provenance": {
+  "fixture": "Qwen/Qwen3-VL-2B-Instruct",
+  "certainty": "template",
+  "note": "text tower = qwen3 (its multimodal rope reduces to rope for text positions); the vision tower is declared without a graph"
+ }
+}

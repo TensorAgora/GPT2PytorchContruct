@@ -1,0 +1,37 @@
+{
+ "id": "gemma3_v2",
+ "version": "1",
+ "assembly": {
+  "text": "gemma3_text",
+  "prefix": {
+   "model.": "model.language_model."
+  },
+  "config": "text_config"
+ },
+ "match": {
+  "model_type": [
+   "gemma3"
+  ],
+  "architectures": [
+   "Gemma3ForConditionalGeneration"
+  ],
+  "gguf_architecture": []
+ },
+ "components": [
+  {
+   "name": "vision_tower",
+   "prefix": "model.vision_tower.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "multi_modal_projector",
+   "prefix": "model.multi_modal_projector.",
+   "state": "declared_without_graph"
+  }
+ ],
+ "provenance": {
+  "fixture": null,
+  "certainty": "template",
+  "note": "transformers >= 4.52 layout: model.language_model.*, model.vision_tower.*"
+ }
+}

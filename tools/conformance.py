@@ -102,7 +102,8 @@ def check(did: str) -> dict:
         r = resolve_and_bind(m, job.row, only=did)
         out["C1"] = "PASS" if r.binding and r.binding.ok else f"FAIL {r.near_misses[:1]}"
     # C3
-    bad3 = c3(d["schemes"].get("hf", {}), skip=split_roles(did))
+    text = d["provenance"].get("text", "").split("@")[0]  # an assembly is judged by its text model's own names
+    bad3 = c3((load(text) if text else d)["schemes"].get("hf", {}), skip=split_roles(text or did))
     out["C3"] = "PASS" if not bad3 else f"FAIL {bad3[:2]}"
     # C4
     golden = d["provenance"].get("golden")
@@ -134,7 +135,7 @@ def check(did: str) -> dict:
     else:
         bad = []
         half = copy.deepcopy(m)
-        half["tensors"] = half["tensors"][: len(half["tensors"]) // 2]
+        half["tensors"] = half["tensors"][::2]  # every other tensor: hits every part of the model
         shape = copy.deepcopy(m)
         big = max(shape["tensors"], key=lambda t: t["numel"])  # a parameter, never a sliced buffer
         big["shape"] = [big["shape"][0] + 1] + big["shape"][1:]

@@ -41,6 +41,7 @@ def decoder(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
     """Pre-norm decoder (arch.mjs llamaGraph 199-219): embed; per layer norm, attention, residual, norm, mlp, residual;
     final norm; head (tied to the embedding when `tie`)."""
     r = d["recipe"]
+    cfg = cfg.get(r["config"]) or cfg if r.get("config") else cfg  # assemblies: selectors read the text config
     h = {**r.get("flags", {}), **h}
     h["plus_one"] = bool(h.get("norm_plus_one")) and scheme != "gguf"  # GGUF stores Gemma norms with the +1 folded in
     one = h["plus_one"]

@@ -1,0 +1,31 @@
+{
+ "id": "qwen2_5_vl",
+ "version": "1",
+ "assembly": {
+  "text": "qwen2",
+  "prefix": {}
+ },
+ "match": {
+  "model_type": [
+   "qwen2_5_vl",
+   "qwen2_vl"
+  ],
+  "architectures": [
+   "Qwen2_5_VLForConditionalGeneration",
+   "Qwen2VLForConditionalGeneration"
+  ],
+  "gguf_architecture": []
+ },
+ "components": [
+  {
+   "name": "visual",
+   "prefix": "visual.",
+   "state": "declared_without_graph"
+  }
+ ],
+ "provenance": {
+  "fixture": "Qwen/Qwen2.5-VL-3B-Instruct",
+  "certainty": "template",
+  "note": "older layout: the text model at model.*, the vision tower at visual.*"
+ }
+}

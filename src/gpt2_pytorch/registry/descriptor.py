@@ -42,9 +42,37 @@ def _raw(id_: str) -> dict:
     return json.loads(path.read_text())
 
 
+def _rewrite(key: str, rules: dict) -> str:
+    for old, new in rules.items():
+        if key.startswith(old):
+            return new + key[len(old):]
+    return key
+
+
+def assemble(a: dict) -> dict:
+    """A wrapper checkpoint (master §4 → design doc §7.3): the text model of descriptor `assembly.text` under a key
+    prefix, every other part a component (bound or declared without a graph), never dropped."""
+    import copy
+    spec = a["assembly"]
+    d = copy.deepcopy(load(spec["text"]))
+    rules = spec.get("prefix", {})
+    view = lambda v: {**v, "view": "stack of " + _rewrite(v["view"].removeprefix("stack of "), rules)}  # noqa: E731
+    d["schemes"] = {"hf": {r: _rewrite(v, rules) if isinstance(v, str) else view(v) for r, v in d["schemes"]["hf"].items()}}
+    d["components"] = d.get("components", []) + a.get("components", [])
+    d["ignored"] = d.get("ignored", []) + a.get("ignored", [])
+    d["recipe"] = {**d["recipe"], "config": spec.get("config")} if spec.get("config") else d["recipe"]
+    d.update({k: a[k] for k in ("id", "version", "match", "provenance")})
+    d["provenance"] = {**a["provenance"], "text": f"{spec['text']}@{load(spec['text'])['version']}"}
+    return d
+
+
 def load(id_: str) -> dict:
     """The descriptor with `extends` resolved: the child's top-level keys win, dicts merge one level deep, and schemes
-    merge per role."""
+    merge per role. An `assembly` descriptor wraps another descriptor's text model."""
+    if "assembly" in _raw(id_):
+        d = assemble(_raw(id_))
+        validate(d)
+        return d
     d = dict(_raw(id_))
     if parent := d.pop("extends", None):
         base = load(parent)
