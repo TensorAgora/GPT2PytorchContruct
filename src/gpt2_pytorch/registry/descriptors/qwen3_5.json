@@ -55,5 +55,17 @@
   "ported_from": "tensorprog/qwen3_5.py via tools/model_graph.py",
   "golden": "json/qwen3.8-27b-fp8.json",
   "certainty": "template"
- }
+ },
+ "components": [
+  {
+   "name": "visual",
+   "prefix": "model.visual.",
+   "state": "declared_without_graph"
+  },
+  {
+   "name": "mtp",
+   "prefix": "mtp.",
+   "state": "declared_without_graph"
+  }
+ ]
 }

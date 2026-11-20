@@ -20,7 +20,8 @@
    "hidden_size"
   ],
   "Hq": [
-   "num_attention_heads"
+   "num_attention_heads",
+   "gguf:<arch>.attention.head_count"
   ],
   "Hkv": [
    "num_key_value_heads",
@@ -42,10 +43,13 @@
   ],
   "theta": [
    "rope_theta",
+   "gguf:<arch>.rope.freq_base",
    "=10000"
   ],
   "tie": [
    "tie_word_embeddings",
+   "missing:gguf:output.weight",
+   "missing:safetensors:lm_head.weight",
    "=0"
   ]
  },

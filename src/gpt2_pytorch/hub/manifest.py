@@ -125,3 +125,16 @@ def validate_manifest(m: dict) -> list[str]:
         if [(t["file"], t["key"]) for t in m["tensors"]] != sorted((t["file"], t["key"]) for t in m["tensors"]):
             errs.append("tensors not sorted by (file, key)")
     return errs
+
+
+def read_manifest(job, client, revision=None, fetched_at=None):
+    """S1-S4 for one job: (discovery, manifest), manifest None when discovery ended in a skipped:/failed: status."""
+    from .discover import discover, small_files
+    from .headers import read_header
+
+    d = discover(job, client, revision)
+    if d.status:
+        return d, None
+    small = small_files(d, client)
+    headers = {p: read_header(client, d.repo, d.sha, p) for w in d.weights for p in w.parts}
+    return d, build_manifest(job, d, small, headers, fetched_at)

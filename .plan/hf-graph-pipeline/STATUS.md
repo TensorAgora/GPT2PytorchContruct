@@ -4,7 +4,7 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.3).
 
-Tasks closed: 35 of 109. Modules: DONE 5, NOT_STARTED 14, DESIGNED 1.
+Tasks closed: 41 of 109. Modules: DONE 6, NOT_STARTED 13, DESIGNED 1.
 
 ## Per module
 
@@ -15,13 +15,13 @@ Tasks closed: 35 of 109. Modules: DONE 5, NOT_STARTED 14, DESIGNED 1.
 | [05b](05b-headers-and-manifest/TASKS.md) | Safetensors and GGUF header readers, fixtures, tensor manifest v1 | 0 | DONE | - | 7/7 | - |
 | [06a](06a-block-library/TASKS.md) | Descriptor format, selectors, blocks from arch.mjs, GPT-2 and llama-family descriptors | 0 | DONE | - | 8/8 | - |
 | [06b](06b-golden-ports/TASKS.md) | mixtral, deepseek_v3 and qwen3_5 descriptors | 0 | DONE | - | 5/5 | - |
-| [06c](06c-resolve-and-bind/TASKS.md) | Resolution ladder, hyperparameter sources, binding verifier | 0 | NOT_STARTED | A | 0/6 | - |
-| [05c](05c-graph-writer-cli/TASKS.md) | run_one, graph and report writers, content store, single-URL CLI | 0 | NOT_STARTED | A | 0/6 | 06c |
+| [06c](06c-resolve-and-bind/TASKS.md) | Resolution ladder, hyperparameter sources, binding verifier | 0 | DONE | - | 6/6 | - |
+| [05c](05c-graph-writer-cli/TASKS.md) | run_one, graph and report writers, content store, single-URL CLI | 0 | NOT_STARTED | A | 0/6 | - |
 | [05d](05d-batch-and-coverage/TASKS.md) | Batch ledger, resume, coverage reports, backlog, 100-row smoke | 0 | NOT_STARTED | A | 0/5 | 05c |
 | [08a](08a-goldens-pinned/TASKS.md) | Pin the 8 goldens, diff their configs, rebuild them from headers | 0 | NOT_STARTED | A | 0/5 | 05c |
 | [09a](09a-tel-proof/TASKS.md) | Graph⇔TEL design doc, round trip over goldens, TEL coverage analyzer | 0 | NOT_STARTED | A | 0/5 | - |
 | [06d](06d-namemaps/TASKS.md) | Generated HF↔GGUF name maps with a storage-transform overlay | 1 | NOT_STARTED | A | 0/5 | 08a |
-| [06e](06e-sidecars/TASKS.md) | Quantization sidecar binding | 1 | NOT_STARTED | A | 0/4 | 06c, 08a |
+| [06e](06e-sidecars/TASKS.md) | Quantization sidecar binding | 1 | NOT_STARTED | A | 0/4 | 08a |
 | [07a](07a-dense-descriptors/TASKS.md) | Conformance runner and top dense-decoder descriptors | 1 | NOT_STARTED | A | 0/5 | 05d, 06d, 06e |
 | [09b](09b-tel-python-port/TASKS.md) | Python T♭ printer and decoder (T-2) | 1 | NOT_STARTED | A | 0/4 | 09a |
 | [07b](07b-moe/TASKS.md) | Routed MoE annotations, expert storage forms, MoE descriptors | 2 | NOT_STARTED | A | 0/6 | 07a |
@@ -33,7 +33,6 @@ Tasks closed: 35 of 109. Modules: DONE 5, NOT_STARTED 14, DESIGNED 1.
 
 ## Next actions
 
-- 06c stage A: `06c.A.P1.T1` Write 06c DESIGN.md: candidate record (descriptor, rung, evidence, score), the R1–R4 order with nested config keys, a small parser for the prose-like metadata_spec.json dims (`hidden_size | n_embd (GPT-2)`; never eval), the hyper source record, the five binding classes and the near-miss report format
 - 05c stage A: `05c.A.P1.T1` Write 05c DESIGN.md: run_one stage order S1–S12 with each side exit's status, report.json fields (status, candidates, near-misses, binding partition, hyper sources, bytes read), the §5.3 additive fields, content key = sha256(descriptor@version, resolved hyper, naming scheme), graph.ref format, §5.4 paths
 - 05d stage A: `05d.A.P1.T1` Write 05d DESIGN.md: ledger.jsonl record (repo, sha, stage, status, code, duration), resume rule (skip a repo whose latest terminal row has the same sha), concurrency model, coverage and near-miss columns, unlockable-rows ranking, backlog key choice (model_type, gguf arch, backbone class)
 - 08a stage A: `08a.A.P1.T1` Write 08a DESIGN.md: per golden its repo (confirm the mixtral GGUF repo holds mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf), format, spelled-config path and gated rule (gemma-2: skip with a message when its fixture is absent)

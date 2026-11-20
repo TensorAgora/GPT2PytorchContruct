@@ -59,7 +59,7 @@ def check(g: dict, manifest: dict | None = None, limit: int = 20) -> list[str]:
         stored = {t["key"]: t for t in manifest["tensors"]}
         for t in g["tensors"]:
             key = t["checkpoint_key"]
-            if t["role"] in PARAM_ROLES and key:
+            if t["role"] in PARAM_ROLES and key and not (t["view"] or "").startswith("["):  # a [..] view cuts the stored tensor
                 if key not in stored:
                     errs.append(f"tensor {t['name']}: checkpoint_key {key!r} not in the manifest")
                 elif list(stored[key]["shape"]) != t["shape"]:

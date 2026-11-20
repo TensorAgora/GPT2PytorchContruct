@@ -486,20 +486,94 @@
       "blocked": null
     },
     "06c": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T18:42:42+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T18:42:42+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "fixtures resolve and bind",
+          "evidence": "",
+          "at": "2026-11-20T18:42:42+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "06c.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: Ladder (Kimi-K2), Hyper (Qwen2.5 D=3584), Binding (missing q_proj) with examples",
+          "evidence": "",
+          "at": "2026-11-20T18:42:42+00:00"
+        },
+        "06c.B.P1.T1": {
+          "status": "done",
+          "reason": "resolve.py ladder R1-R4 + diffusers/timm/catalog classes; remote-code rule; test_resolve Kimi->deepseek_v3, auto_map->skipped:remote_code",
+          "evidence": "",
+          "at": "2026-11-20T18:42:42+00:00"
+        },
+        "06c.B.P1.T2": {
+          "status": "done",
+          "reason": "hyper.py: descriptor sources, parsed spec alternatives, catalog, defaults with sources; test_hyper qwen2.5 config + mixtral gguf",
+          "evidence": "",
+          "at": "2026-11-20T18:42:42+00:00"
+        },
+        "06c.B.P1.T3": {
+          "status": "done",
+          "reason": "bind.py five classes + near-miss; test_bind removed/misshaped/extra named",
+          "evidence": "",
+          "at": "2026-11-20T18:42:42+00:00"
+        },
+        "06c.B.P1.T4": {
+          "status": "done",
+          "reason": "rank-order fallthrough with near-misses; test_fallthrough passes",
+          "evidence": "",
+          "at": "2026-11-20T18:42:42+00:00"
+        },
+        "06c.C.P1.T1": {
+          "status": "done",
+          "reason": "distilgpt2 gpt2/R2, Qwen2.5 qwen2/R2, mixtral GGUF mixtral/R1: unbound 0, all dims sourced",
+          "evidence": "",
+          "at": "2026-11-20T18:42:42+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T18:42:42+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T18:42:42+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T18:42:42+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T18:42:42+00:00",
+          "reason": "Stage C Integrate complete: fixtures resolve and bind",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "05c": {

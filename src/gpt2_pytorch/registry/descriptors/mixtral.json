@@ -9,7 +9,9 @@
   "architectures": [
    "MixtralForCausalLM"
   ],
-  "gguf_architecture": []
+  "gguf_architecture": [
+   "llama"
+  ]
  },
  "hyperparameters": {
   "Fe": [

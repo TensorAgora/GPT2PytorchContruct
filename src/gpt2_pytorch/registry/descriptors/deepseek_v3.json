@@ -3,8 +3,7 @@
  "version": "1",
  "match": {
   "model_type": [
-   "deepseek_v3",
-   "kimi_k2"
+   "deepseek_v3"
   ],
   "architectures": [
    "DeepseekV3ForCausalLM"
@@ -21,7 +20,8 @@
    "hidden_size"
   ],
   "Hq": [
-   "num_attention_heads"
+   "num_attention_heads",
+   "gguf:<arch>.attention.head_count"
   ],
   "QR": [
    "q_lora_rank"
@@ -52,6 +52,7 @@
   ],
   "dense": [
    "first_k_dense_replace",
+   "gguf:<arch>.leading_dense_block_count",
    "=0"
   ],
   "route": [
