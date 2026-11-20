@@ -17,6 +17,19 @@ class DescriptorError(ValueError):
     pass
 
 
+@cache
+def registry_version() -> str:
+    """Content hash of everything a graph depends on besides the repo: descriptors, registry code, the lowerings.
+    Determinism (master §3) is per (repo, sha, registry version)."""
+    import hashlib
+    root = DIR.parent
+    files = sorted(DIR.glob("*.json")) + sorted(root.glob("*.py")) + sorted((root.parent / "tensorprog").glob("*.py"))
+    h = hashlib.sha256()
+    for f in files:
+        h.update(f.name.encode() + b"\0" + f.read_bytes())
+    return h.hexdigest()[:12]
+
+
 def ids() -> list[str]:
     return sorted(p.stem for p in DIR.glob("*.json"))
 

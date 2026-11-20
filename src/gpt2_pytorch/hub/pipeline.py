@@ -20,7 +20,8 @@ from pathlib import Path
 from .catalog import Job
 from .headers import HeaderError
 from .http import Client, HttpError
-from .manifest import dump, read_manifest
+from .discover import discover
+from .manifest import dump, load_json, manifest_from, write_json
 
 REPORT_FORMAT = "tensormorph-hf-graph-report"
 CERTAINTY = {"R1": None, "R2": None, "R3": "assumed", "R4": "assumed"}
@@ -38,10 +39,8 @@ def repo_dir(out: Path, job: Job) -> Path:
     return Path(out) / job.category / job.format / job.repo_id.replace("/", "__")
 
 
-def _write(path: Path, obj) -> Path:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(dump(obj))
-    return path
+def _write(path: Path, obj, gz: bool = False) -> Path:
+    return write_json(path, obj, gz)
 
 
 def prefix_tree(keys, depth=3) -> dict:
@@ -81,11 +80,11 @@ def keys_of(manifest: dict) -> dict:
 def load_graph(folder) -> dict:
     """The full graph of a repo folder: graph.json, or graph.ref over its shared graph."""
     folder = Path(folder)
-    if (folder / "graph.json").exists():
-        return json.loads((folder / "graph.json").read_text())
+    if (folder / "graph.json").exists() or (folder / "graph.json.gz").exists():
+        return load_json(folder / "graph.json")
     ref = json.loads((folder / "graph.ref").read_text())
     root = next(p for p in [folder, *folder.parents] if (p / "graphs").is_dir())
-    g = json.loads((root / "graphs" / f"{ref['content_key']}.json").read_text())
+    g = load_json(root / "graphs" / f"{ref['content_key']}.json")
     g["model"] = ref["model"]
     g["groups"]["label"] = ref["model"]["name"]
     tensors = {t["name"]: t for t in g["tensors"]}
@@ -99,24 +98,32 @@ def load_graph(folder) -> dict:
 
 
 def run_one(job: Job, out, client=None, revision: str | None = None, fetched_at: str | None = None) -> Result:
+    from ..registry.descriptor import registry_version
     from ..registry.hyper import dim_sources
     from ..registry.resolve import resolve_and_bind
 
     client = client or Client()
     client = client.scoped() if hasattr(client, "scoped") else client  # per-job counters (FixtureClient has none)
     out, folder = Path(out), repo_dir(out, job)
-    report = {"format": REPORT_FORMAT, "version": 1, "repo": job.repo_id, "category": job.category, "weights_format": job.format}
+    report = {"format": REPORT_FORMAT, "version": 1, "repo": job.repo_id, "category": job.category, "weights_format": job.format,
+              "registry_version": registry_version()}
     requests0 = client.requests
     try:
-        d, manifest = read_manifest(job, client, revision, fetched_at)
+        d = discover(job, client, revision)
+        report["sha"] = d.sha
+        if d.status:
+            return _finish(folder, report | {"status": d.status}, [])
+        old = folder / "manifest.json"
+        old = load_json(old) if old.exists() or old.with_name("manifest.json.gz").exists() else None
+        if old and old["model"]["revision_sha"] == d.sha:  # same revision: re-resolve offline, no header request
+            manifest = old
+        else:
+            manifest = manifest_from(job, d, client, fetched_at)
     except HeaderError as e:
         return _finish(folder, report | {"status": f"failed:{e.code}", "message": str(e)}, [])
     except HttpError as e:
         return _finish(folder, report | {"status": f"failed:http_{e.status}", "message": str(e)}, [])
-    report["sha"] = d.sha
-    if manifest is None:
-        return _finish(folder, report | {"status": d.status}, [])
-    paths = [_write(folder / "manifest.json", manifest)]
+    paths = [_write(folder / "manifest.json", manifest, gz=True)]
     report["bytes"] = {"header_bytes_read": manifest["stats"]["header_bytes_read"], "payload_bytes_read": 0,
                        "requests": client.requests - requests0}
     report["keys"] = keys_of(manifest)
@@ -139,13 +146,11 @@ def run_one(job: Job, out, client=None, revision: str | None = None, fetched_at:
     shared["groups"]["label"] = r.descriptor["id"]  # viz_graph labels the root group with the model name
     shared["provenance"] = {"certainty": r.descriptor["provenance"].get("certainty", "template"),
                             "evidence": f"descriptor {d_id} over resolved hyperparameters", "origin": "gpt2_pytorch.registry",
-                            "descriptor": d_id, "path": "A"}
-    raw = dump(shared)
-    key = hashlib.sha256(raw).hexdigest()[:24]
-    gpath = out / "graphs" / f"{key}.json"
+                            "descriptor": d_id, "path": "A", "registry": registry_version()}
+    key = hashlib.sha256(dump(shared)).hexdigest()[:24]
+    gpath = out / "graphs" / f"{key}.json.gz"
     if not gpath.exists():
-        gpath.parent.mkdir(parents=True, exist_ok=True)
-        gpath.write_bytes(raw)
+        write_json(out / "graphs" / f"{key}.json", shared, gz=True)
     hyper_sources = {k: v[1] for k, v in r.hyper.items()}
     ref = {"content_key": key, "model": {"name": job.repo_id.split("/")[-1].lower()},
            "overrides": {name: {"view": v} for name, v in sorted(b.views.items())},

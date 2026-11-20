@@ -89,6 +89,15 @@ def compare(g: dict, golden: dict, ignore=(), limit: int = 40) -> list[str]:
     return diffs[:limit] + ([f"... {len(diffs) - limit} more differences"] if len(diffs) > limit else [])
 
 
+def _load(path: Path):
+    """JSON, or gzipped JSON (the pipeline writes manifests and shared graphs as .json.gz)."""
+    import gzip
+    if path.suffix != ".gz" and not path.exists():
+        path = path.with_name(path.name + ".gz")
+    raw = path.read_bytes()
+    return json.loads(gzip.decompress(raw) if path.suffix == ".gz" else raw)
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("graphs", nargs="+", type=Path)
@@ -96,11 +105,11 @@ def main(argv=None) -> int:
     ap.add_argument("--against", type=Path)
     ap.add_argument("--ignore", action="append", default=[], choices=["dims", "shape", "checkpoint_key", "view", "totals"])
     a = ap.parse_args(argv)
-    manifest = json.loads(a.manifest.read_text()) if a.manifest else None
-    golden = json.loads(a.against.read_text()) if a.against else None
+    manifest = _load(a.manifest) if a.manifest else None
+    golden = _load(a.against) if a.against else None
     failed = 0
     for path in a.graphs:
-        g = json.loads(path.read_text())
+        g = _load(path)
         problems = check(g, manifest)
         if golden is not None:
             if a.ignore:

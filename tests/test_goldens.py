@@ -10,6 +10,7 @@ import pytest
 pytest.importorskip("gguf")
 from gpt2_pytorch.hub.catalog import Job  # noqa: E402
 from gpt2_pytorch.hub.fixtures import FixtureClient, find  # noqa: E402
+from gpt2_pytorch.hub.manifest import load_json  # noqa: E402
 from gpt2_pytorch.hub.pipeline import load_graph, run_one  # noqa: E402
 from tools.graph_check import check, compare  # noqa: E402
 
@@ -39,5 +40,5 @@ def test_golden_from_pinned_header(row, tmp_path):
         assert rep["near_misses"], "a no_graph golden must say why"
         return
     g = load_graph(r.dir)
-    assert check(g, json.loads((r.dir / "manifest.json").read_text())) == []
+    assert check(g, load_json(r.dir / "manifest.json")) == []
     assert compare(g, json.loads(Path(row["golden"]).read_text()), want.get("ignore", ())) == []

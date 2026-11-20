@@ -15,7 +15,7 @@ import sys
 import time
 from pathlib import Path
 
-from gpt2_pytorch.hub.batch import coverage, run_all, throughput
+from gpt2_pytorch.hub.batch import coverage, prune_graphs, run_all, throughput
 from gpt2_pytorch.hub.catalog import Job, load_jobs, stratified
 from gpt2_pytorch.hub.http import Client
 from gpt2_pytorch.hub.fixtures import FixtureClient, job_for
@@ -62,7 +62,7 @@ def main(argv=None) -> int:
             t0 = time.monotonic()
             new = run_all(todo, a.out, lambda j: run_one(j, a.out, client), a.concurrency, a.limit, a.refresh,
                           lambda j: client.model_info(j.repo_id, refresh=True)["sha"])
-            print(json.dumps(throughput(new, time.monotonic() - t0)))
+            print(json.dumps(throughput(new, time.monotonic() - t0) | {"pruned_graphs": prune_graphs(a.out)}))
         if a.coverage:
             print(json.dumps(coverage(a.out, jobs)))
         return 0

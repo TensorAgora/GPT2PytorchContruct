@@ -5,6 +5,7 @@ import pytest
 
 pytest.importorskip("gguf")
 from gpt2_pytorch.hub.fixtures import FixtureClient, find  # noqa: E402
+from gpt2_pytorch.hub.manifest import load_json  # noqa: E402
 from gpt2_pytorch.hub.pipeline import load_graph, run_one  # noqa: E402
 from tools.graph_check import check  # noqa: E402
 
@@ -36,7 +37,7 @@ def test_distilgpt2_ok_and_graph_valid(tmp_path):
     assert rep["winner"]["descriptor"] == "gpt2@1" and rep["bytes"]["payload_bytes_read"] == 0
     assert all(v["source"] for v in rep["dims"].values())  # R-09: every dim has a source
     g = load_graph(r.dir)
-    manifest = json.loads((r.dir / "manifest.json").read_text())
+    manifest = load_json(r.dir / "manifest.json")
     assert check(g, manifest) == [] and g["provenance"]["descriptor"] == "gpt2@1" and g["checkpoint"]["bound"] == 82
 
 
@@ -51,7 +52,7 @@ def test_unknown_model_type_is_no_graph_with_prefix_tree(tmp_path):
 def test_shared_graph(tmp_path):
     out = tmp_path / "out"
     a, b = run(FIX, out), run(copy_fixture(tmp_path, "o/distilgpt2-copy"), out)
-    assert a.content_key == b.content_key and len(list((out / "graphs").glob("*.json"))) == 1
+    assert a.content_key == b.content_key and len(list((out / "graphs").glob("*.json.gz"))) == 1
     assert (a.dir / "graph.ref").exists() and (b.dir / "graph.ref").exists()
     assert load_graph(b.dir)["model"]["name"] == "distilgpt2-copy"
 

@@ -18,6 +18,26 @@ from pathlib import Path
 from .http import redact
 
 TERMINAL = ("ok", "ok_assumed", "partial", "no_graph", "skipped:", "failed:")
+# re-run on restart: outages are not facts about the repo
+TRANSIENT = ("failed:http_0", "failed:http_429", "failed:http_5", "failed:exception_")
+# re-run when the registry changed: a new descriptor may now resolve them
+REGISTRY_BOUND = ("no_graph", "ok_assumed", "skipped:remote_code")
+
+
+def needs_run(rec: dict | None, registry: str) -> bool:
+    if rec is None or not rec["status"].startswith(TERMINAL) or rec["status"].startswith(TRANSIENT):
+        return True
+    return rec["status"] in REGISTRY_BOUND and rec.get("registry") != registry
+
+
+def prune_graphs(out) -> int:
+    """Delete shared graphs no graph.ref points at (a descriptor change leaves the old ones behind)."""
+    out = Path(out)
+    live = {json.loads(p.read_text())["content_key"] for p in out.rglob("graph.ref")}
+    dead = [p for p in (out / "graphs").glob("*.json*") if p.name.split(".")[0] not in live]
+    for p in dead:
+        p.unlink()
+    return len(dead)
 
 
 def stage_of(status: str) -> str:
@@ -54,17 +74,15 @@ class Ledger:
             os.fsync(f.fileno())
 
 
-def run_all(jobs, out, run, concurrency=4, limit=None, refresh=False, sha_of=None, log=print) -> list[dict]:
-    """Run `run(job) -> Result` over jobs not yet terminal in the ledger. Returns the new ledger lines."""
-    out = Path(out)
+def run_all(jobs, out, run, concurrency=4, limit=None, refresh=False, sha_of=None, log=print, registry=None) -> list[dict]:
+    """Run `run(job) -> Result` over jobs that need it (needs_run, or a changed sha with refresh). Returns the new
+    ledger lines."""
+    from ..registry.descriptor import registry_version
+
+    out, registry = Path(out), registry or registry_version()
     done = read_ledger(out)
-    todo = []
-    for j in jobs:
-        rec = done.get(j.repo_id)
-        if rec and rec["status"].startswith(TERMINAL):
-            if not (refresh and sha_of and rec.get("sha") and sha_of(j) != rec["sha"]):
-                continue
-        todo.append(j)
+    todo = [j for j in jobs if needs_run(done.get(j.repo_id), registry)
+            or (refresh and sha_of and done[j.repo_id].get("sha") and sha_of(j) != done[j.repo_id]["sha"])]
     todo = todo[:limit] if limit is not None else todo
     ledger, new = Ledger(out), []
 
@@ -76,7 +94,7 @@ def run_all(jobs, out, run, concurrency=4, limit=None, refresh=False, sha_of=Non
             rep = json.loads((r.dir / "report.json").read_text()) if r.dir and (r.dir / "report.json").exists() else {}
         except Exception as e:  # one bad repo never stops the batch
             status, rep = f"failed:exception_{type(e).__name__}", {"message": redact(str(e))[:300]}
-        rec = {"repo": job.repo_id, "sha": rep.get("sha"), "category": job.category, "format": job.format,
+        rec = {"repo": job.repo_id, "sha": rep.get("sha"), "category": job.category, "format": job.format, "registry": registry,
                "stage": stage_of(status), "status": status, "code": status.split(":", 1)[1] if ":" in status else None,
                "duration_s": round(time.monotonic() - t0, 3),
                "header_bytes": (rep.get("bytes") or {}).get("header_bytes_read", 0), "requests": (rep.get("bytes") or {}).get("requests", 0)}

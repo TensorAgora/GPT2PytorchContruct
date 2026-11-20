@@ -6,6 +6,7 @@ HF_TOKEN is read from the environment only (never from a stored login), sent as 
 """
 import copy
 import email.utils
+import gzip
 import json
 import logging
 import os
@@ -141,13 +142,19 @@ class Client:
         if not allowed(path):
             raise NotAllowed(f"{path!r} is not a §3 small file")
         cached = self.cache_dir / repo / sha / path
+        zipped = cached.with_name(cached.name + ".gz")  # storage rule: big indexes stay compressed on disk
+        if zipped.exists():
+            return gzip.decompress(zipped.read_bytes())
         if cached.exists():
             return cached.read_bytes()
         r = self.get(self.file_url(repo, sha, path))
         if r.status != 200:
             raise HttpError(r.status, self.file_url(repo, sha, path))
         cached.parent.mkdir(parents=True, exist_ok=True)
-        cached.write_bytes(r.body)
+        if len(r.body) > 32 << 10:
+            zipped.write_bytes(gzip.compress(r.body, 6, mtime=0))
+        else:
+            cached.write_bytes(r.body)
         return r.body
 
     def model_info(self, repo: str, revision: str | None = None, refresh: bool = False) -> dict:

@@ -1,6 +1,7 @@
 """S4 tensor manifest v1 (master §5.2): Observed facts only — what the headers and small files state, nothing that
 depends on a chosen architecture. Canonical JSON; `provenance.fetched_at` is the only volatile field."""
 import datetime
+import gzip
 import json
 import math
 from concurrent.futures import ThreadPoolExecutor
@@ -15,6 +16,28 @@ MODEL_HEADER_BUDGET = 256 << 20  # D3: per model, all files (set from the 100-ro
 
 def dump(obj) -> bytes:
     return (json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n").encode()
+
+
+def write_json(path, obj, gz: bool = False) -> Path:
+    """Canonical JSON; gz writes <path>.gz deterministically (mtime 0). Storage rule: manifests and shared graphs."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    raw = dump(obj)
+    if gz:
+        path = path.with_name(path.name + ".gz")
+        raw = gzip.compress(raw, 6, mtime=0)
+    path.write_bytes(raw)
+    return path
+
+
+def load_json(path):
+    """JSON at path or path.gz (path may name either)."""
+    path = Path(path)
+    plain = path.with_name(path.name.removesuffix(".gz"))
+    gz = plain.with_name(plain.name + ".gz")
+    if gz.exists():
+        return json.loads(gzip.decompress(gz.read_bytes()))
+    return json.loads(plain.read_text())
 
 
 def _folder(path: str) -> str:
@@ -101,7 +124,7 @@ def build_manifest(job, discovery, small: dict, headers: dict, fetched_at: str |
                   "format": d.weights[0].kind, "license": row.get("license") or None, "gated": d.gated,
                   "library_name": d.info.get("library_name") or row.get("library_name") or None,
                   "base_model": row.get("base_model") or None, "catalog_row": dict(row)},
-        "files": files, "config": small,
+        "files": files, "config": {k: v for k, v in small.items() if not k.endswith(".safetensors.index.json")},  # §5.2
         "gguf": {"version": gguf["version"], "kv": gguf["kv"], "alignment": gguf["alignment"]} if gguf else None,
         "tensors": tensors, "safetensors_metadata": metadata,
         "stats": {"tensor_count": len(tensors), "params_by_dtype": params, "weight_bytes": sum(t["nbytes"] for t in tensors),
@@ -129,20 +152,24 @@ def validate_manifest(m: dict) -> list[str]:
     return errs
 
 
-def read_manifest(job, client, revision=None, fetched_at=None):
-    """S1-S4 for one job: (discovery, manifest), manifest None when discovery ended in a skipped:/failed: status."""
-    from .discover import discover, small_files
-    from .headers import read_header
+def manifest_from(job, d, client, fetched_at=None) -> dict:
+    """S2-S4 for a discovered repo: small files, every weight header (shards in parallel), the manifest."""
+    from .discover import small_files
+    from .headers import HeaderError, read_header
 
-    d = discover(job, client, revision)
-    if d.status:
-        return d, None
     small = small_files(d, client)
     parts = [p for w in d.weights for p in w.parts]
-    with ThreadPoolExecutor(min(8, len(parts))) as pool:  # shards in parallel; the client's semaphore bounds requests
+    with ThreadPoolExecutor(min(8, len(parts))) as pool:  # the client's semaphore bounds requests
         headers = dict(zip(parts, pool.map(lambda p: read_header(client, d.repo, d.sha, p), parts)))
     total = sum(h["bytes_read"] for h in headers.values())
     if total > MODEL_HEADER_BUDGET:
-        from .headers import HeaderError
         raise HeaderError("over_budget", f"{total} header bytes over the {MODEL_HEADER_BUDGET} per-model budget (D3)")
-    return d, build_manifest(job, d, small, headers, fetched_at)
+    return build_manifest(job, d, small, headers, fetched_at)
+
+
+def read_manifest(job, client, revision=None, fetched_at=None):
+    """S1-S4 for one job: (discovery, manifest), manifest None when discovery ended in a skipped:/failed: status."""
+    from .discover import discover
+
+    d = discover(job, client, revision)
+    return (d, None) if d.status else (d, manifest_from(job, d, client, fetched_at))
