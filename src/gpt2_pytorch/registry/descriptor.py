@@ -43,13 +43,16 @@ def _raw(id_: str) -> dict:
 
 
 def load(id_: str) -> dict:
-    """The descriptor with `extends` resolved: the child's top-level keys win, dicts merge one level deep."""
+    """The descriptor with `extends` resolved: the child's top-level keys win, dicts merge one level deep, and schemes
+    merge per role."""
     d = dict(_raw(id_))
     if parent := d.pop("extends", None):
         base = load(parent)
         for k, v in base.items():
             if k not in d:
                 d[k] = v
+            elif k == "schemes":  # roles merge per scheme: a child adds or renames roles, it never drops the parent's
+                d[k] = {s: {**v.get(s, {}), **d[k].get(s, {})} for s in {*v, *d[k]}}
             elif isinstance(v, dict) and isinstance(d[k], dict) and k not in ("provenance",):
                 d[k] = {**v, **d[k]}
         d["id"], d["version"] = _raw(id_)["id"], _raw(id_)["version"]

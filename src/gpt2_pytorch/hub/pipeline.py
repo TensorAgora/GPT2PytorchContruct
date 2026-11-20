@@ -153,7 +153,7 @@ def run_one(job: Job, out, client=None, revision: str | None = None, fetched_at:
         write_json(out / "graphs" / f"{key}.json", shared, gz=True)
     hyper_sources = {k: v[1] for k, v in r.hyper.items()}
     ref = {"content_key": key, "model": {"name": job.repo_id.split("/")[-1].lower()},
-           "overrides": {name: {"view": v} for name, v in sorted(b.views.items())},
+           "overrides": dict(sorted(r.overrides.items())),
            "checkpoint": b.checkpoint(manifest), "components": components,
            "provenance": {"certainty": CERTAINTY[r.candidate.rung] or shared["provenance"]["certainty"],
                           "evidence": r.candidate.evidence, "rung": r.candidate.rung, "hyper_sources": hyper_sources}}
@@ -164,6 +164,7 @@ def run_one(job: Job, out, client=None, revision: str | None = None, fetched_at:
                "dims": {k: {"value": g["dims"][k], "source": s} for k, s in dim_sources(r.descriptor, r.hyper, g).items()},
                "binding": {c: len(v) for c, v in b.partition.items()} | {"unclaimed": len(b.unclaimed)},
                "components": components,
+               "storage_transforms": r.transforms,
                "sidecars": [{"tensor": t, "principal": t.removesuffix("_scale_inv"), "scheme": "fp8_block"} for t in b.partition.get("aux", [])],
                "totals": {"ops": g["totals"]["ops"], "contraction_flops": g["totals"]["contraction_flops"],
                           "params": sum(math.prod(e["shape"]) for e in r.expected if e["role"] == "parameter")}}

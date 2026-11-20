@@ -41,5 +41,5 @@ Constants (eps, rope tables) are not part of §8.1 structural equality, so none 
 | --- | --- | --- |
 | distilgpt2, qwen2.5, mistral, mixtral, qwen3.8 | 0 differences | qwen3.8 includes the FP8 scale views and declares `model.visual` (333) and `mtp` (22) as components: status partial |
 | deepseek-v3 | 0 differences except `view` on the FP8 weights outside the routed experts | the arch.mjs golden names the FP8 scales only inside its expert views; §5.3 asks every weight stored in another form to name it, as qwen3.8's golden does. MTP layer 61 is a component (partial); `e_score_correction_bias` is aux |
-| phi-3.5-mini-instruct | no_graph: 160 q/k/v and gate/up keys missing, 64 fused tensors unclaimed | the checkpoint stores fused `qkv_proj` and `gate_up_proj`; the golden spells them separately. The 06d overlay split binds them, and then the test expects 0 differences |
+| phi-3.5-mini-instruct | before 06d: no_graph (160 q/k/v and gate/up keys missing, 64 fused tensors unclaimed); after 06d: 0 differences except `checkpoint_key`/`view` on the 160 split parameters | the checkpoint stores fused `qkv_proj` and `gate_up_proj`; the golden names separate keys that do not exist. The 06d overlay binds them as row slices (`[0:3072,:]` of `qkv_proj`) |
 | gemma-2-2b-it | skipped (gated) | |

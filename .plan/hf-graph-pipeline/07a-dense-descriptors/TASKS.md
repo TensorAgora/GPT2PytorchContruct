@@ -4,7 +4,7 @@
 
 State: **NOT_STARTED**. Tasks closed: 0/5. Depends on: 05d, 06d, 06e. Blocks: 07b, 07c, 07e.
 
-Waiting on: 06d, 06e (must be DONE before stages that need dependencies).
+Waiting on: 06e (must be DONE before stages that need dependencies).
 
 Next: `07a.A.P1.T1` Pick the decoder_dense keys from output/categories/descriptor_backlog.csv (expected: llama, qwen2, qwen3, mistral, hf_olmo, gemma2, gemma3_text, phi3) and write 07a DESIGN.md: per key the descriptor it extends, its differences (q/k norm, sliding-window pattern, bias) and predicted rows
 

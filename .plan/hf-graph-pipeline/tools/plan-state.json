@@ -923,20 +923,88 @@
       "blocked": null
     },
     "06d": {
-      "state": "NOT_STARTED",
+      "state": "DONE",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T19:25:09+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "built",
+          "evidence": "",
+          "at": "2026-11-20T19:25:09+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "name maps generated",
+          "evidence": "",
+          "at": "2026-11-20T19:25:09+00:00"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "06d.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: gguf 0.19.0 = llama.cpp a83d68b; permute conversion/llama.py:176-181,262-265; gemma +1 gemma.py:119-120",
+          "evidence": "",
+          "at": "2026-11-20T19:25:09+00:00"
+        },
+        "06d.B.P1.T1": {
+          "status": "done",
+          "reason": "tools/gen_namemaps.py -> namemaps/gguf.json (105 KB, MIT NOTICE); --check exits 0",
+          "evidence": "",
+          "at": "2026-11-20T19:25:09+00:00"
+        },
+        "06d.B.P1.T2": {
+          "status": "done",
+          "reason": "overlay.json rope_permute/offset/split; test_namemaps q<->attn_q rope_permute, gemma2 offset",
+          "evidence": "",
+          "at": "2026-11-20T19:25:09+00:00"
+        },
+        "06d.B.P1.T3": {
+          "status": "done",
+          "reason": "GGUF schemes generated for every decoder descriptor; mixtral hand list dropped; goldens + path-A pass",
+          "evidence": "",
+          "at": "2026-11-20T19:25:09+00:00"
+        },
+        "06d.C.P1.T1": {
+          "status": "done",
+          "reason": "C3 ok for llama, mixtral, qwen2, deepseek_v3 (test_namemaps -k c3)",
+          "evidence": "",
+          "at": "2026-11-20T19:25:09+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T19:25:09+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T19:25:09+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-20T19:25:09+00:00",
+          "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-20T19:25:09+00:00",
+          "reason": "Stage C Integrate complete: name maps generated",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "06e": {

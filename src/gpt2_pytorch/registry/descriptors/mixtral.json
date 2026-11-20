@@ -40,21 +40,6 @@
    "experts_d": {
     "view": "stack of model.layers.{i}.block_sparse_moe.experts.{{0…{Em1}}}.w2.weight"
    }
-  },
-  "gguf": {
-   "embed": "token_embd.weight",
-   "attn_norm": "blk.{i}.attn_norm.weight",
-   "q": "blk.{i}.attn_q.weight",
-   "k": "blk.{i}.attn_k.weight",
-   "v": "blk.{i}.attn_v.weight",
-   "o": "blk.{i}.attn_output.weight",
-   "ffn_norm": "blk.{i}.ffn_norm.weight",
-   "router": "blk.{i}.ffn_gate_inp.weight",
-   "experts_g": "blk.{i}.ffn_gate_exps.weight",
-   "experts_u": "blk.{i}.ffn_up_exps.weight",
-   "experts_d": "blk.{i}.ffn_down_exps.weight",
-   "norm": "output_norm.weight",
-   "head": "output.weight"
   }
  },
  "recipe": {
@@ -96,6 +81,6 @@
   "ported_from": "arch.mjs mixtralGraph (222-249)",
   "golden": "json/mixtral-8x7b-instruct-q4km.json",
   "certainty": "template",
-  "note": "gguf scheme hand-listed until 06d generates it; the hf scheme reads per-expert tensors as stacked views"
+  "note": "the gguf scheme is generated from gguf-py (06d); the hf scheme reads per-expert tensors as stacked views"
  }
 }

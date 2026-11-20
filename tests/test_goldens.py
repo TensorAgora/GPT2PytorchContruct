@@ -19,8 +19,9 @@ EXPECTED = {
     # the arch.mjs golden names FP8 scales only inside its expert views; the pipeline names every stored form (§5.3)
     "deepseek-v3": {"status": "partial", "ignore": ("view",)},
     "qwen3.8-27b-fp8": {"status": "partial"},
-    # fused qkv_proj / gate_up_proj storage: bound once 06d's overlay splits them
-    "phi-3.5-mini-instruct": {"status": "no_graph"},
+    # the checkpoint stores fused qkv_proj / gate_up_proj; the overlay binds q/k/v and gate/up as row slices of them,
+    # so those parameters name the fused key and a slice view where the golden names separate keys
+    "phi-3.5-mini-instruct": {"ignore": ("checkpoint_key", "view")},
 }
 
 

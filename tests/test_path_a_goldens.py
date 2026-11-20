@@ -7,6 +7,7 @@ import pytest
 pytest.importorskip("jsonschema")
 from gpt2_pytorch.registry.build import build, dump_js  # noqa: E402
 from gpt2_pytorch.registry.descriptor import hyper_from_config, ids, load  # noqa: E402
+from gpt2_pytorch.registry.namemaps import gguf_scheme  # noqa: E402
 from tools.graph_check import check, compare  # noqa: E402
 
 GOLDENS = {"distilgpt2": "gpt2", "qwen2.5-7b-instruct": "qwen2", "mistral-7b-instruct-v0.3": "mistral",
@@ -18,6 +19,8 @@ SCHEME = {"mixtral-8x7b-instruct-q4km": "gguf"}
 
 def rebuild(golden):
     d = load(GOLDENS[golden])
+    if SCHEME.get(golden) == "gguf":
+        d = {**d, "schemes": {**d["schemes"], "gguf": gguf_scheme(d["schemes"]["hf"])}}
     cfg = json.loads(Path("tests/fixtures/spelled", f"{golden}.config.json").read_text())
     return build(d, hyper_from_config(d, cfg), SCHEME.get(golden, "hf"), name=golden, cfg=cfg)[0]
 

@@ -12,6 +12,7 @@ from .bind import verify
 from .build import build
 from .descriptor import DescriptorError, ids, load
 from .hyper import NESTED, HyperError, dim_sources, resolve_hyper
+from .namemaps import apply_overlay, gguf_scheme
 
 RANK = {"R1": 0, "R2": 1, "R3": 2, "R4": 3}
 
@@ -36,6 +37,8 @@ class Resolution:
     binding: object = None
     near_misses: list = field(default_factory=list)
     candidates: list = field(default_factory=list)
+    overrides: dict = field(default_factory=dict)  # param -> {checkpoint_key?, view} the binding sets
+    transforms: list = field(default_factory=list)  # storage transforms of the overlay that apply
 
 
 def config_of(manifest: dict) -> dict:
@@ -109,6 +112,7 @@ def resolve_and_bind(manifest: dict, row: dict | None = None, name: str | None =
     if status:
         return res
     scheme = "gguf" if manifest["model"]["format"] == "gguf" else "hf"
+    arch = ((manifest.get("gguf") or {}).get("kv") or {}).get("general.architecture")
     cfg = config_of(manifest)
     names = [t["key"] for t in manifest["tensors"]]
     name = name or manifest["model"]["id"].split("/")[-1].lower()
@@ -116,6 +120,8 @@ def resolve_and_bind(manifest: dict, row: dict | None = None, name: str | None =
         if not c.descriptor:
             continue
         d = load(c.descriptor)
+        if scheme == "gguf" and d["recipe"]["template"] == "decoder" and "gguf" not in d["schemes"]:
+            d = {**d, "schemes": {**d["schemes"], "gguf": gguf_scheme(d["schemes"]["hf"])}}  # generated (06d)
         miss = {"descriptor": f"{d['id']}@{d['version']}", "rung": c.rung, "evidence": c.evidence}
         if scheme not in d["schemes"]:
             res.near_misses.append(miss | {"reason": f"no {scheme} naming scheme"})
@@ -126,12 +132,16 @@ def resolve_and_bind(manifest: dict, row: dict | None = None, name: str | None =
         except (HyperError, DescriptorError, KeyError, ValueError, AssertionError, ZeroDivisionError) as e:
             res.near_misses.append(miss | {"reason": f"{type(e).__name__}: {e}"[:300]})
             continue
-        binding = verify(expected, manifest, d, graph.get("aliases"), {k: v for k, (v, _) in hyper.items()})
+        fmt = {k: v for k, (v, _) in hyper.items()} | graph["dims"]
+        expected, overrides, transforms = apply_overlay(expected, manifest, d, scheme, d["schemes"][scheme], fmt, arch)
+        binding = verify(expected, manifest, d, graph.get("aliases"), fmt)
         if not binding.ok:
             res.near_misses.append(miss | {"reason": "binding failed", **binding.near_miss()})
             continue
         res.status = "ok" if c.rung in ("R1", "R2") else "ok_assumed"
         res.candidate, res.descriptor, res.hyper, res.graph, res.expected, res.binding = c, d, hyper, graph, expected, binding
+        res.overrides = {**overrides, **{n: {**overrides.get(n, {}), "view": v} for n, v in binding.views.items()}}
+        res.transforms = transforms
         return res
     return res
 
