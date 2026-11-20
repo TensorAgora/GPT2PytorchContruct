@@ -4,7 +4,7 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.3).
 
-Tasks closed: 83 of 109. Modules: DONE 13, BUILT 1, DESIGNED 2, NOT_STARTED 4.
+Tasks closed: 87 of 109. Modules: DONE 13, BUILT 1, DESIGNED 3, NOT_STARTED 3.
 
 ## Per module
 
@@ -25,7 +25,7 @@ Tasks closed: 83 of 109. Modules: DONE 13, BUILT 1, DESIGNED 2, NOT_STARTED 4.
 | [07a](07a-dense-descriptors/TASKS.md) | Conformance runner and top dense-decoder descriptors | 1 | BUILT | C | 4/5 | - |
 | [09b](09b-tel-python-port/TASKS.md) | Python T♭ printer and decoder (T-2) | 1 | DONE | - | 4/4 | - |
 | [07b](07b-moe/TASKS.md) | Routed MoE annotations, expert storage forms, MoE descriptors | 2 | DESIGNED | B | 4/6 | 07a |
-| [07c](07c-hybrid-state/TASKS.md) | Delta rule, Mamba, layer selectors, scan annotation, hybrid descriptors | 3 | NOT_STARTED | A | 0/5 | 07a, 07b |
+| [07c](07c-hybrid-state/TASKS.md) | Delta rule, Mamba, layer selectors, scan annotation, hybrid descriptors | 3 | DESIGNED | B | 4/5 | 07a, 07b |
 | [07d](07d-assemblies/TASKS.md) | VLM assemblies, MTP and draft heads | 4 | NOT_STARTED | A | 0/4 | 07c, 07b |
 | [07e](07e-encoders/TASKS.md) | BERT family and T5/BART descriptors | 5 | NOT_STARTED | A | 0/4 | 07a |
 | [06f](06f-library-trace/TASKS.md) | Path B library trace and the C2 signature check | 6 | NOT_STARTED | A | 0/6 | 07b, 07c, 07d, 07e |
@@ -34,7 +34,6 @@ Tasks closed: 83 of 109. Modules: DONE 13, BUILT 1, DESIGNED 2, NOT_STARTED 4.
 ## Next actions
 
 - 07a stage C: `07a.C.P1.T1` [network] Re-run decoder_dense rows (`tools.hf_graph --all --category decoder_dense`, sized by the D3 throughput) and `--coverage`
-- 07c stage A: `07c.A.P1.T1` Write 07c DESIGN.md: how qwen3_5.py's delta-rule lowering becomes a block (called, not re-implemented), the Mamba block (unrolled at --seq T), the scan annotation's `body` group, selectors used (layer_types, hybrid_override_pattern) and the chosen keys (lfm2, jamba, nemotron_h, falcon_h1, qwen35 GGUF, qwen3_5_moe)
 - 07d stage A: `07d.A.P1.T1` Write 07d DESIGN.md: the assembly descriptor (components with state bound|declared_without_graph, tensor prefixes, params), the partial status rule, and the chosen multimodal_vlm keys (qwen3_5_text, qwen3_5_moe_text, gemma4_text, qwen3_vl_text, qwen4_exp_text, paligemma) and speculative_draft heads
 - 07e stage A: `07e.A.P1.T1` Write 07e DESIGN.md: new blocks (layer-norm post-norm, bidirectional attention, GELU FFN, T5 relative position bias, cross attention), the keys (bert, modernbert, xlm-roberta, roberta, deberta-v2, distilbert, t5, mt5, bart, marian) and each one's C4 hand count (no goldens exist)
 - 06f stage A: `06f.A.P1.T1` Write 06f DESIGN.md: building a library class from config.json on the `meta` device (never trust_remote_code), torch.export vs torch.fx, the ATen → Program mapping taken from OPS/generated/pytorch-tel-mapping.md, typed opaque ops (D5), parameter-name binding through bind.py, certainty 'traced'

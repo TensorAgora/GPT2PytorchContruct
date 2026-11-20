@@ -1294,10 +1294,13 @@
       "blocked": null
     },
     "07c": {
-      "state": "NOT_STARTED",
+      "state": "DESIGNED",
       "stages": {
         "A": {
-          "status": "pending"
+          "status": "done",
+          "reason": "designed",
+          "evidence": "",
+          "at": "2026-11-20T20:08:15+00:00"
         },
         "B": {
           "status": "pending"
@@ -1306,8 +1309,47 @@
           "status": "pending"
         }
       },
-      "tasks": {},
-      "transitions": [],
+      "tasks": {
+        "07c.A.P1.T1": {
+          "status": "done",
+          "reason": "DESIGN: delta rule via qwen3_5.py, Mamba-1, LFM2 conv, scan annotation, selectors, chosen keys",
+          "evidence": "",
+          "at": "2026-11-20T20:08:15+00:00"
+        },
+        "07c.B.P1.T1": {
+          "status": "done",
+          "reason": "annotate_scan: 5,088 qwen3.8 delta-rule step ops kind=scan with existing body groups; golden 0 diffs",
+          "evidence": "",
+          "at": "2026-11-20T20:08:15+00:00"
+        },
+        "07c.B.P1.T2": {
+          "status": "done",
+          "reason": "mamba block unrolled with scan tags; test_blocks -k mamba passes (shapes, ops per step)",
+          "evidence": "",
+          "at": "2026-11-20T20:08:16+00:00"
+        },
+        "07c.B.P1.T3": {
+          "status": "done",
+          "reason": "lfm2 + jamba descriptors with fixtures; conformance C1/C3/C4/C5/C6 PASS",
+          "evidence": "",
+          "at": "2026-11-20T20:08:16+00:00"
+        }
+      },
+      "transitions": [
+        {
+          "from": "NOT_STARTED",
+          "to": "IN_PROGRESS",
+          "at": "2026-11-20T20:08:15+00:00",
+          "reason": "derived from stage progress"
+        },
+        {
+          "from": "IN_PROGRESS",
+          "to": "DESIGNED",
+          "at": "2026-11-20T20:08:15+00:00",
+          "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        }
+      ],
       "blocked": null
     },
     "07d": {

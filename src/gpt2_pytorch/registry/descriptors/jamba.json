@@ -1,0 +1,142 @@
+{
+ "id": "jamba",
+ "version": "1",
+ "extends": "llama",
+ "match": {
+  "model_type": [
+   "jamba"
+  ],
+  "architectures": [
+   "JambaForCausalLM"
+  ],
+  "gguf_architecture": [
+   "jamba"
+  ]
+ },
+ "hyperparameters": {
+  "Fe": [
+   "intermediate_size"
+  ],
+  "E": [
+   "num_experts"
+  ],
+  "K": [
+   "num_experts_per_tok"
+  ],
+  "norm_topk": [
+   "=0"
+  ],
+  "expand": [
+   "mamba_expand",
+   "=2"
+  ],
+  "N": [
+   "mamba_d_state",
+   "=16"
+  ],
+  "R": [
+   "mamba_dt_rank"
+  ],
+  "Kc": [
+   "mamba_d_conv",
+   "=4"
+  ],
+  "conv_bias": [
+   "mamba_conv_bias",
+   "=1"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "ffn_norm": "model.layers.{i}.pre_ff_layernorm.weight",
+   "gate": "model.layers.{i}.feed_forward.gate_proj.weight",
+   "up": "model.layers.{i}.feed_forward.up_proj.weight",
+   "down": "model.layers.{i}.feed_forward.down_proj.weight",
+   "norm": "model.final_layernorm.weight",
+   "router": "model.layers.{i}.feed_forward.router.weight",
+   "experts_g": {
+    "view": "stack of model.layers.{i}.feed_forward.experts.{{0…{Em1}}}.gate_proj.weight"
+   },
+   "experts_u": {
+    "view": "stack of model.layers.{i}.feed_forward.experts.{{0…{Em1}}}.up_proj.weight"
+   },
+   "experts_d": {
+    "view": "stack of model.layers.{i}.feed_forward.experts.{{0…{Em1}}}.down_proj.weight"
+   },
+   "mamba_in": "model.layers.{i}.mamba.in_proj.weight",
+   "mamba_conv": "model.layers.{i}.mamba.conv1d.weight",
+   "mamba_conv_bias": "model.layers.{i}.mamba.conv1d.bias",
+   "mamba_x": "model.layers.{i}.mamba.x_proj.weight",
+   "mamba_dt": "model.layers.{i}.mamba.dt_proj.weight",
+   "mamba_dt_bias": "model.layers.{i}.mamba.dt_proj.bias",
+   "mamba_A": "model.layers.{i}.mamba.A_log",
+   "mamba_D": "model.layers.{i}.mamba.D",
+   "mamba_out": "model.layers.{i}.mamba.out_proj.weight",
+   "mamba_dt_norm": "model.layers.{i}.mamba.dt_layernorm.weight",
+   "mamba_b_norm": "model.layers.{i}.mamba.b_layernorm.weight",
+   "mamba_c_norm": "model.layers.{i}.mamba.c_layernorm.weight"
+  }
+ },
+ "recipe": {
+  "root": "jamba",
+  "lanes": [
+   "E",
+   "H",
+   "B"
+  ],
+  "format_values": {
+   "Em1": "E - 1"
+  },
+  "flags": {
+   "qkv_bias": false,
+   "mlp_module": "feed_forward",
+   "mamba_norms": true
+  },
+  "modules": {
+   "ffn_norm": "pre_ff_layernorm"
+  },
+  "dims": {
+   "B": "B",
+   "T": "T",
+   "q": "T",
+   "k": "T",
+   "D": "D",
+   "Dq": "Hq * Dh",
+   "Dkv": "Hkv * Dh",
+   "Dh": "Dh",
+   "Dh2": "Dh",
+   "F": "F",
+   "Fe": "Fe",
+   "V": "V",
+   "H": "Hq // Hkv",
+   "Hkv": "Hkv",
+   "E": "E",
+   "Di": "expand * D",
+   "Di2": "2 * expand * D",
+   "N": "N",
+   "R": "R",
+   "XP": "R + 2 * N",
+   "Kc": "Kc",
+   "U": "1"
+  },
+  "layers": {
+   "attention": {
+    "period": "attn_layer_period",
+    "phase": "attn_layer_offset",
+    "on": "gqa_norope",
+    "off": "mamba"
+   },
+   "mlp": {
+    "period": "expert_layer_period",
+    "phase": "expert_layer_offset",
+    "on": "moe_qwen",
+    "off": "swiglu"
+   }
+  }
+ },
+ "provenance": {
+  "ported_from": "HF Jamba: Mamba-1 mixers (dt/B/C RMSNorms) and attention without positional encoding every attn_layer_period-th layer; a softmax top-k MoE every expert_layer_period-th layer",
+  "fixture": "ai21labs/Jamba-tiny-random",
+  "certainty": "template"
+ }
+}

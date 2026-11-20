@@ -162,11 +162,11 @@ def mask(b: Builder, i):
     return b.E("log", f"Mask_{i}", "M01")
 
 
-def gqa(b: Builder, h: dict, i: int, at: str, theta_key="theta", tag=""):
+def gqa(b: Builder, h: dict, i: int, at: str, theta_key="theta", tag="", use_rope=True):
     """grouped-query attention: q heads grouped by the kv head they share (Llama, Qwen2/3, Mistral, Phi-3, Gemma, Mixtral).
     Flags: qk_norm (RMSNorm over Dh after the head split, Qwen3 / Gemma 3), attn_cap (Gemma 2 soft-capping)."""
     n = f"N1_{i}"
-    theta = h[theta_key]
+    theta = h.get(theta_key)
     one = bool(h.get("plus_one"))
 
     def proj(sym, w, axis, part):
@@ -184,15 +184,21 @@ def gqa(b: Builder, h: dict, i: int, at: str, theta_key="theta", tag=""):
             with b.within(f"{at}.q_norm", "RMSNorm"):
                 qh = rms(b, f"Q_{i}.normed", qh, b.param(f"gqn_{i}", ["Dh"], "q_norm", i=i), "Dh", one)
         b.permute(f"Q_{i}.perm", qh, [0, 2, 3, 1, 4])
-        b.rename(f"Q_{i}.q", f"Q_{i}.perm", "T", "q")
-        rope(b, f"Q_{i}", f"Q_{i}.q", "q", "Dh", theta, tag)
+        if use_rope:
+            b.rename(f"Q_{i}.q", f"Q_{i}.perm", "T", "q")
+            rope(b, f"Q_{i}", f"Q_{i}.q", "q", "Dh", theta, tag)
+        else:  # Jamba's attention has no positional encoding
+            b.rename(f"Q_{i}", f"Q_{i}.perm", "T", "q")
         kh = b.reshape(f"K_{i}.heads", k, ["B", "T", "Hkv", "Dh"])
         if h.get("qk_norm"):
             with b.within(f"{at}.k_norm", "RMSNorm"):
                 kh = rms(b, f"K_{i}.normed", kh, b.param(f"gkn_{i}", ["Dh"], "k_norm", i=i), "Dh", one)
         b.permute(f"K_{i}.perm", kh, [0, 2, 1, 3])
-        b.rename(f"K_{i}.k", f"K_{i}.perm", "T", "k")
-        rope(b, f"K_{i}", f"K_{i}.k", "k", "Dh", theta, tag)
+        if use_rope:
+            b.rename(f"K_{i}.k", f"K_{i}.perm", "T", "k")
+            rope(b, f"K_{i}", f"K_{i}.k", "k", "Dh", theta, tag)
+        else:
+            b.rename(f"K_{i}", f"K_{i}.perm", "T", "k")
         b.reshape(f"V_{i}.heads", v, ["B", "T", "Hkv", "Dh"])
         b.permute(f"V_{i}.perm", f"V_{i}.heads", [0, 2, 1, 3])
         b.rename(f"V_{i}", f"V_{i}.perm", "T", "k")
@@ -251,7 +257,7 @@ def experts(b: Builder, i: int, at: str, x: str, k: int | None = None):
 
 
 def mlp_swiglu(b, h, i, layer):
-    return swiglu(b, h, i, f"{layer}.mlp")
+    return swiglu(b, h, i, f"{layer}.{h.get('mlp_module', 'mlp')}")
 
 
 def router(b: Builder, i: int, moe: str):
@@ -278,7 +284,7 @@ def moe_mixtral(b, h, i, layer):
 def moe_qwen(b, h, i, layer):
     """Qwen2/3-MoE: softmax router over E, top-k chosen, renormalized over the chosen when norm_topk_prob (then the same
     ops as mixtral's softmax over the chosen), every expert drawn"""
-    moe = f"{layer}.mlp"
+    moe = f"{layer}.{h.get('mlp_module', 'mlp')}"
     router(b, i, moe)
     with b.within(moe, "SparseMoeBlock"):
         b.buffer(f"Sel_{i}", ["B", "T", "E"], f"the router's top-{h['K']} choice of softmax(R): 1 for a chosen expert (runtime)")
@@ -384,9 +390,116 @@ def gqa_local(b, h, i, at):
     return gqa(b, h, i, at, "theta_local", "_local")
 
 
+def _shift(b: Builder):
+    """the causal-convolution tap table conv_shift[Kc, T, k]: tap j of output t reads input t + j - (Kc - 1)"""
+    K, T = b.size("Kc"), b.size("T")
+    return b.constant("conv_shift", [[[1.0 if s == t + j - (K - 1) else 0.0 for s in range(T)] for t in range(T)] for j in range(K)],
+                      ["Kc", "T", "k"])
+
+
+def causal_conv(b: Builder, out, x, w, C):
+    """depthwise causal conv over T of x [B, T, C] with weight w [C, U, Kc] (tensorprog/qwen3_5.py's spelling)"""
+    taps = b.C(f"{out}.taps", b.rename(f"{out}.k", x, "T", "k"), _shift(b), "k")  # [B, C, Kc, T]
+    ww = b.reshape(f"{out}.w", w, [C, "Kc"])
+    conv = b.R("sum", f"{out}.sum", b.E("mul", f"{out}.prod", taps, ww), "Kc")  # [B, C, T]
+    return b.permute(out, conv, [0, 2, 1])
+
+
+def lfm2_conv(b: Builder, h: dict, i: int, at: str):
+    """LFM2 gated short convolution: B, C, x = in_proj(x); y = C · conv(B · x); out_proj"""
+    layer, D = at.rsplit(".", 1)[0], b.size("D")
+    cv = f"{layer}.conv"
+    with b.within(f"{cv}.in_proj", "Linear"):
+        bcx = b.C(f"Bcx_{i}", f"N1_{i}", b.param(f"Wbcx_{i}", ["D3", "D"], "conv_in", i=i), "D")
+    with b.within(cv, "ShortConv"):
+        bb = b.slice(f"Bc_{i}", bcx, "D3", 0, D, "D")
+        cc = b.slice(f"Cc_{i}", bcx, "D3", D, 2 * D, "D")
+        xx = b.slice(f"Xc_{i}", bcx, "D3", 2 * D, 3 * D, "D")
+        bx = b.E("mul", f"Bx_{i}", bb, xx)
+    with b.within(f"{cv}.conv", "CausalConv1d"):
+        conv = causal_conv(b, f"Cv_{i}", bx, b.param(f"Wconv_{i}", ["D", "U", "Kc"], "conv_w", i=i), "D")
+    with b.within(cv, "ShortConv"):
+        y = b.E("mul", f"Yc_{i}", cc, conv)
+    with b.within(f"{cv}.out_proj", "Linear"):  # weight [D, D]: the input side is renamed Dc
+        return b.C(f"O_{i}", b.rename(f"Yc_{i}.r", y, "D", "Dc"), b.param(f"Wco_{i}", ["D", "Dc"], "conv_out", i=i), "Dc")
+
+
+def _onehot(b: Builder, t: int):
+    T = b.size("T")
+    e = b.constant(f"e_{t}", [1.0 if s == t else 0.0 for s in range(T)], ["T"])
+    eu = b.constant(f"eu_{t}", [[1.0 if s == t else 0.0] for s in range(T)], ["T", "U"])
+    return e, eu
+
+
+def mamba(b: Builder, h: dict, i: int, at: str):
+    """Mamba-1 selective scan, unrolled over T (Jamba, Mamba): in_proj → x, z; causal conv + SiLU; x_proj → dt, B, C
+    (Jamba: RMSNorms on each); dt = softplus(dt_proj); h_t = exp(dt_t A) h_{t-1} + (dt_t x_t) ⊗ B_t; y_t = C_t · h_t;
+    y = (y + D x) · silu(z); out_proj. The outer products are contractions over the size-1 axis U. Step ops are named
+    Ss_i.t<t>.* (scan annotation)."""
+    layer = at.rsplit(".", 1)[0]
+    m = f"{layer}.mamba"
+    Di, N, R = b.size("Di"), b.size("N"), b.size("R")
+    one = b.constant("c_one", 1.0)
+    with b.within(f"{m}.in_proj", "Linear"):
+        xz = b.C(f"Xz_{i}", f"N1_{i}", b.param(f"Wmi_{i}", ["Di2", "D"], "mamba_in", i=i), "D")
+    with b.within(m, "Mamba"):
+        x = b.slice(f"Xm_{i}.x", xz, "Di2", 0, Di, "Di")
+        z = b.slice(f"Xm_{i}.z", xz, "Di2", Di, 2 * Di, "Di")
+    with b.within(f"{m}.conv1d", "CausalConv1d"):
+        conv = causal_conv(b, f"Cm_{i}", x, b.param(f"Wmc_{i}", ["Di", "U", "Kc"], "mamba_conv", i=i), "Di")
+        if h.get("conv_bias"):
+            conv = b.E("add", f"Cm_{i}.b", conv, b.param(f"bmc_{i}", ["Di"], "mamba_conv_bias", i=i))
+        xc = silu(b, f"Xs_{i}", conv)
+    with b.within(f"{m}.x_proj", "Linear"):
+        xp = b.C(f"Xp_{i}", xc, b.param(f"Wmx_{i}", ["XP", "Di"], "mamba_x", i=i), "Di")
+    with b.within(m, "Mamba"):
+        dt = b.slice(f"Dt_{i}.raw", xp, "XP", 0, R, "R")
+        bm = b.slice(f"Bm_{i}", xp, "XP", R, R + N, "N")
+        cm = b.slice(f"Cs_{i}", xp, "XP", R + N, R + 2 * N, "N")
+    if h.get("mamba_norms"):  # Jamba
+        for nm, src, ax, role in (("dt", dt, "R", "mamba_dt_norm"), ("b", bm, "N", "mamba_b_norm"), ("c", cm, "N", "mamba_c_norm")):
+            with b.within(f"{m}.{nm}_layernorm", "RMSNorm"):
+                out = rms(b, f"{src}.n", src, b.param(f"g{nm}m_{i}", [ax], role, i=i), ax)
+            dt, bm, cm = (out, bm, cm) if nm == "dt" else (dt, out, cm) if nm == "b" else (dt, bm, out)
+    with b.within(f"{m}.dt_proj", "Linear"):
+        dtp = b.E("add", f"Dt_{i}.lin", b.C(f"Dt_{i}.mm", dt, b.param(f"Wdt_{i}", ["Di", "R"], "mamba_dt", i=i), "R"),
+                  b.param(f"bdt_{i}", ["Di"], "mamba_dt_bias", i=i))
+    with b.within(m, "Mamba"):
+        delta = b.E("log", f"Dt_{i}", b.E("add", f"Dt_{i}.exp1", b.E("exp", f"Dt_{i}.exp", dtp), one))  # softplus
+        A = b.E("sub", f"Am_{i}", b.constant("c_zero", 0.0), b.E("exp", f"Am_{i}.exp", b.param(f"A_log_{i}", ["Di", "N"], "mamba_A", i=i)))
+        Au = b.reshape(f"Am_{i}.u", A, ["U", "Di", "N"])
+        state = out = None
+        for t in range(b.size("T")):
+            e, eu = _onehot(b, t)
+            s = f"Ss_{i}.t{t}"
+            dt_t = b.C(f"{s}.dt", delta, e, "T")  # [B, Di]
+            x_t = b.C(f"{s}.x", xc, e, "T")
+            b_t = b.reshape(f"{s}.Bu", b.C(f"{s}.B", bm, e, "T"), ["B", "U", "N"])
+            c_t = b.C(f"{s}.C", cm, e, "T")  # [B, N]
+            dbx = b.C(f"{s}.dBx", b.reshape(f"{s}.dxu", b.E("mul", f"{s}.dx", dt_t, x_t), ["B", "Di", "U"]), b_t, "U")
+            if state is None:  # h_0 = dt_0 x_0 ⊗ B_0: the first step has nothing to decay
+                state = dbx
+            else:
+                decay = b.E("exp", f"{s}.dA", b.C(f"{s}.dtA", b.reshape(f"{s}.dtu", dt_t, ["B", "Di", "U"]), Au, "U"))  # [B, Di, N]
+                state = b.E("add", f"{s}.h", b.E("mul", f"{s}.decayed", state, decay), dbx)
+            y_t = b.C(f"{s}.y", state, c_t, "N")  # [B, Di]
+            placed = b.C(f"{s}.o", b.reshape(f"{s}.yu", y_t, ["B", "Di", "U"]), eu, "U")  # [B, Di, T]
+            out = placed if out is None else b.E("add", f"{s}.acc", out, placed)
+        y = b.permute(f"Ym_{i}", out, [0, 2, 1])
+        y = b.E("add", f"Ym_{i}.skip", y, b.E("mul", f"Ym_{i}.dx", xc, b.param(f"Dm_{i}", ["Di"], "mamba_D", i=i)))
+        y = b.E("mul", f"Ym_{i}.gated", y, silu(b, f"Zm_{i}", z))
+    with b.within(f"{m}.out_proj", "Linear"):
+        return b.C(f"O_{i}", y, b.param(f"Wmo_{i}", ["D", "Di"], "mamba_out", i=i), "Di")
+
+
+def gqa_norope(b, h, i, at):
+    return gqa(b, h, i, at, use_rope=False)
+
+
 def mla_direct(b, h, i, at):
     return mla(b, h, i, at, direct_q=True)
 
 
-ATTENTION = {"gqa": gqa, "gqa_local": gqa_local, "mla": mla, "mla_direct": mla_direct}
+ATTENTION = {"gqa": gqa, "gqa_local": gqa_local, "gqa_norope": gqa_norope, "mla": mla, "mla_direct": mla_direct,
+             "lfm2_conv": lfm2_conv, "mamba": mamba}
 MLP = {"swiglu": mlp_swiglu, "moe_mixtral": moe_mixtral, "moe_deepseek": moe_deepseek, "moe_qwen": moe_qwen}

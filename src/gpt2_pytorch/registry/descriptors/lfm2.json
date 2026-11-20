@@ -1,0 +1,103 @@
+{
+ "id": "lfm2",
+ "version": "1",
+ "extends": "llama",
+ "match": {
+  "model_type": [
+   "lfm2"
+  ],
+  "architectures": [
+   "Lfm2ForCausalLM"
+  ],
+  "gguf_architecture": [
+   "lfm2"
+  ]
+ },
+ "hyperparameters": {
+  "Hkv": [
+   "num_key_value_heads",
+   "=Hq"
+  ],
+  "F": [
+   "shape:model.layers.0.feed_forward.w1.weight[0]",
+   "intermediate_size"
+  ],
+  "eps": [
+   "norm_eps",
+   "rms_norm_eps",
+   "=1e-5"
+  ],
+  "Kc": [
+   "conv_L_cache",
+   "=3"
+  ],
+  "tie": [
+   "tie_word_embeddings",
+   "missing:safetensors:lm_head.weight",
+   "=1"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "attn_norm": "model.layers.{i}.operator_norm.weight",
+   "o": "model.layers.{i}.self_attn.out_proj.weight",
+   "q_norm": "model.layers.{i}.self_attn.q_layernorm.weight",
+   "k_norm": "model.layers.{i}.self_attn.k_layernorm.weight",
+   "ffn_norm": "model.layers.{i}.ffn_norm.weight",
+   "gate": "model.layers.{i}.feed_forward.w1.weight",
+   "up": "model.layers.{i}.feed_forward.w3.weight",
+   "down": "model.layers.{i}.feed_forward.w2.weight",
+   "conv_in": "model.layers.{i}.conv.in_proj.weight",
+   "conv_w": "model.layers.{i}.conv.conv.weight",
+   "conv_out": "model.layers.{i}.conv.out_proj.weight",
+   "embd_norm": "model.embedding_norm.weight"
+  }
+ },
+ "recipe": {
+  "root": "lfm2",
+  "flags": {
+   "qkv_bias": false,
+   "qk_norm": true,
+   "mlp_module": "feed_forward"
+  },
+  "modules": {
+   "ffn_norm": "ffn_norm"
+  },
+  "dims": {
+   "B": "B",
+   "T": "T",
+   "q": "T",
+   "k": "T",
+   "D": "D",
+   "Dq": "Hq * Dh",
+   "Dkv": "Hkv * Dh",
+   "Dh": "Dh",
+   "Dh2": "Dh",
+   "F": "F",
+   "V": "V",
+   "H": "Hq // Hkv",
+   "Hkv": "Hkv",
+   "D3": "3 * D",
+   "Dc": "D",
+   "Kc": "Kc",
+   "U": "1"
+  },
+  "layers": {
+   "attention": {
+    "index_sets": {
+     "gqa": "full_attn_idxs"
+    },
+    "default": "lfm2_conv"
+   },
+   "mlp": {
+    "uniform": "swiglu"
+   }
+  },
+  "final_norm_role": "embd_norm"
+ },
+ "provenance": {
+  "ported_from": "HF Lfm2: gated short convolutions (B, C, x = in_proj; C · conv(B · x)) and GQA layers with q/k layernorms at full_attn_idxs; SwiGLU w1/w3/w2; final embedding_norm",
+  "fixture": "LiquidAI/LFM2-350M",
+  "certainty": "template"
+ }
+}

@@ -8,6 +8,7 @@ which bind.py checks against a manifest. Graphs are written the way JSON.stringi
 import argparse
 import json
 import math
+import re
 from decimal import Decimal
 from pathlib import Path
 
@@ -84,7 +85,7 @@ def decoder(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
         with b.within(at(i), "DecoderLayer"):
             b.E("add", f"X_{i + 1}", f"Xm_{i}", m)
     with b.within(f"{root}.norm", "RMSNorm"):
-        rms(b, "Xf", f"X_{L}", b.param("gf", ["D"], "norm"), "D", one)
+        rms(b, "Xf", f"X_{L}", b.param("gf", ["D"], r.get("final_norm_role", "norm")), "D", one)  # LFM2: embd_norm
     tie = bool(h.get("tie")) and d.get("ties", {}).get("head") == "embed"
     head = E if tie else b.param("Wlm", ["V", "D"], "head")
     if tie:
@@ -98,6 +99,7 @@ def decoder(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
     g, exp = _finish(b.p, d, name, EXAMPLE, extra)
     if b.routed:
         annotate_routed(g, b.routed)
+    annotate_scan(g)
     return g, exp
 
 
@@ -147,7 +149,23 @@ def qwen3_5(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
     prog = lower_qwen3_5(cfg, batch=1, seq=EXAMPLE["T"], prefix=d["schemes"][scheme]["prefix"])
     doc = prog.to_dict(name, {"B": 1, "T": EXAMPLE["T"]}) | {"verification": [], "roles": Q_ROLES}
     g = viz_graph(json.loads(json.dumps(doc)), f"gpt2_pytorch.registry {d['id']}@{d['version']}")
+    annotate_scan(g)
     return g, expected(g)
+
+
+SCAN_STEP = re.compile(r"^(?P<sym>[A-Za-z]+_\d+)\.t(?P<t>\d+)\.")
+
+
+def annotate_scan(g: dict) -> None:
+    """D8: the ops of an unrolled recurrence step (`<sym>_<layer>.t<step>.*`: the gated delta rule's Dn_i, Mamba's
+    Ss_i) carry execution {kind: scan, axis: T, step, body: <the statement group of the recurrence>}."""
+    marks = {}
+    for o in g["ops"]:
+        if m := SCAN_STEP.match(o["out"]):
+            o["execution"] = marks[o["index"]] = {"kind": "scan", "axis": "T", "step": int(m["t"]), "body": f"{o['module']}:{m['sym']}"}
+    for mm in g["multiplications"]:
+        if mm["op"] in marks:
+            mm["execution"] = marks[mm["op"]]
 
 
 TEMPLATES = {"decoder": decoder, "gpt2_lowering": gpt2_lowering, "qwen3_5": qwen3_5}

@@ -17,7 +17,7 @@ ROLE_TENSOR = {
     "router": "FFN_GATE_INP", "experts_g": "FFN_GATE_EXP", "experts_u": "FFN_UP_EXP", "experts_d": "FFN_DOWN_EXP",
     "q_a": "ATTN_Q_A", "q_a_norm": "ATTN_Q_A_NORM", "q_b": "ATTN_Q_B", "kv_a": "ATTN_KV_A_MQA", "kv_a_norm": "ATTN_KV_A_NORM",
     "kv_b": "ATTN_KV_B", "shared_gate": "FFN_GATE_SHEXP", "shared_up": "FFN_UP_SHEXP", "shared_down": "FFN_DOWN_SHEXP",
-    "q_norm": "ATTN_Q_NORM", "k_norm": "ATTN_K_NORM", "post_attn_norm": "ATTN_POST_NORM", "post_ffn_norm": "FFN_POST_NORM",
+    "embd_norm": "TOKEN_EMBD_NORM", "q_norm": "ATTN_Q_NORM", "k_norm": "ATTN_K_NORM", "post_attn_norm": "ATTN_POST_NORM", "post_ffn_norm": "FFN_POST_NORM",
 }
 
 

@@ -39,6 +39,16 @@ def block_counts(block: str, d: dict) -> tuple[int, int]:
         rest = BT * D * d["KA"] + BT * d["KR"] * d["KH"] + B * H * T * Dr * Dr + B * T * Dr * Dr \
             + B * H * T * T * (Dn + Dr + Dv) + BT * d["HV"] * D
         return (9 if block == "mla_direct" else 10), q + rest
+    if block == "gqa_norope":
+        Hkv, Dh = d["Hkv"], d["Dh"]
+        Hq = d["H"] * Hkv
+        return 6, BT * (2 * D * d["Dq"] + 2 * D * d["Dkv"]) + 2 * B * Hq * T * T * Dh
+    if block == "lfm2_conv":  # in_proj, conv taps over (k, Kc), out_proj
+        return 3, BT * 3 * D * D + B * D * d["Kc"] * T * T + BT * D * D
+    if block == "mamba":  # in, taps, x_proj, dt_proj, out + per step dt, x, B, C, dBx, y, place (+ dtA after step 0)
+        Di, N = d["Di"], d["N"]
+        steps = T * (2 * B * T * Di + 2 * B * T * N + 2 * B * Di * N + B * Di * T) + (T - 1) * B * Di * N
+        return 5 + 7 * T + (T - 1), BT * D * 2 * Di + B * Di * d["Kc"] * T * T + BT * Di * d["XP"] + BT * d["R"] * Di + BT * Di * D + steps
     if block == "swiglu":
         return 3, 3 * BT * D * d["F"]
     if block in ("moe_mixtral", "moe_qwen"):
