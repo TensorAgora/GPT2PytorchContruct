@@ -159,7 +159,7 @@ def _trace_descriptor(lib: str, cls: str) -> dict:
 
 def _path_b(manifest, row, name, cfg, cands, res):
     """Path B (06f): when no descriptor binds, trace a library class the files name; the denoiser first for diffusers."""
-    from .trace import TraceError, trace, transformers_has
+    from .trace import TraceError, distinct_kinds, trace, transformers_has
     libs = [c for c in cands if c.library_class and c.library_class.split(":", 1)[0] in ("timm", "diffusers")]
     libs.sort(key=lambda c: (not any(w in c.library_class for w in ("UNet", "Transformer")), c.library_class))
     mt = cfg.get("model_type")
@@ -188,7 +188,7 @@ def _path_b(manifest, row, name, cfg, cands, res):
         miss = {"descriptor": f"{d['id']}@{d['version']}", "rung": c.rung, "evidence": c.evidence}
         stored = {t["key"] for t in sub["tensors"]}
         # transformers: the saved class first, then a causal LM, then the bare model (a head the checkpoint lacks)
-        for kind in (("arch", "auto", "base") if lib == "transformers" else ("auto",)):
+        for kind in (distinct_kinds(ccfg) if lib == "transformers" else ("auto",)):
             try:
                 graph, expected, info = trace(lib, cls, ccfg, name, kind)
             except (TraceError, Exception) as e:  # noqa: BLE001 - a class that cannot be built or exported is a near-miss

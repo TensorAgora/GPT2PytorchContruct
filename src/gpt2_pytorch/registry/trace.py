@@ -17,8 +17,10 @@ IDENTITY = {"dropout", "alias", "clone", "contiguous", "detach", "lift_fresh_cop
             "_to_copy", "to", "type_as"}  # dtype casts: the graph's dtypes are the checkpoint's
 
 
-# ponytail: one trace at a time; torch.export's fake-tensor state is process-global, so batch threads queue here
-_LOCK = threading.Lock()
+# torch.export's fake-tensor state is process-global: batch threads hand traces to a pool of spawned processes, which
+# also run them in parallel and, recycled every 25 traces, give back the memory export keeps
+WORKERS = 4
+_POOL, _POOL_LOCK = None, threading.Lock()
 
 
 class TraceError(Exception):
@@ -32,6 +34,43 @@ def transformers_has(model_type) -> bool:
     except ImportError:
         return False
     return model_type in CONFIG_MAPPING
+
+
+def transformers_class(cfg: dict, kind: str):
+    """(class name, build) for a kind, build() making the model: `arch` the class the checkpoint was saved from (task head included), `auto` a causal
+    LM when there is one (seq2seq for encoder-decoders) else the bare model, `base` the bare model, or causal / seq2seq.
+    Only classes transformers ships; trust_remote_code is never set."""
+    import transformers as tr
+    config = tr.AutoConfig.for_model(cfg.get("model_type"), **{k: v for k, v in cfg.items() if k not in ("model_type", "auto_map")})
+    if kind == "arch":
+        arch = (cfg.get("architectures") or [None])[0]
+        klass = getattr(tr, arch, None) if isinstance(arch, str) else None
+        if klass is None or not hasattr(klass, "config_class"):
+            raise TraceError(f"transformers has no class {arch}")
+        return klass.__name__, lambda: klass(config)
+    if kind == "auto":
+        kind = "seq2seq" if config.is_encoder_decoder else "causal" if type(config) in tr.MODEL_FOR_CAUSAL_LM_MAPPING else "base"
+    auto = {"causal": tr.AutoModelForCausalLM, "base": tr.AutoModel, "seq2seq": tr.AutoModelForSeq2SeqLM}[kind]
+    try:
+        klass = auto._model_mapping[type(config)]
+    except KeyError:
+        raise TraceError(f"transformers has no {kind} class for {cfg.get('model_type')}") from None
+    # the Auto factory, not klass(config): it picks the text sub-config of composite configs (Qwen3.5) itself
+    return klass.__name__, lambda: auto.from_config(config)
+
+
+def distinct_kinds(cfg: dict, kinds=("arch", "auto", "base")) -> list[str]:
+    """kinds that build different classes (arch and auto are often both XForCausalLM): one trace each"""
+    seen, out = set(), []
+    for k in kinds:
+        try:
+            name = transformers_class(cfg, k)[0]
+        except Exception:  # noqa: BLE001 - a kind with no class is tried, to report why
+            name = f"?{k}"
+        if name not in seen:
+            seen.add(name)
+            out.append(k)
+    return out
 
 
 def make_model(library: str, cls: str, cfg: dict, kind: str = "causal"):
@@ -49,19 +88,7 @@ def make_model(library: str, cls: str, cfg: dict, kind: str = "causal"):
                 raise TraceError(f"diffusers has no class {cls}")
             m = klass.from_config({k: v for k, v in cfg.items() if not k.startswith("_")})
         elif library == "transformers":
-            import transformers as tr
-            mt = cfg.get("model_type")
-            config = tr.AutoConfig.for_model(mt, **{k: v for k, v in cfg.items() if k not in ("model_type", "auto_map")})
-            arch = (cfg.get("architectures") or [None])[0]
-            if kind == "arch":  # the class the checkpoint was saved from (task head included), when transformers ships it
-                klass = getattr(tr, arch, None) if isinstance(arch, str) else None
-                if klass is None or not hasattr(klass, "config_class"):
-                    raise TraceError(f"transformers has no class {arch}")
-                return klass(config).eval()
-            if kind == "auto":  # the pipeline's fallback: a causal LM when there is one, else the bare model
-                kind = "seq2seq" if config.is_encoder_decoder else "causal" if type(config) in tr.MODEL_FOR_CAUSAL_LM_MAPPING else "base"
-            auto = {"causal": tr.AutoModelForCausalLM, "base": tr.AutoModel, "seq2seq": tr.AutoModelForSeq2SeqLM}[kind]
-            m = auto.from_config(config, trust_remote_code=False)
+            m = transformers_class(cfg, kind)[1]()
         else:
             raise TraceError(f"no library {library}")
     return m.eval()
@@ -275,20 +302,48 @@ def trace_graph(library: str, cls: str, cfg: dict, name: str = "model", kind: st
 
 
 def trace(library: str, cls: str, cfg: dict, name: str = "model", kind: str = "causal"):
+    """`_trace` in a worker process (see WORKERS)."""
+    global _POOL
+    import multiprocessing as mp
+    from concurrent.futures import ProcessPoolExecutor
+    from concurrent.futures.process import BrokenProcessPool
+    with _POOL_LOCK:
+        if _POOL is None:
+            import atexit
+            _POOL = ProcessPoolExecutor(WORKERS, mp_context=mp.get_context("spawn"), max_tasks_per_child=25)
+            atexit.register(_POOL.shutdown, wait=False, cancel_futures=True)
+        pool = _POOL
+    try:
+        return pool.submit(_trace_in_worker, library, cls, cfg, name, kind).result()
+    except BrokenProcessPool:  # a worker died (out of memory, a crash in native code): a fresh pool for the next trace
+        with _POOL_LOCK:
+            _POOL = None if _POOL is pool else _POOL
+        raise TraceError("trace worker died") from None
+
+
+def _trace_in_worker(*args):
+    try:
+        return _trace(*args)
+    except TraceError:
+        raise
+    except Exception as e:  # noqa: BLE001 - torch exceptions may not pickle back to the parent
+        raise TraceError(f"{type(e).__name__}: {str(e)[:300]}") from None
+
+
+def _trace(library: str, cls: str, cfg: dict, name: str = "model", kind: str = "causal"):
     """(viz-graph, expected params, info): info["unused"] are state_dict keys the class declares that L never reads (a
     pooler beside a token classifier, a second head), classed `ignored` when stored; info["ties"] maps each key to every
     name of the same parameter object (lm_head.weight and embed_tokens.weight when tied)."""
     import json as _json
 
     import torch
-    with _LOCK:
-        model = make_model(library, cls, cfg, kind)
-        args, kw = example_inputs(library, cls, cfg, model, kind)
-        try:
-            ep = torch.export.export(model, args, kwargs=kw, strict=False)
-        except Exception as e:  # noqa: BLE001 - data-dependent control flow and the like: report, never guess
-            raise TraceError(f"export failed: {type(e).__name__}: {str(e)[:200]}") from None
-        p, _ = to_program(ep, name)
+    model = make_model(library, cls, cfg, kind)
+    args, kw = example_inputs(library, cls, cfg, model, kind)
+    try:
+        ep = torch.export.export(model, args, kwargs=kw, strict=False)
+    except Exception as e:  # noqa: BLE001 - data-dependent control flow and the like: report, never guess
+        raise TraceError(f"export failed: {type(e).__name__}: {str(e)[:200]}") from None
+    p, _ = to_program(ep, name)
     doc = prune(p.to_dict(name, {"B": 1, "T": 8}) | {"verification": []})
     g = viz_graph(_json.loads(_json.dumps(doc)), f"gpt2_pytorch.registry.trace {library}:{cls} (torch.export on meta)")
     transient = set(ep.graph_signature.non_persistent_buffers)  # never saved: HF position_ids and the like
