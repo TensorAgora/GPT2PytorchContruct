@@ -85,3 +85,9 @@ def test_sidecar_records_beside_report(tmp_path):
     s = json.loads((r.dir / "report.json").read_text())["sidecars"]
     recs = load_json(r.dir / "sidecars.json")
     assert s["count"] == len(recs) > 0 and s["by_scheme"] == {"fp8_block": len(recs)} and s["file"] == "sidecars.json.gz"
+
+
+def test_keys_skip_custom_pipeline_class_pairs():
+    from gpt2_pytorch.hub.pipeline import keys_of
+    m = {"config": {"model_index.json": {"_class_name": ["pipeline_x", "XPipeline"]}, "vae/config.json": {"_class_name": "AutoencoderKL"}}}
+    assert keys_of(m)["library_class"] == ["AutoencoderKL"]

@@ -70,7 +70,8 @@ def keys_of(manifest: dict) -> dict:
     small = manifest.get("config") or {}
     cfg = small.get("config.json") or {}
     nested = [cfg[n] for n in NESTED if isinstance(cfg.get(n), dict)]
-    classes = sorted({c["_class_name"] for c in small.values() if isinstance(c, dict) and c.get("_class_name")})
+    # a [module, class] pair names a custom pipeline in the repo's own code: not a library class
+    classes = sorted({c["_class_name"] for c in small.values() if isinstance(c, dict) and isinstance(c.get("_class_name"), str)})
     return {"model_type": cfg.get("model_type") or next((c.get("model_type") for c in nested if c.get("model_type")), None),
             "architectures": cfg.get("architectures") or next((c.get("architectures") for c in nested if c.get("architectures")), None),
             "gguf_architecture": ((manifest.get("gguf") or {}).get("kv") or {}).get("general.architecture"),
