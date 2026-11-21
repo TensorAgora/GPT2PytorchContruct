@@ -1087,7 +1087,7 @@
       "blocked": null
     },
     "07a": {
-      "state": "BUILT",
+      "state": "DONE",
       "stages": {
         "A": {
           "status": "done",
@@ -1102,7 +1102,10 @@
           "at": "2026-11-20T19:59:41+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "decoder_dense rerun and coverage done",
+          "evidence": "",
+          "at": "2026-11-21T00:10:45+00:00"
         }
       },
       "tasks": {
@@ -1129,6 +1132,12 @@
           "reason": "gemma2 (real) + gemma3_text with fixtures: C1/C4/C6 PASS; gemma2_arch kept for the golden",
           "evidence": "",
           "at": "2026-11-20T19:59:41+00:00"
+        },
+        "07a.C.P1.T1": {
+          "status": "done",
+          "reason": "decoder_dense 6651/6651 terminal, 4319 ok; 07a keys 1320 ok vs 1505 predicted: 115 unfetchable + 51 remote code + 64 listed/observed no_graph",
+          "evidence": "",
+          "at": "2026-11-21T00:10:45+00:00"
         }
       },
       "transitions": [
@@ -1150,6 +1159,13 @@
           "to": "BUILT",
           "at": "2026-11-20T19:59:41+00:00",
           "reason": "Stage B Build complete: built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-21T00:10:45+00:00",
+          "reason": "Stage C Integrate complete: decoder_dense rerun and coverage done",
           "evidence": ""
         }
       ],
@@ -1235,7 +1251,7 @@
       "blocked": null
     },
     "07b": {
-      "state": "DESIGNED",
+      "state": "BUILT",
       "stages": {
         "A": {
           "status": "done",
@@ -1244,7 +1260,10 @@
           "at": "2026-11-20T19:59:41+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "build tasks done; deps done",
+          "evidence": "",
+          "at": "2026-11-21T00:10:45+00:00"
         },
         "C": {
           "status": "pending"
@@ -1274,6 +1293,12 @@
           "reason": "qwen3_moe + deepseek_v2 with fixtures: C1/C4/C6 PASS (gpt_oss deferred, DESIGN)",
           "evidence": "",
           "at": "2026-11-20T19:59:41+00:00"
+        },
+        "07b.C.P1.T1": {
+          "status": "done",
+          "reason": "mixtral + deepseek-v3 goldens rebuild with 0 diffs; active_flops 204,346,490,880 and 586,829,070,336 match hand counts",
+          "evidence": "",
+          "at": "2026-11-21T00:10:57+00:00"
         }
       },
       "transitions": [
@@ -1288,6 +1313,13 @@
           "to": "DESIGNED",
           "at": "2026-11-20T19:59:41+00:00",
           "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-21T00:10:45+00:00",
+          "reason": "Stage B Build complete: build tasks done; deps done",
           "evidence": ""
         }
       ],
@@ -1406,7 +1438,7 @@
       "blocked": null
     },
     "07e": {
-      "state": "DESIGNED",
+      "state": "BUILT",
       "stages": {
         "A": {
           "status": "done",
@@ -1415,7 +1447,10 @@
           "at": "2026-11-20T20:24:20+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "build tasks done; deps done",
+          "evidence": "",
+          "at": "2026-11-21T00:10:45+00:00"
         },
         "C": {
           "status": "pending"
@@ -1453,6 +1488,13 @@
           "to": "DESIGNED",
           "at": "2026-11-20T20:24:20+00:00",
           "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-21T00:10:45+00:00",
+          "reason": "Stage B Build complete: build tasks done; deps done",
           "evidence": ""
         }
       ],

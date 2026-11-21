@@ -18,6 +18,11 @@ Predicted decoder_dense rows unlocked by the new descriptors: qwen3 955 + hf_olm
 Expected misses: repos that are adapters only, remote-code repos whose architectures string matches none, and hf_olmo
 variants with `layer_norm_type: default` (LayerNorm, not RMSNorm).
 
+Observed after the full run (07a.C): the four keys have 1,533 rows; 1,320 ok (qwen3 822, hf_olmo 350, gemma2 86,
+gemma3_text 62). Not ok: 115 never fetchable (gated, 401, 404, `.bin` only), 51 remote code, 64 no_graph (25 draft
+heads of DFlash / DSpark / DSpine conversions, LoRA adapters, sentence-embedding projection heads, OLMo-1B's non-affine
+LayerNorm). decoder_dense overall: 4,319 ok + 8 partial + 113 ok_assumed of 6,651.
+
 Not chosen: (unknown) 202 (no key: R3 fingerprint), gemma3 82 and gemma4 80 (VLM wrappers: 07d), granite 77 (llama tensors;
 R3 proposes llama, `ok_assumed`, multipliers not drawn), the long tail under 80 rows (path B, 06f).
 
