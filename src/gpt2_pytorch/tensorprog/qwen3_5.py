@@ -10,7 +10,7 @@ modeling_qwen3_5.py arithmetic exactly:
 - full_attention layers: q_proj holds (query, gate) per head; q_norm / k_norm; partial RoPE (the first
   rotary_dim of each head, pass-through for the rest, spelled full width so no concat is needed); causal GQA softmax;
   context * sigmoid(gate); o_proj. Text-only input gives all three M-RoPE position rows the same ids, so M-RoPE is RoPE.
-- SwiGLU MLP, final norm, untied lm_head.
+- SwiGLU MLP, final norm, lm_head (tied to the embedding table when the config says so).
 The vision tower and the MTP head do not run in a text forward pass and are not spelled.
 """
 import math
@@ -32,6 +32,7 @@ ROLES = {
 class _Lowering:
     def __init__(self, cfg: dict, batch: int, seq: int, prefix: str):
         c = self.c = cfg.get("text_config", cfg)
+        self.tied = bool(c.get("tie_word_embeddings", cfg.get("tie_word_embeddings")))  # composite configs keep it on top
         self.prefix = prefix
         hk, hv, dh = c["linear_num_key_heads"], c["linear_num_value_heads"], c["head_dim"]
         self.T = seq
@@ -227,9 +228,8 @@ class _Lowering:
                 x = E("add", f"X_{i + 1}", xm, m)
         with self.at(f"{top}.norm", "RMSNorm"):
             xf = self.rms("Xf", x, self.param("gf", ("D",), f"{pre}norm.weight"), "D")
-        assert not c.get("tie_word_embeddings"), "tied lm_head: not in this checkpoint"
-        with self.at("lm_head", "Linear"):
-            p.contract("L", xf, self.param("Wlm", ("V", "D"), "lm_head.weight"), ["D"])
+        with self.at("lm_head", "Linear"):  # a tied head reads the embedding table
+            p.contract("L", xf, "E" if self.tied else self.param("Wlm", ("V", "D"), "lm_head.weight"), ["D"])
         return p
 
 

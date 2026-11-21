@@ -55,6 +55,15 @@
      ]
     }
    }
+  },
+  "qwen35": {
+   "offset": {
+    "blk.{i}.attn_norm.weight": 1,
+    "blk.{i}.post_attention_norm.weight": 1,
+    "blk.{i}.attn_q_norm.weight": 1,
+    "blk.{i}.attn_k_norm.weight": 1,
+    "output_norm.weight": 1
+   }
   }
  },
  "hf": {

@@ -142,6 +142,23 @@ def gpt2_lowering(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=())
     return g, expected(g)
 
 
+def spell_qwen3_5(kv: dict, shapes: dict) -> dict:
+    """The text config.json the qwen3_5 lowering reads, spelled from the metadata llama.cpp writes for arch qwen35."""
+    g = lambda k: kv[f"qwen35.{k}"]  # noqa: E731
+    # block_count counts the MTP block(s) after the stack (nextn_predict_layers), stored or stripped
+    n, every, hv = g("block_count") - kv.get("qwen35.nextn_predict_layers", 0), g("full_attention_interval"), g("ssm.time_step_rank")
+    return {"model_type": "qwen3_5_text", "hidden_size": g("embedding_length"), "num_hidden_layers": n,
+            "num_attention_heads": g("attention.head_count"), "num_key_value_heads": g("attention.head_count_kv"),
+            "head_dim": g("attention.key_length"), "intermediate_size": g("feed_forward_length"),
+            "vocab_size": shapes["token_embd.weight"][0], "rms_norm_eps": g("attention.layer_norm_rms_epsilon"),
+            "linear_num_key_heads": g("ssm.group_count"), "linear_key_head_dim": g("ssm.state_size"),
+            "linear_num_value_heads": hv, "linear_value_head_dim": g("ssm.inner_size") // hv,
+            "linear_conv_kernel_dim": g("ssm.conv_kernel"),
+            "layer_types": ["full_attention" if (i + 1) % every == 0 else "linear_attention" for i in range(n)],
+            "rope_theta": g("rope.freq_base"), "partial_rotary_factor": g("rope.dimension_count") / g("attention.key_length"),
+            "tie_word_embeddings": "output.weight" not in shapes}
+
+
 def qwen3_5(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
     """Qwen3.5 / Qwen3.6 hybrid text model through the existing tensorprog/qwen3_5.py lowering (called, not rewritten).
     FP8 `*_scale_inv` views need the header (sidecars, 06e); from a config alone they stay empty."""

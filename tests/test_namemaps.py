@@ -29,3 +29,20 @@ def test_phi3_fused_storage_binds_as_slices():
     assert r.overrides["Wq_0"] == {"checkpoint_key": "model.layers.0.self_attn.qkv_proj.weight", "view": "[0:3072,:]"}
     assert r.overrides["Wu_0"]["view"] == "[8192:16384,:]"
     assert {t["transform"] for t in r.transforms} == {"split"}
+
+
+def test_qwen35_gguf_spelled_config_and_names():
+    from gpt2_pytorch.registry.build import spell_qwen3_5
+    from gpt2_pytorch.registry.namemaps import gguf_rename
+    kv = {f"qwen35.{k}": v for k, v in {"block_count": 5, "nextn_predict_layers": 1, "full_attention_interval": 4, "embedding_length": 64,
+          "attention.head_count": 4, "attention.head_count_kv": 2, "attention.key_length": 16, "feed_forward_length": 128,
+          "attention.layer_norm_rms_epsilon": 1e-6, "ssm.group_count": 2, "ssm.state_size": 16, "ssm.time_step_rank": 4,
+          "ssm.inner_size": 64, "ssm.conv_kernel": 4, "rope.freq_base": 1e7, "rope.dimension_count": 4}.items()}
+    cfg = spell_qwen3_5(kv, {"token_embd.weight": [100, 64]})
+    assert cfg["num_hidden_layers"] == 4 and cfg["layer_types"][3] == "full_attention" and cfg["tie_word_embeddings"]
+    stored = {"blk.0.post_attention_norm.weight", "blk.0.ssm_dt.bias", "blk.0.ssm_a", "token_embd.weight", "output_norm.weight"}
+    pre = "model.language_model."
+    exp = [{"name": n, "checkpoint_key": pre + k} for n, k in [("a", "layers.0.post_attention_layernorm.weight"), ("b", "layers.0.linear_attn.dt_bias"),
+                                                                ("c", "layers.0.linear_attn.A_log"), ("d", "embed_tokens.weight"), ("e", "norm.weight")]]
+    out = gguf_rename({"tensors": []}, exp, "qwen35", stored, pre)
+    assert {e["checkpoint_key"] for e in out} == stored

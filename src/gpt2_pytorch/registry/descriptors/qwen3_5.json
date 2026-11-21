@@ -50,7 +50,10 @@
   "note": "tensorprog/qwen3_5.py lower_qwen3_5; delta rule unrolled at T=8"
  },
  "ties": {},
- "ignored": [],
+ "ignored": [
+  "cls.output.weight",
+  "cls.output.bias"
+ ],
  "provenance": {
   "ported_from": "tensorprog/qwen3_5.py via tools/model_graph.py",
   "golden": "json/qwen3.8-27b-fp8.json",

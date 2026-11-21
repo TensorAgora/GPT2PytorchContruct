@@ -123,3 +123,37 @@ def transform_of(key: str, scheme_name: str, arch_or_id: str) -> list[str]:
     rules = overlay().get(scheme_name, {}).get(arch_or_id, {})
     return [kind for kind in ("rope_permute", "offset", "split") for p in rules.get(kind, {}) if _pattern(p).match(key)
             or fnmatchcase(key, p)]
+
+
+# HF names gguf-py's tables do not list (llama.cpp renames them in the converter): (MODEL_TENSOR, GGUF suffix)
+EXTRA = {"linear_attn.dt_bias": ("SSM_DT", ".bias"), "linear_attn.A_log": ("SSM_A", "")}
+TOP = {"embed_tokens.weight": "token_embd.weight", "norm.weight": "output_norm.weight", "lm_head.weight": "output.weight"}
+
+
+def gguf_rename(graph: dict, expected: list, arch: str, stored: set, prefix: str) -> list:
+    """HF checkpoint keys -> the GGUF names llama.cpp writes, through gguf-py's tables (the candidate that is stored wins
+    when a name maps to several, e.g. post_attention_layernorm). Rewrites the graph's checkpoint keys too."""
+    names, out, by = table()["tensor_names"], [], {}
+    for e in expected:
+        key = e["checkpoint_key"]
+        base = key.removeprefix(prefix).removeprefix("model.")
+        if key.startswith("lm_head."):
+            base = key
+        m = re.match(r"layers\.(\d+)\.(.+)$", base)
+        gk = TOP.get(base)
+        if m:
+            i, rest = m.groups()
+            suffix = next((s for s in (".weight", ".bias") if rest.endswith(s)), "")
+            stem = rest.removesuffix(suffix)
+            types = [(t, suffix) for t in hf_tensor(f"model.layers.{{i}}.{stem}", arch)] or ([EXTRA[stem]] if stem in EXTRA else [])
+            for t, suf in types:
+                cand = names[t].format(i=i, bid=i) + suf
+                if cand in stored:
+                    gk = cand
+                    break
+        by[key] = gk or key
+        out.append(e | {"checkpoint_key": by[key]})
+    for t in graph["tensors"]:
+        if t.get("checkpoint_key") in by:
+            t["checkpoint_key"] = by[t["checkpoint_key"]]
+    return out

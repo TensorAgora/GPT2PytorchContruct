@@ -9,10 +9,10 @@ import sys
 from dataclasses import dataclass, field
 
 from .bind import verify
-from .build import build
+from .build import build, spell_qwen3_5
 from .descriptor import DescriptorError, ids, load
 from .hyper import NESTED, HyperError, dim_sources, resolve_hyper
-from .namemaps import apply_overlay, gguf_scheme
+from .namemaps import apply_overlay, gguf_rename, gguf_scheme
 
 RANK = {"R1": 0, "R2": 1, "R3": 2, "R4": 3}
 
@@ -125,18 +125,27 @@ def resolve_and_bind(manifest: dict, row: dict | None = None, name: str | None =
         if scheme == "gguf" and d["recipe"]["template"] == "decoder" and "gguf" not in d["schemes"]:
             d = {**d, "schemes": {**d["schemes"], "gguf": gguf_scheme(d["schemes"]["hf"])}}  # generated (06d)
         miss = {"descriptor": f"{d['id']}@{d['version']}", "rung": c.rung, "evidence": c.evidence}
-        if scheme not in d["schemes"]:
+        renamed = scheme == "gguf" and d["recipe"]["template"] == "qwen3_5" and arch == "qwen35"
+        c_scheme, c_cfg = ("hf", None) if renamed else (scheme, cfg)
+        if c_scheme not in d["schemes"]:
             res.near_misses.append(miss | {"reason": f"no {scheme} naming scheme"})
             continue
         try:
-            hyper = resolve_hyper(d, manifest, row)
-            graph, expected = build(d, hyper, scheme, name, cfg, names)
+            if renamed:  # llama.cpp writes Qwen3.5's HF tensors one to one: spell the config from metadata, build HF, rename
+                kv = (manifest.get("gguf") or {}).get("kv") or {}
+                c_cfg = spell_qwen3_5(kv, {t["key"]: t["shape"] for t in manifest["tensors"]})
+                d = {**d, "components": d["components"] + [{"name": "mtp", "prefix": f"blk.{j}.", "state": "declared_without_graph"}
+                                                           for j in range(c_cfg["num_hidden_layers"], kv["qwen35.block_count"])]}
+            hyper = resolve_hyper(d, manifest, row, cfg=c_cfg)
+            graph, expected = build(d, hyper, c_scheme, name, c_cfg, names)
+            if renamed:
+                expected = gguf_rename(graph, expected, arch, set(names), d["schemes"]["hf"].get("prefix", ""))
         except (HyperError, DescriptorError, KeyError, ValueError, AssertionError, ZeroDivisionError, TypeError, IndexError) as e:
             # TypeError / IndexError: a config value of a shape the descriptor cannot express (Step-5's per-layer rope_theta)
             res.near_misses.append(miss | {"reason": f"{type(e).__name__}: {e}"[:300]})
             continue
         fmt = {k: v for k, (v, _) in hyper.items()} | graph["dims"]
-        expected, overrides, transforms = apply_overlay(expected, manifest, d, scheme, d["schemes"][scheme], fmt, arch)
+        expected, overrides, transforms = apply_overlay(expected, manifest, d, scheme, {} if renamed else d["schemes"][scheme], fmt, arch)
         binding = verify(expected, manifest, d, graph.get("aliases"), fmt)
         if not binding.ok:
             res.near_misses.append(miss | {"reason": "binding failed", **binding.near_miss()})
