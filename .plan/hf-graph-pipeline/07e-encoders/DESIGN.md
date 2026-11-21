@@ -25,3 +25,11 @@
 
 No encoder goldens exist, so C4 compares the build with these closed forms (tools/conformance.py).
 Predicted rows unlocked: bert family 2,296 + t5/mt5 324 + bart 117 = 2,737.
+
+## Later fixes (2026-11-21, encoder rows from the sample run)
+
+TF-era `LayerNorm.gamma` / `.beta` bind as `.weight` / `.bias` (bind.legacy_key, the rename transformers applies on
+load; path B gets it from the class's WeightRenaming list). Encoder GGUFs (arch `bert`) get a scheme generated from
+gguf-py's HF -> GGUF tables (namemaps.tabled_scheme) and Hq from `bert.attention.head_count`. Path B ignores every
+stored `*.inv_freq` (ESM's rotary_embeddings). Misses kept: GLiNER/GLiClass and other custom libraries (no config
+class), jina's XLM-RoBERTa-flash (`emb_ln`, remote code), ALBERT (no descriptor; path B), ModernBERT task wrappers.

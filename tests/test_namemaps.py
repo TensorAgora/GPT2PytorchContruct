@@ -46,3 +46,11 @@ def test_qwen35_gguf_spelled_config_and_names():
                                                                 ("c", "layers.0.linear_attn.A_log"), ("d", "embed_tokens.weight"), ("e", "norm.weight")]]
     out = gguf_rename({"tensors": []}, exp, "qwen35", stored, pre)
     assert {e["checkpoint_key"] for e in out} == stored
+
+
+def test_tabled_scheme_spells_bert_in_gguf():
+    from gpt2_pytorch.registry.descriptor import load
+    from gpt2_pytorch.registry.namemaps import tabled_scheme
+    s = tabled_scheme(load("bert")["schemes"]["hf"], "bert")
+    assert s["q"] == "blk.{i}.attn_q.{what}" and s["out_ln"] == "blk.{i}.layer_output_norm.{what}" and s["type_embed"] == "token_types.weight"
+    assert tabled_scheme({"x": "no.such.{i}.tensor.weight"}, "bert") is None

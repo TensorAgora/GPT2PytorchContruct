@@ -38,6 +38,21 @@ def gguf_scheme(hf_scheme: dict) -> dict:
     return {role: names[_types(role)[0]] + ".{what}" for role in hf_scheme if role in ROLE_TENSOR}
 
 
+def tabled_scheme(hf_scheme: dict, arch: str) -> dict | None:
+    """A GGUF scheme for any template from gguf-py's own HF -> MODEL_TENSOR tables (BERT's `attention.self.query` ->
+    `blk.{i}.attn_q`); None unless every HF name maps."""
+    names, out = table()["tensor_names"], {}
+    for role, key in hf_scheme.items():
+        if not isinstance(key, str):
+            continue
+        ts = hf_tensor(key, arch)
+        if not ts:
+            return None
+        m = re.search(r"\.(weight|bias|\{what\})$", key)
+        out[role] = names[ts[0]] + (m.group() if m else "")
+    return out
+
+
 def _types(role: str) -> tuple:
     t = ROLE_TENSOR[role]
     return t if isinstance(t, tuple) else (t,)

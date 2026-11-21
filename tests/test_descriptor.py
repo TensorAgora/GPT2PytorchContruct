@@ -65,3 +65,11 @@ def test_mlx_stacked_experts_bind_one_tensor():
     m = {"tensors": [{"key": sk, "dtype": "BF16", "shape": [4, 8, 16], "file": "m.safetensors", "numel": 512}], "config": {}}
     b = verify(e, m, {"ignored": []})
     assert b.ok and b.keys == {"Wge_0": sk} and b.partition["bound"] == [sk]
+
+
+def test_tf_era_layernorm_names_bind():
+    from gpt2_pytorch.registry.bind import verify
+    e = [{"name": "g", "checkpoint_key": "enc.LayerNorm.weight", "view": None, "shape": [4], "role": "parameter"}]
+    m = {"tensors": [{"key": "enc.LayerNorm.gamma", "dtype": "F32", "shape": [4], "file": "m.bin", "numel": 4}], "config": {}}
+    b = verify(e, m, {"ignored": []})
+    assert b.ok and b.keys == {"g": "enc.LayerNorm.gamma"}

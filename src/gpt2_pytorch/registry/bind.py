@@ -39,6 +39,11 @@ def stack_members(view: str) -> list[str]:
     return [f"{m['pre']}{j}{m['post']}" for j in range(int(m["a"]), int(m["b"]) + 1)] if m else []
 
 
+def legacy_key(key: str) -> str:
+    """`…LayerNorm.weight` / `.bias` as TF-era checkpoints store them (`gamma` / `beta`)."""
+    return key.replace("LayerNorm.weight", "LayerNorm.gamma").replace("LayerNorm.bias", "LayerNorm.beta")
+
+
 def stacked_key(view: str) -> str | None:
     """MLX stores routed experts already stacked: `….experts.{0…E-1}.gate_proj.weight` as `….switch_mlp.gate_proj.weight`."""
     m = STACK.fullmatch(view.split(" (")[0])
@@ -68,6 +73,8 @@ def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None =
         key, view = e["checkpoint_key"], e["view"] or ""
         if key:
             t = stored.get(key)
+            if t is None and (alt := legacy_key(key)) in stored:  # TF-era BERT names transformers renames on load
+                key, t, b.keys[e["name"]] = alt, stored[alt], alt
             if t is None:
                 b.missing.append([e["name"], key])
                 continue

@@ -25,7 +25,8 @@
    "hidden_size"
   ],
   "Hq": [
-   "num_attention_heads"
+   "num_attention_heads",
+   "gguf:<arch>.attention.head_count"
   ],
   "Dh": [
    "=D // Hq"

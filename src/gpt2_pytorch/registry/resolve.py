@@ -12,7 +12,7 @@ from .bind import verify
 from .build import build, spell_qwen3_5
 from .descriptor import DescriptorError, ids, load
 from .hyper import NESTED, HyperError, dim_sources, resolve_hyper
-from .namemaps import apply_overlay, gguf_rename, gguf_scheme
+from .namemaps import apply_overlay, gguf_rename, gguf_scheme, tabled_scheme
 
 RANK = {"R1": 0, "R2": 1, "R3": 2, "R4": 3}
 
@@ -125,6 +125,8 @@ def resolve_and_bind(manifest: dict, row: dict | None = None, name: str | None =
         d = load(c.descriptor)
         if scheme == "gguf" and d["recipe"]["template"] == "decoder" and "gguf" not in d["schemes"]:
             d = {**d, "schemes": {**d["schemes"], "gguf": gguf_scheme(d["schemes"]["hf"])}}  # generated (06d)
+        elif scheme == "gguf" and "gguf" not in d["schemes"] and arch and (ts := tabled_scheme(d["schemes"]["hf"], arch)):
+            d = {**d, "schemes": {**d["schemes"], "gguf": ts}}  # encoders: gguf-py's HF -> GGUF tables
         miss = {"descriptor": f"{d['id']}@{d['version']}", "rung": c.rung, "evidence": c.evidence}
         renamed = scheme == "gguf" and d["recipe"]["template"] == "qwen3_5" and arch == "qwen35"
         c_scheme, c_cfg = ("hf", None) if renamed else (scheme, cfg)
@@ -165,7 +167,7 @@ def _trace_descriptor(lib: str, cls: str) -> dict:
     import importlib.metadata as md
     version = md.version({"timm": "timm", "diffusers": "diffusers", "transformers": "transformers"}[lib])
     return {"id": f"trace_{lib}_{cls}", "version": version, "match": {}, "hyperparameters": {}, "schemes": {"hf": {}},
-            "recipe": {"template": "trace"}, "ties": {}, "ignored": ["*.num_batches_tracked", "*.position_ids", "*.rotary_emb.inv_freq"], "components": [],
+            "recipe": {"template": "trace"}, "ties": {}, "ignored": ["*.num_batches_tracked", "*.position_ids", "*.inv_freq"], "components": [],
             "provenance": {"certainty": "traced", "path": "B", "ported_from": f"{lib} {version} class {cls}, torch.export on meta"}}
 
 
