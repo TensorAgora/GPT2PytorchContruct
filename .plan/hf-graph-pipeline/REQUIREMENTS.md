@@ -52,9 +52,9 @@ Every requirement extracted from the master document, the module that owns it, a
 | R-43 | Assemblies bind the VLM text tower and mark vision towers, projectors, MTP and draft heads bound or declared_without_graph in `components`, never silently dropped; no stored tensor falls outside a class | must | §4 (§7.3), §5.3, §7 (Wave 4) | 07d | 4/4 | 07d |
 | R-44 | BERT-family (bert, modernbert, xlm-roberta, roberta, deberta-v2, distilbert) and T5/BART (t5, mt5, bart, marian) descriptors pass C1 and C4 | must | §7 (Wave 5) | 07e | 4/4 | 07e |
 | R-45 | C2: for every path-A descriptor with an upstream class, the tiny-config path-A matmul signature equals path B's, modulo dense-vs-routed experts | must | §6, §7 (Wave 6) | 06f | 1/1 | 06f |
-| R-46 | After the full run every job has one terminal status, the reports add up to the R-01 job count, and a re-run with unchanged shas is a no-op | must | §7 (Wave 7), §8.2 | 07f | 0/2 | 07f |
-| R-47 | Each output/categories/<category>/README.md summarizes that category's statuses, keys and near-misses | must | §5.4 | 07f | 0/1 | 07f |
-| R-48 | tel_roundtrip runs over every graph the pipeline writes | must | §9.6 | 07f | 0/1 | 07f |
+| R-46 | After the full run every job has one terminal status, the reports add up to the R-01 job count, and a re-run with unchanged shas is a no-op | must | §7 (Wave 7), §8.2 | 07f | 2/2 | 07f |
+| R-47 | Each output/categories/<category>/README.md summarizes that category's statuses, keys and near-misses | must | §5.4 | 07f | 1/1 | 07f |
+| R-48 | tel_roundtrip runs over every graph the pipeline writes | must | §9.6 | 07f | 1/1 | 07f |
 | R-49 | A TEL coverage analyzer counts per graph the T♭-spellable ops and each §9.4 counted exclusion | must | §7 (Wave T), §9.4 | 09a | 1/1 | 09a |
 | R-50 | `tools/viz_to_tel.py` → `tools/tel_compile.mjs` on distilgpt2 still prints PASS | must | §9.6 | 09a | 1/1 | 09a |
 | R-51 | The T♭ printer and decoder are ported to Python next to viz_graph() with both §9.6 fixes, matching tel.js on the 8 goldens (T-2 default) | must | §9.6, §10 (T-2) | 09b | 4/4 | 09b |

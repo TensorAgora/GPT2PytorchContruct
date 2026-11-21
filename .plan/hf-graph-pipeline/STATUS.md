@@ -4,7 +4,7 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.3).
 
-Tasks closed: 105 of 109. Modules: DONE 19, DESIGNED 1.
+Tasks closed: 109 of 109. Modules: DONE 20.
 
 ## Per module
 
@@ -29,8 +29,8 @@ Tasks closed: 105 of 109. Modules: DONE 19, DESIGNED 1.
 | [07d](07d-assemblies/TASKS.md) | VLM assemblies, MTP and draft heads | 4 | DONE | - | 4/4 | - |
 | [07e](07e-encoders/TASKS.md) | BERT family and T5/BART descriptors | 5 | DONE | - | 4/4 | - |
 | [06f](06f-library-trace/TASKS.md) | Path B library trace and the C2 signature check | 6 | DONE | - | 6/6 | - |
-| [07f](07f-full-run/TASKS.md) | Full catalog run, category READMEs, TEL round trip over all graphs | 7 | DESIGNED | B | 0/4 | - |
+| [07f](07f-full-run/TASKS.md) | Full catalog run, category READMEs, TEL round trip over all graphs | 7 | DONE | - | 4/4 | - |
 
 ## Next actions
 
-- 07f stage B: `07f.B.P1.T1` [network] Run `python -m tools.hf_graph --all` at the D3-sized concurrency, then `--coverage`
+- Nothing actionable: every module is DONE or BLOCKED.

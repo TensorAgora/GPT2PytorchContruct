@@ -1676,26 +1676,71 @@
       "blocked": null
     },
     "07f": {
-      "state": "DESIGNED",
+      "state": "DONE",
       "stages": {
         "A": {
           "status": "skipped",
           "reason": "no design subject: runs and summarizes existing tools"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "final run, READMEs and TEL round trip done",
+          "evidence": "",
+          "at": "2026-11-21T12:54:34+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "every job terminal, READMEs match coverage, re-run is a no-op",
+          "evidence": "",
+          "at": "2026-11-21T12:54:34+00:00"
         }
       },
-      "tasks": {},
+      "tasks": {
+        "07f.B.P1.T1": {
+          "status": "done",
+          "reason": "final --all pass (12793 re-resolved rows, concurrency 8): 29780/29780 jobs terminal on registry 8571cf96ee37, coverage_total 29780, 0 exception rows",
+          "evidence": "",
+          "at": "2026-11-21T12:26:21+00:00"
+        },
+        "07f.B.P1.T2": {
+          "status": "done",
+          "reason": "--coverage --readme wrote 21 category READMEs; each total equals its coverage.csv rows",
+          "evidence": "",
+          "at": "2026-11-21T12:26:27+00:00"
+        },
+        "07f.B.P1.T3": {
+          "status": "done",
+          "reason": "tel_roundtrip: 7356 lines + summary; 1740 zero_diff (every Opaque-free graph), 5616 errors all in path-B graphs with Opaque ops; tel_coverage 9.56M/14.16M ops spellable",
+          "evidence": "",
+          "at": "2026-11-21T12:54:34+00:00"
+        },
+        "07f.C.P1.T1": {
+          "status": "done",
+          "reason": "second --all: 0 rows run, 0 ledger rows appended (73903 before/after), 0 header bytes",
+          "evidence": "",
+          "at": "2026-11-21T12:54:34+00:00"
+        }
+      },
       "transitions": [
         {
           "from": "NOT_STARTED",
           "to": "DESIGNED",
           "at": "2026-11-20T18:01:01+00:00",
           "reason": "derived from stage progress"
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-21T12:54:34+00:00",
+          "reason": "Stage B Build complete: final run, READMEs and TEL round trip done",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-21T12:54:34+00:00",
+          "reason": "Stage C Integrate complete: every job terminal, READMEs match coverage, re-run is a no-op",
+          "evidence": ""
         }
       ],
       "blocked": null
