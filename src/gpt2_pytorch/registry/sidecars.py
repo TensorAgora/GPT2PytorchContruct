@@ -39,8 +39,8 @@ def apply(manifest: dict, cfg: dict | None = None) -> Sidecars:
         t = st.get(key)
         if t is None:
             continue
-        # block FP8: X.weight_scale_inv beside an F8 X.weight
-        if key.endswith("_scale_inv") and (p := st.get(key.removesuffix("_scale_inv"))) and p["dtype"].startswith("F8"):
+        # block FP8 (and meituan blockwise_int8): X.weight_scale_inv beside an F8 / I8 X.weight
+        if key.endswith("_scale_inv") and (p := st.get(key.removesuffix("_scale_inv"))) and p["dtype"].startswith(("F8", "I8")):
             want = [math.ceil(n / b) for n, b in zip(p["shape"], block)] + p["shape"][len(block):]
             if list(t["shape"]) == want:
                 s.attach(key, p["key"], "fp8_block")
@@ -117,6 +117,10 @@ def apply(manifest: dict, cfg: dict | None = None) -> Sidecars:
             for k in [key] + extras:
                 s.attach(k, principal, scheme)
             s.views[principal] = f"{scheme}: {' / '.join('.' + k.rsplit('.', 1)[1] for k in [key] + extras)}"
+        # ModelOpt / compressed-tensors kv_cache_scheme: P.k_scale / P.v_scale beside an unquantized P.weight
+        elif key.endswith((".k_scale", ".v_scale")) and (base := key.rsplit(".", 1)[0]) + ".weight_scale" not in st \
+                and (p := st.get(base + ".weight") or st.get(base.rsplit(".", 1)[0] + ".kv_b_proj.weight")):  # MLA: no k/v_proj
+            s.attach(key, p["key"], "kv_cache_scale")
         # bitsandbytes: P.weight.absmax / .quant_map / .quant_state.* -> P.weight (shape only in the payload)
         elif (key.endswith(BNB_SUFFIXES) or ".quant_state." in key) and (p := st.get(key.split(".weight.", 1)[0] + ".weight")):
             s.attach(key, p["key"], "bitsandbytes")

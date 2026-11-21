@@ -86,3 +86,13 @@ def test_gptq_bias_is_aux_unless_bound():
     s = apply(_m((f"{p}.qweight", "I32", [32, 64]), (f"{p}.qzeros", "I32", [2, 8]), (f"{p}.scales", "F16", [2, 64]), (f"{p}.bias", "F16", [64])),
               {"quantization_config": {"quant_method": "gptq", "bits": 4}})
     assert s.aux[f"{p}.bias"] == f"{p}.weight" and s.stored[f"{p}.weight"]["shape"] == [64, 256]
+
+
+def test_kv_cache_scales_and_block_int8_are_aux():
+    from gpt2_pytorch.registry.sidecars import apply
+    a = "model.layers.0.self_attn"
+    s = apply(_m((f"{a}.k_proj.weight", "BF16", [8, 16]), (f"{a}.k_proj.k_scale", "F32", []),
+                 (f"{a}.kv_b_proj.weight", "BF16", [8, 16]), (f"{a}.v_proj.v_scale", "F32", []),  # MLA: no v_proj
+                 ("model.layers.0.mlp.down_proj.weight", "I8", [256, 512]), ("model.layers.0.mlp.down_proj.weight_scale_inv", "F32", [2, 4])), {})
+    assert s.aux == {f"{a}.k_proj.k_scale": f"{a}.k_proj.weight", f"{a}.v_proj.v_scale": f"{a}.kv_b_proj.weight",
+                     "model.layers.0.mlp.down_proj.weight_scale_inv": "model.layers.0.mlp.down_proj.weight"}

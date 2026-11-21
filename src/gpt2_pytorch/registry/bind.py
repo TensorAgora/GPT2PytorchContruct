@@ -18,6 +18,7 @@ class Binding:
     misshaped: list = field(default_factory=list)  # [param, key, graph shape, header shape]
     unclaimed: list = field(default_factory=list)  # keys
     views: dict = field(default_factory=dict)  # param name -> view text the binding adds (quantized storage)
+    keys: dict = field(default_factory=dict)  # param name -> stored key the binding chose (MLX stacked experts)
     sidecars: list = field(default_factory=list)  # [{tensor, principal, scheme}] attached (06e)
 
     def near_miss(self, limit=20) -> dict:
@@ -36,6 +37,12 @@ class Binding:
 def stack_members(view: str) -> list[str]:
     m = STACK.fullmatch(view.split(" (")[0])
     return [f"{m['pre']}{j}{m['post']}" for j in range(int(m["a"]), int(m["b"]) + 1)] if m else []
+
+
+def stacked_key(view: str) -> str | None:
+    """MLX stores routed experts already stacked: `….experts.{0…E-1}.gate_proj.weight` as `….switch_mlp.gate_proj.weight`."""
+    m = STACK.fullmatch(view.split(" (")[0])
+    return m["pre"].removesuffix("experts.") + "switch_mlp" + m["post"] if m and m["pre"].endswith("experts.") else None
 
 
 def conv_layout(want, got):
@@ -74,6 +81,13 @@ def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None =
                     b.misshaped.append([e["name"], key, e["shape"], t["shape"]])
             claim[key], owner[key] = "bound", e["name"]
         elif members := stack_members(view):
+            sk = stacked_key(view)
+            if sk in stored and not any(k in stored for k in members):
+                if list(stored[sk]["shape"]) != list(e["shape"]):
+                    b.misshaped.append([e["name"], sk, e["shape"], stored[sk]["shape"]])
+                claim[sk], owner[sk], b.keys[e["name"]] = "bound", e["name"], sk
+                b.views[e["name"]] = "stacked experts (MLX switch_mlp)"
+                continue
             for k in members:
                 t = stored.get(k)
                 if t is None:
@@ -107,7 +121,7 @@ def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None =
             b.unclaimed.append(key)
     for principal, text in sc.views.items():
         if principal in owner and claim.get(principal) == "bound":
-            b.views[owner[principal]] = text
+            b.views[owner[principal]] = "; ".join(filter(None, [b.views.get(owner[principal]), text]))
     b.sidecars = [r for r in sc.records if claim.get(r["tensor"]) == "aux"]
     claim = {k: v for k, v in claim.items() if not stored.get(k, {}).get("virtual")}
     b.partition = {c: sorted(k for k, v in claim.items() if v == c) for c in CLASSES}

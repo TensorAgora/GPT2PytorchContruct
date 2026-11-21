@@ -54,3 +54,14 @@ def test_depthwise_conv_layouts():
     from gpt2_pytorch.registry.bind import conv_layout
     assert "GGUF" in conv_layout([64, 1, 3], [64, 3]) and "MLX" in conv_layout([64, 1, 3], [64, 3, 1])
     assert conv_layout([64, 1, 3], [3, 64]) is None and conv_layout([64, 2, 3], [64, 3, 2]) is None
+
+
+def test_mlx_stacked_experts_bind_one_tensor():
+    from gpt2_pytorch.registry.bind import stacked_key, verify
+    view = "stack of model.layers.0.mlp.experts.{0…3}.gate_proj.weight"
+    sk = "model.layers.0.mlp.switch_mlp.gate_proj.weight"
+    assert stacked_key(view) == sk
+    e = [{"name": "Wge_0", "checkpoint_key": None, "view": view, "shape": [4, 8, 16], "role": "parameter"}]
+    m = {"tensors": [{"key": sk, "dtype": "BF16", "shape": [4, 8, 16], "file": "m.safetensors", "numel": 512}], "config": {}}
+    b = verify(e, m, {"ignored": []})
+    assert b.ok and b.keys == {"Wge_0": sk} and b.partition["bound"] == [sk]

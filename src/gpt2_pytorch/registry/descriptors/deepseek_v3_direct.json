@@ -1,0 +1,76 @@
+{
+ "id": "deepseek_v3_direct",
+ "version": "1",
+ "extends": "deepseek_v3",
+ "match": {
+  "model_type": [
+   "deepseek_v3"
+  ],
+  "architectures": [
+   "DeepseekV3ForCausalLM"
+  ],
+  "gguf_architecture": []
+ },
+ "hyperparameters": {
+  "QR": [
+   "q_lora_rank",
+   "=1"
+  ],
+  "Ns": [
+   "n_shared_experts",
+   "=1"
+  ]
+ },
+ "schemes": {
+  "hf": {
+   "q": "model.layers.{i}.self_attn.q_proj.weight"
+  }
+ },
+ "recipe": {
+  "dims": {
+   "B": "B",
+   "T": "T",
+   "q": "T",
+   "k": "T",
+   "D": "D",
+   "H": "Hq",
+   "QR": "QR",
+   "QH": "Hq * (Dn + Dr)",
+   "Dqk": "Dn + Dr",
+   "Dn": "Dn",
+   "Dr": "Dr",
+   "Dr2": "Dr",
+   "KA": "KR + Dr",
+   "KR": "KR",
+   "KH": "Hq * (Dn + Dv)",
+   "Dkvh": "Dn + Dv",
+   "Dv": "Dv",
+   "HV": "Hq * Dv",
+   "F": "F",
+   "Fe": "Fe",
+   "E": "E",
+   "V": "V",
+   "Fs": "Fe * Ns"
+  },
+  "layers": {
+   "attention": {
+    "by_presence": {
+     "mla": "model.layers.{i}.self_attn.q_a_proj.weight"
+    },
+    "default": "mla_direct"
+   },
+   "mlp": {
+    "first_k": "first_k_dense_replace",
+    "first": "swiglu",
+    "then": "moe_deepseek"
+   }
+  }
+ },
+ "provenance": {
+  "ported_from": "deepseek_v3 with deepseek_v2's direct-Q attention",
+  "golden": null,
+  "certainty": "template",
+  "note": "DeepseekV3ForCausalLM checkpoints with q_lora_rank null (q_proj, no q_a/q_b) or n_shared_experts > 1 (Moonlight, Kanana-2, GigaChat3); tried after deepseek_v3, so repos deepseek_v3 binds keep it",
+  "fixture": null
+ }
+}

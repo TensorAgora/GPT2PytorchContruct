@@ -176,7 +176,8 @@
   "fixture": "deepseek-ai/DeepSeek-V3"
  },
  "aux": [
-  "model.layers.*.mlp.gate.e_score_correction_bias"
+  "model.layers.*.mlp.gate.e_score_correction_bias",
+  "blk.*.exp_probs_b.bias"
  ],
  "components": [
   {

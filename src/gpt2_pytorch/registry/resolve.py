@@ -153,6 +153,8 @@ def resolve_and_bind(manifest: dict, row: dict | None = None, name: str | None =
         res.status = "ok" if c.rung in ("R1", "R2") else "ok_assumed"
         res.candidate, res.descriptor, res.hyper, res.graph, res.expected, res.binding = c, d, hyper, graph, expected, binding
         res.overrides = {**overrides, **{n: {**overrides.get(n, {}), "view": v} for n, v in binding.views.items()}}
+        for n, k in binding.keys.items():
+            res.overrides[n] = {**res.overrides.get(n, {}), "checkpoint_key": k}
         res.transforms = transforms
         return res
     return res if only else _path_b(manifest, row, name, cfg, cands, res)  # a forced descriptor never falls back
