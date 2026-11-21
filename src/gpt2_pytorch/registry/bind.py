@@ -75,6 +75,8 @@ def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None =
             t = stored.get(key)
             if t is None and (alt := legacy_key(key)) in stored:  # TF-era BERT names transformers renames on load
                 key, t, b.keys[e["name"]] = alt, stored[alt], alt
+            if t is None and (alt := next((k for k, to in (aliases or {}).items() if to == e["name"] and k in stored), None)):
+                key, t, b.keys[e["name"]] = alt, stored[alt], alt  # only a tied copy is stored (BART without model.shared)
             if t is None:
                 b.missing.append([e["name"], key])
                 continue

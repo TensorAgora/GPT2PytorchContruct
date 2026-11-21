@@ -1,0 +1,1 @@
+{"captured_at":"2026-11-21T08:16:06+00:00","category":"encoder_decoder","format":"safetensors","header_bytes_read":60392,"repo":"facebook/bart-large-cnn","requests":2,"sha":"37f520fa929c961707657b28798b30c003dd100b","tool":"gpt2_pytorch.hub.fixtures"}

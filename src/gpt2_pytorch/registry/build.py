@@ -357,7 +357,8 @@ def seq2seq(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
     with b.within("lm_head", "Linear"):
         if t5 and tie:  # T5 v1.0 rescales before the tied head
             xd = b.E("mul", "dXf.scaled", xd, b.constant("c_tie_scale", dims["D"] ** -0.5))
-        if "logits_bias" in b.scheme:
+        # BART's final_logits_bias is an all-zero buffer HF lets checkpoints omit: drawn only when stored
+        if "logits_bias" in b.scheme and (not names or b.key("logits_bias")[0] in names):
             raw = b.C("L.raw", xd, head, "D")
             b.E("add", "L", raw, b.reshape("Lb", b.param("Wlb", ["U", "V"], "logits_bias"), ["V"]))
         else:

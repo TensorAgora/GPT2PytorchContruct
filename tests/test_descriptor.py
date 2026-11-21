@@ -73,3 +73,12 @@ def test_tf_era_layernorm_names_bind():
     m = {"tensors": [{"key": "enc.LayerNorm.gamma", "dtype": "F32", "shape": [4], "file": "m.bin", "numel": 4}], "config": {}}
     b = verify(e, m, {"ignored": []})
     assert b.ok and b.keys == {"g": "enc.LayerNorm.gamma"}
+
+
+def test_param_binds_to_its_only_stored_tied_copy():
+    from gpt2_pytorch.registry.bind import verify
+    e = [{"name": "E", "checkpoint_key": "model.shared.weight", "view": None, "shape": [8, 4], "role": "parameter"}]
+    m = {"tensors": [{"key": k, "dtype": "F32", "shape": [8, 4], "file": "m.safetensors", "numel": 32}
+                     for k in ("model.encoder.embed_tokens.weight", "model.decoder.embed_tokens.weight")], "config": {}}
+    b = verify(e, m, {"ignored": []}, {"model.encoder.embed_tokens.weight": "E", "model.decoder.embed_tokens.weight": "E"})
+    assert b.ok and b.keys == {"E": "model.encoder.embed_tokens.weight"} and b.partition["tied"] == ["model.decoder.embed_tokens.weight"]

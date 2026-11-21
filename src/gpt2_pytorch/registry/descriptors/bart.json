@@ -103,10 +103,20 @@
   }
  },
  "ties": {},
- "ignored": [],
+ "ignored": [
+  "model.encoder.version",
+  "model.decoder.version"
+ ],
  "provenance": {
   "ported_from": "HF BART: post-norm LayerNorm, learned positions (offset 2), layernorm_embedding, GELU; tied head plus final_logits_bias",
-  "fixture": null,
+  "fixture": "facebook/bart-large-cnn",
   "certainty": "template"
- }
+ },
+ "components": [
+  {
+   "name": "classification_head",
+   "prefix": "classification_head.",
+   "state": "declared_without_graph"
+  }
+ ]
 }
