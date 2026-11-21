@@ -54,3 +54,10 @@ def test_tabled_scheme_spells_bert_in_gguf():
     s = tabled_scheme(load("bert")["schemes"]["hf"], "bert")
     assert s["q"] == "blk.{i}.attn_q.{what}" and s["out_ln"] == "blk.{i}.layer_output_norm.{what}" and s["type_embed"] == "token_types.weight"
     assert tabled_scheme({"x": "no.such.{i}.tensor.weight"}, "bert") is None
+
+
+def test_tabled_scheme_fixes_t5_block0_relative_bias():
+    from gpt2_pytorch.registry.descriptor import load
+    from gpt2_pytorch.registry.namemaps import tabled_scheme
+    s = tabled_scheme(load("t5")["schemes"]["hf"], "t5")
+    assert s["enc_rel_bias"] == "enc.blk.0.attn_rel_b.weight" and s["x_q"] == "dec.blk.{i}.cross_attn_q.weight"

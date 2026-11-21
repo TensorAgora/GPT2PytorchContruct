@@ -45,11 +45,14 @@ def tabled_scheme(hf_scheme: dict, arch: str) -> dict | None:
     for role, key in hf_scheme.items():
         if not isinstance(key, str):
             continue
-        ts = hf_tensor(key, arch)
+        ts, at = hf_tensor(key, arch), None
+        if not ts and (n := re.search(r"\.(\d+)\.", key)):  # one fixed block (T5's block.0 relative_attention_bias)
+            ts, at = hf_tensor(f"{key[:n.start()]}.{{i}}.{key[n.end():]}", arch), n.group(1)
         if not ts:
             return None
         m = re.search(r"\.(weight|bias|\{what\})$", key)
-        out[role] = names[ts[0]] + (m.group() if m else "")
+        name = names[ts[0]] + (m.group() if m else "")
+        out[role] = name.replace("{i}", at).replace("{bid}", at) if at else name
     return out
 
 

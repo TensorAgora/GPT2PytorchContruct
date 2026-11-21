@@ -16,29 +16,36 @@
  },
  "hyperparameters": {
   "L": [
-   "num_layers"
+   "num_layers",
+   "gguf:<arch>.block_count"
   ],
   "Ld": [
    "num_decoder_layers",
    "=L"
   ],
   "D": [
-   "d_model"
+   "d_model",
+   "gguf:<arch>.embedding_length"
   ],
   "Hq": [
-   "num_heads"
+   "num_heads",
+   "gguf:<arch>.attention.head_count"
   ],
   "Dh": [
-   "d_kv"
+   "d_kv",
+   "gguf:<arch>.attention.key_length"
   ],
   "F": [
-   "d_ff"
+   "d_ff",
+   "gguf:<arch>.feed_forward_length"
   ],
   "V": [
-   "vocab_size"
+   "vocab_size",
+   "shape:token_embd.weight[0]"
   ],
   "Nb": [
    "relative_attention_num_buckets",
+   "gguf:<arch>.attention.relative_buckets_count",
    "=32"
   ],
   "Md": [
@@ -47,10 +54,12 @@
   ],
   "eps": [
    "layer_norm_epsilon",
+   "gguf:<arch>.attention.layer_norm_rms_epsilon",
    "=1e-6"
   ],
   "tie": [
    "tie_word_embeddings",
+   "missing:gguf:output.weight",
    "=1"
   ]
  },

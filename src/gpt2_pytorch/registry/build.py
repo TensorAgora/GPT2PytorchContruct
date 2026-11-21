@@ -287,7 +287,9 @@ def seq2seq(d: dict, h: dict, scheme: str, name: str, cfg: dict, names=()):
 
     def ffn(tag, i, x, at, role_prefix):
         with b.within(at, "FeedForward"):
-            if t5 and cfg.get("feed_forward_proj", "relu").startswith("gated"):
+            # gated-GELU (v1.1 / mT5) per the config, or, with no config (GGUF), per the stored gate tensor
+            gated = cfg.get("feed_forward_proj", "relu").startswith("gated") if cfg else b.key(f"{role_prefix}wi0", i=i)[0] in names
+            if t5 and gated:
                 g = gelu_tanh(b, f"{tag}G_{i}", b.C(f"{tag}G_{i}.mm", x, b.param(f"W{tag}g_{i}", ["F", "D"], f"{role_prefix}wi0", i=i), "D"))
                 u = b.C(f"{tag}U_{i}", x, b.param(f"W{tag}u_{i}", ["F", "D"], f"{role_prefix}wi1", i=i), "D")
                 hdn = b.E("mul", f"{tag}H_{i}", g, u)

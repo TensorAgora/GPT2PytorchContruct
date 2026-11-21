@@ -41,7 +41,7 @@ bert 1,170 / 1,237, roberta + xlm-roberta 823 / 870, distilbert 186 / 189, t5 + 
 2,547 = 2,737 − the 190 misses below. Path B adds modernbert 488, deberta-v2 280, electra 58, mpnet 33, tapas 25,
 albert 15, esm 10 (encoder) and mbart 38, m2m_100 18, pegasus 9, marian 5 (encoder_decoder).
 
-Misses (190): t5/mt5 GGUF with no generated scheme (32: llama.cpp's `enc.` / `dec.` names), BERT / XLM-R GGUF
+Misses (190): t5/mt5 GGUF with no generated scheme (32: llama.cpp's `enc.` / `dec.` names; bound after this record by tabled_scheme + GGUF hyper sources + gate presence), BERT / XLM-R GGUF
 embedders whose binding fails (26: bge-m3, snowflake-arctic, jina qkv-fused), remote code (35), gated (9), BART/T5
 classification heads and T5 encoder-only cross-encoders (22), custom heads and variants (ColBERT `linear`,
 `distance_embedding`, `scorer`, geneformer, gena-lm: ~20), no candidates (~17). After this record: BART without
