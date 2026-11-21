@@ -4,8 +4,6 @@
 
 State: **DESIGNED**. Tasks closed: 0/4. Depends on: 06f, 05d, 09a. Blocks: nothing.
 
-Waiting on: 06f (must be DONE before stages that need dependencies).
-
 Next: `07f.B.P1.T1` [network] Run `python -m tools.hf_graph --all` at the D3-sized concurrency, then `--coverage`
 
 `[x]` done, `[~]` awaiting verification, `[-]` skipped, `[ ]` open. Boxes change only through the plan tool.

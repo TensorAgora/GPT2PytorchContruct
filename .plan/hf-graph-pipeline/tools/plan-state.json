@@ -1427,7 +1427,7 @@
       "blocked": null
     },
     "07d": {
-      "state": "BUILT",
+      "state": "DONE",
       "stages": {
         "A": {
           "status": "done",
@@ -1442,7 +1442,10 @@
           "at": "2026-11-21T06:23:55+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "VLM and draft rows bind with every tensor classed",
+          "evidence": "",
+          "at": "2026-11-21T11:02:53+00:00"
         }
       },
       "tasks": {
@@ -1463,6 +1466,12 @@
           "reason": "qwen3_vl, qwen2_5_vl(+v2), gemma3(+v2) wrappers; C1 PASS on fixtures (draft heads deferred, DESIGN)",
           "evidence": "",
           "at": "2026-11-20T20:12:11+00:00"
+        },
+        "07d.C.P1.T1": {
+          "status": "done",
+          "reason": "vlm 3035 + draft 12 rows terminal; 0 failed:unclassified_tensor; 0 ok/partial/ok_assumed reports with unclaimed>0; coverage rebuilt",
+          "evidence": "",
+          "at": "2026-11-21T11:02:53+00:00"
         }
       },
       "transitions": [
@@ -1484,6 +1493,13 @@
           "to": "BUILT",
           "at": "2026-11-21T06:23:55+00:00",
           "reason": "Stage B Build complete: 07d B tasks done; 07c dependency closed",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-21T11:02:53+00:00",
+          "reason": "Stage C Integrate complete: VLM and draft rows bind with every tensor classed",
           "evidence": ""
         }
       ],
@@ -1569,7 +1585,7 @@
       "blocked": null
     },
     "06f": {
-      "state": "DESIGNED",
+      "state": "DONE",
       "stages": {
         "A": {
           "status": "done",
@@ -1578,10 +1594,16 @@
           "at": "2026-11-20T20:48:29+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "07d and 07e done; trace path built",
+          "evidence": "",
+          "at": "2026-11-21T11:02:53+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "library trace rows bound across vision and diffusion",
+          "evidence": "",
+          "at": "2026-11-21T11:03:10+00:00"
         }
       },
       "tasks": {
@@ -1614,6 +1636,12 @@
           "reason": "conformance --c2: 19 PASS, 11 n/a (no upstream class/fixture config), 0 FAIL",
           "evidence": "",
           "at": "2026-11-20T20:48:39+00:00"
+        },
+        "06f.C.P1.T1": {
+          "status": "done",
+          "reason": "path-B ok/partial rows: vision 1670 ok, diffusion 192 ok + 2062 partial; trust_remote_code only read as a catalog flag, never set",
+          "evidence": "",
+          "at": "2026-11-21T11:03:10+00:00"
         }
       },
       "transitions": [
@@ -1628,6 +1656,20 @@
           "to": "DESIGNED",
           "at": "2026-11-20T20:48:29+00:00",
           "reason": "Stage A Design complete: design written",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-21T11:02:53+00:00",
+          "reason": "Stage B Build complete: 07d and 07e done; trace path built",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-21T11:03:10+00:00",
+          "reason": "Stage C Integrate complete: library trace rows bound across vision and diffusion",
           "evidence": ""
         }
       ],
