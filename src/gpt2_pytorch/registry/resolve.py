@@ -165,7 +165,7 @@ def _trace_descriptor(lib: str, cls: str) -> dict:
     import importlib.metadata as md
     version = md.version({"timm": "timm", "diffusers": "diffusers", "transformers": "transformers"}[lib])
     return {"id": f"trace_{lib}_{cls}", "version": version, "match": {}, "hyperparameters": {}, "schemes": {"hf": {}},
-            "recipe": {"template": "trace"}, "ties": {}, "ignored": ["*.num_batches_tracked", "*.position_ids"], "components": [],
+            "recipe": {"template": "trace"}, "ties": {}, "ignored": ["*.num_batches_tracked", "*.position_ids", "*.rotary_emb.inv_freq"], "components": [],
             "provenance": {"certainty": "traced", "path": "B", "ported_from": f"{lib} {version} class {cls}, torch.export on meta"}}
 
 
@@ -208,7 +208,9 @@ def _path_b(manifest, row, name, cfg, cands, res):
             except (TraceError, Exception) as e:  # noqa: BLE001 - a class that cannot be built or exported is a near-miss
                 res.near_misses.append(miss | {"reason": f"path B: {type(e).__name__}: {e}"[:300]})
                 continue
-            expected, fix = _align_prefix(graph, expected, stored)
+            view = _renamed(stored, info.get("renames", []))  # the name the class gives each stored key -> stored key
+            expected, fix0 = _align_prefix(graph, expected, set(view))
+            expected, fix = _through(graph, expected, view), (lambda k, f=fix0: view.get(f(k), f(k)))
             aliases = _ties(graph, expected, info["ties"], fix, stored)
             dropped = [k for k in stored if any(re.search(rx, k) for rx in info["ignore_re"])]
             d = {**d, "ignored": d["ignored"] + dropped + [k for u in info["unused"] if (k := fix(u)) in stored and k not in aliases]}
@@ -243,6 +245,25 @@ def _ties(graph: dict, expected: list, ties: dict, fix, stored: set) -> dict:
             e["checkpoint_key"] = keyed[e["name"]]["checkpoint_key"] = here[0]
         aliases.update({n: e["name"] for n in here if n != e["checkpoint_key"]})
     return aliases
+
+
+def _renamed(stored: set, renames: list) -> dict:
+    """{key as the class's load-time renames spell it: stored key}"""
+    out = {}
+    for s in stored:
+        n = s
+        for rx, to in renames:
+            n = re.sub(rx, to, n)
+        out[n] = s
+    return out
+
+
+def _through(graph: dict, expected: list, view: dict) -> list:
+    """Checkpoint keys from the class's spelling back to the stored names (graph tensors too)."""
+    for t in graph["tensors"]:
+        if t.get("checkpoint_key") in view:
+            t["checkpoint_key"] = view[t["checkpoint_key"]]
+    return [e | {"checkpoint_key": view.get(e["checkpoint_key"], e["checkpoint_key"])} for e in expected]
 
 
 def _align_prefix(graph: dict, expected: list, stored: set) -> list:

@@ -10,7 +10,8 @@
    "Qwen2ForCausalLM"
   ],
   "gguf_architecture": [
-   "qwen2"
+   "qwen2",
+   "llama"
   ]
  },
  "recipe": {

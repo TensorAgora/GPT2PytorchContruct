@@ -415,4 +415,17 @@ def _trace(library: str, cls: str, cfg: dict, name: str = "model", kind: str = "
     ties = {n: names for names in groups.values() if len(names) > 1 for n in names}
     # stored keys the class itself tells transformers to drop on load (GPT-2's old attn.bias masks, T5's spare bias)
     ignore_re = list(getattr(model, "_keys_to_ignore_on_load_unexpected", None) or [])
-    return g, expected, {"unused": unused, "ties": ties, "ignore_re": ignore_re}
+    return g, expected, {"unused": unused, "ties": ties, "ignore_re": ignore_re, "renames": load_renames(library, model)}
+
+
+def load_renames(library: str, model) -> list:
+    """[(stored-key regex, replacement)]: the key renames transformers applies on load (GPT-NeoX's embed_out ->
+    lm_head, LayerNorm gamma/beta); tensor-changing converters (split, concat, permute) are not renames."""
+    if library != "transformers":
+        return []
+    try:
+        from transformers.conversion_mapping import WeightRenaming, get_model_conversion_mapping
+    except ImportError:
+        return []
+    return [(c.source_patterns[0], c.target_patterns[0]) for c in get_model_conversion_mapping(model)
+            if type(c) is WeightRenaming and len(c.source_patterns) == len(c.target_patterns) == 1]

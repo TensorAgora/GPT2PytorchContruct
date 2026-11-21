@@ -61,3 +61,13 @@ def test_denoiser_inputs_cover_sdxl_and_dit_classes():
     args, kw = denoiser_inputs("FluxTransformer2DModel", flux)
     assert list(args[0].shape) == [1, 16, 64] and "guidance" in kw and list(kw["img_ids"].shape) == [16, 3]
     assert denoiser_inputs("MiniMaxH3Transformer3DModel", {}) is None
+
+
+def test_load_renames_map_stored_keys_to_the_class_names():
+    from gpt2_pytorch.registry.resolve import _renamed, _through
+    view = _renamed({"embed_out.weight", "enc.LayerNorm.gamma", "wte.weight"},
+                    [(r"^embed_out\.", "lm_head."), ("LayerNorm.gamma", "LayerNorm.weight")])
+    assert view == {"lm_head.weight": "embed_out.weight", "enc.LayerNorm.weight": "enc.LayerNorm.gamma", "wte.weight": "wte.weight"}
+    g = {"tensors": [{"checkpoint_key": "lm_head.weight"}]}
+    assert _through(g, [{"checkpoint_key": "lm_head.weight"}], view)[0]["checkpoint_key"] == "embed_out.weight"
+    assert g["tensors"][0]["checkpoint_key"] == "embed_out.weight"

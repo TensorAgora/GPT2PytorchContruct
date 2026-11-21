@@ -64,6 +64,12 @@
     "blk.{i}.attn_k_norm.weight": 1,
     "output_norm.weight": 1
    }
+  },
+  "mistral3": {
+   "rope_permute": {
+    "blk.{i}.attn_q.weight": "Hq",
+    "blk.{i}.attn_k.weight": "Hkv"
+   }
   }
  },
  "hf": {

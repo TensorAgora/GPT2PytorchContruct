@@ -31,3 +31,9 @@ R3 proposes llama, `ok_assumed`, multipliers not drawn), the long tail under 80 
 `python -m tools.conformance ID... | --all` (C1 fixture binding, C3 gguf-py names, C4 totals vs golden or the per-block
 closed form, C5 hostile inputs, C6 determinism); `tests/test_conformance.py` runs it for every descriptor. The closed form
 (`block_counts`) is checked against every golden it applies to.
+
+Later fixes (2026-11-21, run 6 review): Mistral3ForConditionalGeneration assemblies (`mistral3`, `mistral3_v2`: the
+mistral text model + Pixtral vision tower as a component; Magistral, Devstral, Ministral-3), GGUF arch `mistral3`
+→ llama (with llama.cpp's Q/K permutation), llama-arch GGUFs with q/k/v biases (QwQ conversions) → qwen2, and
+path B applies the class's load-time key renames (`transformers.conversion_mapping` WeightRenaming: GPT-NeoX
+`embed_out` → `lm_head`) and ignores stored `rotary_emb.inv_freq` buffers (Pythia, Polyglot).

@@ -9,7 +9,8 @@
    "LlamaForCausalLM"
   ],
   "gguf_architecture": [
-   "llama"
+   "llama",
+   "mistral3"
   ]
  },
  "hyperparameters": {
