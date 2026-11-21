@@ -94,6 +94,67 @@ def make_model(library: str, cls: str, cfg: dict, kind: str = "causal"):
     return m.eval()
 
 
+def denoiser_inputs(cls: str, c: dict):
+    """(args, kwargs) for a diffusers denoiser on meta: a small latent, 8 text tokens, one timestep; None for a class
+    without a table entry (MiniMax-H3, Z-Image and the like need data-dependent index tensors or tensor lists)."""
+    import torch
+    m = {"device": "meta"}
+    e = lambda *s: torch.empty(*s, **m)  # noqa: E731
+    t, kw = torch.ones(1, **m), {"return_dict": False}
+    if cls.startswith("UNet2D"):
+        s = 8 if c.get("sample_size") is None else min(int(c["sample_size"] if not isinstance(c["sample_size"], (list, tuple)) else c["sample_size"][0]), 16)
+        if c.get("cross_attention_dim"):
+            dim = c["cross_attention_dim"]
+            kw["encoder_hidden_states"] = e(1, 8, dim if isinstance(dim, int) else dim[0])
+        if c.get("addition_embed_type") == "text_time":  # SDXL: pooled text embeds + 6 micro-conditioning ids
+            kw["added_cond_kwargs"] = {"text_embeds": e(1, c["projection_class_embeddings_input_dim"] - 6 * c["addition_time_embed_dim"]),
+                                       "time_ids": e(1, 6)}
+        if c.get("class_embed_type") is not None or c.get("num_class_embeds"):
+            kw["class_labels"] = e(1, c["projection_class_embeddings_input_dim"]) if c.get("class_embed_type") == "projection" \
+                else torch.zeros(1, dtype=torch.long, **m)
+        return (e(1, c["in_channels"], s, s), torch.tensor(1, **m)), kw
+    if cls == "ControlNetModel":  # the UNet's down half + a conditioning image at 8x the latent size
+        (x, ts), kw = denoiser_inputs("UNet2DConditionModel", c)
+        return (x, ts), kw | {"controlnet_cond": e(1, c.get("conditioning_channels") or 3, 8 * x.shape[-2], 8 * x.shape[-1])}
+    if cls == "FluxControlNetModel":  # Flux's inputs + a packed conditioning latent (+ a mode id for Union)
+        (x,), kw = denoiser_inputs("FluxTransformer2DModel", c)
+        kw["controlnet_cond"] = e(*x.shape)
+        if c.get("num_mode"):
+            kw["controlnet_mode"] = torch.zeros(1, 1, dtype=torch.long, **m)
+        return (x,), kw
+    if cls == "T2IAdapter":
+        return (e(1, c.get("in_channels") or 3, 64, 64),), {}
+    if cls in ("FluxTransformer2DModel", "Flux2Transformer2DModel"):  # packed latent [B, S, C] + per-token rope ids
+        n_ax = len(c.get("axes_dims_rope") or [16, 56, 56])
+        kw |= {"encoder_hidden_states": e(1, 8, c["joint_attention_dim"]), "timestep": t, "img_ids": e(16, n_ax), "txt_ids": e(8, n_ax)}
+        if cls == "FluxTransformer2DModel":
+            kw["pooled_projections"] = e(1, c["pooled_projection_dim"])
+        if c.get("guidance_embeds"):
+            kw["guidance"] = t
+        return (e(1, 16, c["in_channels"]),), kw
+    if cls == "SD3Transformer2DModel":
+        s = 4 * c.get("patch_size", 2)
+        kw |= {"encoder_hidden_states": e(1, 8, c["joint_attention_dim"]), "pooled_projections": e(1, c["pooled_projection_dim"]), "timestep": t}
+        return (e(1, c["in_channels"], s, s),), kw
+    if cls == "WanTransformer3DModel":
+        pt, ph, pw = c.get("patch_size") or (1, 2, 2)
+        kw |= {"timestep": t, "encoder_hidden_states": e(1, 8, c["text_dim"])}
+        if c.get("image_dim"):  # I2V: CLIP image tokens
+            kw["encoder_hidden_states_image"] = e(1, 8, c["image_dim"])
+        return (e(1, c["in_channels"], 2 * pt, 4 * ph, 4 * pw),), kw
+    if cls == "QwenImageTransformer2DModel":
+        kw |= {"encoder_hidden_states": e(1, 8, c["joint_attention_dim"]), "encoder_hidden_states_mask": torch.ones(1, 8, **m),
+               "timestep": t, "img_shapes": [[(1, 4, 4)]]}
+        if c.get("guidance_embeds"):
+            kw["guidance"] = t
+        return (e(1, 16, c["in_channels"]),), kw
+    if cls == "LTXVideoTransformer3DModel":
+        kw |= {"encoder_hidden_states": e(1, 8, c["caption_channels"]), "timestep": t, "encoder_attention_mask": torch.ones(1, 8, **m),
+               "num_frames": 2, "height": 4, "width": 2}
+        return (e(1, 16, c["in_channels"]),), kw
+    return None
+
+
 def example_inputs(library: str, cls: str, cfg: dict, model, kind: str = "causal"):
     import torch
     meta = {"device": "meta"}
@@ -115,15 +176,8 @@ def example_inputs(library: str, cls: str, cfg: dict, model, kind: str = "causal
         if c.is_encoder_decoder and "decoder_input_ids" in params:
             kw["decoder_input_ids"] = torch.zeros(1, 8, dtype=torch.long, **meta)
         return (x,), kw
-    if cls.startswith("UNet2D"):
-        c = model.config
-        s = 8 if c.get("sample_size") is None else min(int(c["sample_size"] if not isinstance(c["sample_size"], (list, tuple)) else c["sample_size"][0]), 16)
-        args = (torch.empty(1, c["in_channels"], s, s, **meta), torch.tensor(1, **meta))
-        kw = {"return_dict": False}
-        if c.get("cross_attention_dim"):
-            dim = c["cross_attention_dim"]
-            kw["encoder_hidden_states"] = torch.empty(1, 8, dim if isinstance(dim, int) else dim[0], **meta)
-        return args, kw
+    if (got := denoiser_inputs(cls, dict(model.config))) is not None:
+        return got
     if cls.startswith("Autoencoder"):
         return (torch.empty(1, model.config["in_channels"], 16, 16, **meta),), {"return_dict": False}
     raise TraceError(f"no example inputs for {library}:{cls}")

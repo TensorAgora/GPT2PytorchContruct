@@ -186,12 +186,14 @@ def _path_b(manifest, row, name, cfg, cands, res):
         lib, cls = c.library_class.split(":", 1)
         sub, ccfg, comps = manifest, cfg, None
         if lib == "diffusers":
-            path = next((p for p, v in small.items() if isinstance(v, dict) and v.get("_class_name") == cls and "/" in p), None)
+            # a pipeline folder's config, or a single model's root config.json (ControlNet, T2I-Adapter, a bare UNet)
+            path = next((p for p, v in small.items() if isinstance(v, dict) and v.get("_class_name") == cls
+                         and ("/" in p or p == "config.json")), None)
             if path is None:
                 continue  # a pipeline class names no weights of its own
-            folder = path.rsplit("/", 1)[0] + "/"
+            folder = path.rsplit("/", 1)[0] + "/" if "/" in path else ""
             ccfg = small[path]
-            sub = {**manifest, "tensors": [t for t in manifest["tensors"] if t["file"].startswith(folder)]}
+            sub = {**manifest, "tensors": [t for t in manifest["tensors"] if (t["file"].startswith(folder) if folder else "/" not in t["file"])]}
             comps = []
             for f in sorted({t["file"].split("/", 1)[0] for t in manifest["tensors"] if "/" in t["file"]} - {folder.rstrip("/")}):
                 ts = [t for t in manifest["tensors"] if t["file"].startswith(f + "/")]

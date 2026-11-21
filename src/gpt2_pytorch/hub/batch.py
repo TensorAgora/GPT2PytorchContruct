@@ -21,7 +21,7 @@ TERMINAL = ("ok", "ok_assumed", "partial", "no_graph", "skipped:", "failed:")
 # re-run on restart: outages are not facts about the repo
 TRANSIENT = ("failed:http_0", "failed:http_429", "failed:http_5", "failed:exception_")
 # re-run when the registry changed: a new descriptor may now resolve them
-REGISTRY_BOUND = ("no_graph", "ok_assumed", "skipped:remote_code")
+REGISTRY_BOUND = ("no_graph", "ok_assumed", "partial", "skipped:remote_code")  # partial: a better graph may exist (D-20)
 
 
 def needs_run(rec: dict | None, registry: str) -> bool:

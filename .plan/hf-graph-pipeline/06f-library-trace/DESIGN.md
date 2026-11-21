@@ -53,3 +53,13 @@ Result: PASS for all 19 descriptors with an upstream class; 11 are n/a (VLM asse
 components from the resolution), `tensorprog/program.py` (Opaque equation), `schemas/viz-graph-v1.schema.json`
 (`Opaque` enum), `registry/descriptor.py` (index_sets clipped to L), `tools/conformance.py` (`--c2`),
 `tests/test_trace.py`, `tests/test_pipeline.py` (`path_b`), `tests/test_model.py` (trace.py exempt, D-21).
+
+## Denoiser inputs (06f.C, 2026-11-21)
+
+The first catalog pass traced only VAEs for most DiT repos (466 `partial` rows were AutoencoderKL graphs) and failed
+555 SDXL UNets (`added_cond_kwargs` missing). `trace.denoiser_inputs` holds one row per class: UNet2D* (SDXL
+`text_time` ids, class labels), ControlNetModel, FluxControlNetModel, T2IAdapter, Flux / Flux2, SD3, Wan, QwenImage,
+LTX-Video; each traces in 3-10 s at < 0.8 GB per worker with every stored parameter bound. Root `config.json`
+single-model repos (ControlNet, T2I-Adapter, bare UNet) are path-B candidates. Still "no example inputs":
+MiniMax-H3, Z-Image (data-dependent index tensors / tensor lists), LTX-2, CogVideoX, HiDream, Cosmos, Krea2,
+video UNets. A registry change re-queues `partial` rows (D-20), so these reach the VAE-only rows.

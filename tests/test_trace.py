@@ -49,3 +49,15 @@ def test_path_b_binds_transformers_checkpoints_without_descriptors(repo, tmp_pat
     rep = json.loads((r.dir / "report.json").read_text())
     assert r.status == "ok" and rep["winner"]["path"] == "B", rep.get("near_misses")
     assert check(load_graph(r.dir), load_json(r.dir / "manifest.json")) == []
+
+
+def test_denoiser_inputs_cover_sdxl_and_dit_classes():
+    from gpt2_pytorch.registry.trace import denoiser_inputs
+    sdxl = {"in_channels": 4, "sample_size": 128, "cross_attention_dim": 2048, "addition_embed_type": "text_time",
+            "projection_class_embeddings_input_dim": 2816, "addition_time_embed_dim": 256}
+    _, kw = denoiser_inputs("UNet2DConditionModel", sdxl)
+    assert list(kw["added_cond_kwargs"]["text_embeds"].shape) == [1, 1280] and list(kw["added_cond_kwargs"]["time_ids"].shape) == [1, 6]
+    flux = {"in_channels": 64, "joint_attention_dim": 4096, "pooled_projection_dim": 768, "guidance_embeds": True}
+    args, kw = denoiser_inputs("FluxTransformer2DModel", flux)
+    assert list(args[0].shape) == [1, 16, 64] and "guidance" in kw and list(kw["img_ids"].shape) == [16, 3]
+    assert denoiser_inputs("MiniMaxH3Transformer3DModel", {}) is None

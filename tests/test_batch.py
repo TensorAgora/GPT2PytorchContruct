@@ -72,3 +72,9 @@ def test_backlog(tmp_path):
     assert [(r["key"], int(r["rows_unlocked"])) for r in rows] == [("mystery", 2)]
     with open(out / "coverage.csv") as f:
         assert sum(int(r["rows"]) for r in csv.DictReader(f) if r["status"] == "no_graph") == 2
+
+
+def test_registry_change_requeues_partial_but_not_ok():
+    from gpt2_pytorch.hub.batch import needs_run
+    assert needs_run({"status": "partial", "registry": "a"}, "b") and not needs_run({"status": "partial", "registry": "b"}, "b")
+    assert not needs_run({"status": "ok", "registry": "a"}, "b")
