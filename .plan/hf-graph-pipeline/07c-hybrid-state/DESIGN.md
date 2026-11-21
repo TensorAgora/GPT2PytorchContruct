@@ -28,3 +28,13 @@ group of that recurrence in `groups`. qwen3.8-27b-fp8: 5,088 step ops annotated,
 
 Predicted rows unlocked: lfm2 107 + jamba 71 = 178 safetensors rows (LFM2's final norm is `TOKEN_EMBD_NORM` in gguf-py,
 role `embd_norm`).
+
+## Observed (07c.C, 2026-11-21 catalog run)
+
+decoder_hybrid + decoder_hybrid_moe: jamba 74 ok of 74; lfm2 94 ok safetensors + 11 GGUF (MLX and GGUF layouts bound
+after 06d). 168 ≥ 178 − the misses below. Beyond the prediction: qwen35 GGUF 142 ok + 58 partial (MTP block as a
+component), falcon_h1 38 and granitemoehybrid 15 through path B.
+
+Misses: LFM2.5 bidirectional encoders / embedders / ColBERT (`Lfm2Bidirectional*`, auto_map: remote code, 10 + 4
+GGUF), one LoRA adapter (`base_model.model.*.lora_A`), the LFM2-ColBERT GGUF `dense_2` head. Not this wave:
+qwen3_next, qwen35moe, lfm2_moe, nemotron_h(_moe) (routed experts stay on path A; no descriptor yet).

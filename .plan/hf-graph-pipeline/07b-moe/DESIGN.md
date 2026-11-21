@@ -42,3 +42,16 @@ glm_moe_dsa 52, deepseek_v4 37, deepseek_v2 34.
   query LoRA (`q_lora_rank: null` → `q_proj` directly). Fixture `deepseek-ai/DeepSeek-V2-Lite`.
 - Not this wave: gpt_oss (attention sinks, alternating sliding windows, biased MXFP4 experts need new blocks; its
   transformers class is a path-B candidate, 06f), glm_moe_dsa and deepseek_v4 (sparse-attention indexer).
+
+## Observed (07b.C, 2026-11-21 catalog run)
+
+decoder_moe catalog rows, keyed by catalog `model_type`: qwen3_moe 126 ok of 132 (101 safetensors incl. MLX stacked
+`switch_mlp` experts and NVFP4 + 25 GGUF `qwen3moe`); deepseek_v2 16 ok of 34. Beyond the prediction:
+deepseek_v3 19 ok + 24 partial (MTP layer as component; `deepseek_v3_direct` binds q_lora_rank-null / multi-shared-
+expert V3s: Moonlight, Kanana-2, GigaChat3), mixtral 69 ok. 142 ≥ 166 − the 24 misses below.
+
+Misses: qwen3_moe 6 (colibri `merged_weight`/`qs` custom packing, 3 tiny-random configs whose layers are dense,
+Loopie's looped config, 1 index 401); deepseek_v2 18 (12 ESFT expert-only deltas: no embedding or attention stored;
+6 GGUF rows the catalog flags as remote code). Known class not bound: llama.cpp's split MLA GGUF form
+(`attn_k_b` / `attn_v_b` in place of `attn_kv_b`, head dims only in `key_length_mla`) — GLM-4.7-Flash, Kimi-K2,
+DeepSeek-R1-0528 GGUFs (~14 rows).

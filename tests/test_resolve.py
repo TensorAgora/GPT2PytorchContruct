@@ -31,6 +31,12 @@ def test_remote_code_without_matching_architecture_is_skipped():
     assert candidates(synthetic(cfg)) == ([], "skipped:remote_code")
 
 
+def test_gguf_architecture_survives_a_remote_code_flag():  # D-24
+    m = synthetic({}, fmt="gguf") | {"gguf": {"kv": {"general.architecture": "qwen3"}}}
+    cands, status = candidates(m, {"trust_remote_code": "true"})
+    assert status is None and [(c.descriptor, c.rung) for c in cands] == [("qwen3", "R1")]
+
+
 def test_diffusers_and_timm_give_library_classes():
     cands, _ = candidates(synthetic({}, {"model_index.json": {"_class_name": "StableDiffusionPipeline"},
                                          "unet/config.json": {"_class_name": "UNet2DConditionModel"}}))

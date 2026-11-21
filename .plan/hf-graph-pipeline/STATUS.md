@@ -4,7 +4,7 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.3).
 
-Tasks closed: 100 of 109. Modules: DONE 14, BUILT 2, DESIGNED 4.
+Tasks closed: 102 of 109. Modules: DONE 16, BUILT 2, DESIGNED 2.
 
 ## Per module
 
@@ -24,14 +24,14 @@ Tasks closed: 100 of 109. Modules: DONE 14, BUILT 2, DESIGNED 4.
 | [06e](06e-sidecars/TASKS.md) | Quantization sidecar binding | 1 | DONE | - | 4/4 | - |
 | [07a](07a-dense-descriptors/TASKS.md) | Conformance runner and top dense-decoder descriptors | 1 | DONE | - | 5/5 | - |
 | [09b](09b-tel-python-port/TASKS.md) | Python T♭ printer and decoder (T-2) | 1 | DONE | - | 4/4 | - |
-| [07b](07b-moe/TASKS.md) | Routed MoE annotations, expert storage forms, MoE descriptors | 2 | BUILT | C | 5/6 | - |
-| [07c](07c-hybrid-state/TASKS.md) | Delta rule, Mamba, layer selectors, scan annotation, hybrid descriptors | 3 | DESIGNED | B | 4/5 | 07b |
-| [07d](07d-assemblies/TASKS.md) | VLM assemblies, MTP and draft heads | 4 | DESIGNED | B | 3/4 | 07c, 07b |
+| [07b](07b-moe/TASKS.md) | Routed MoE annotations, expert storage forms, MoE descriptors | 2 | DONE | - | 6/6 | - |
+| [07c](07c-hybrid-state/TASKS.md) | Delta rule, Mamba, layer selectors, scan annotation, hybrid descriptors | 3 | DONE | - | 5/5 | - |
+| [07d](07d-assemblies/TASKS.md) | VLM assemblies, MTP and draft heads | 4 | BUILT | C | 3/4 | - |
 | [07e](07e-encoders/TASKS.md) | BERT family and T5/BART descriptors | 5 | BUILT | C | 3/4 | - |
-| [06f](06f-library-trace/TASKS.md) | Path B library trace and the C2 signature check | 6 | DESIGNED | B | 5/6 | 07b, 07c, 07d, 07e |
+| [06f](06f-library-trace/TASKS.md) | Path B library trace and the C2 signature check | 6 | DESIGNED | B | 5/6 | 07d, 07e |
 | [07f](07f-full-run/TASKS.md) | Full catalog run, category READMEs, TEL round trip over all graphs | 7 | DESIGNED | B | 0/4 | 06f |
 
 ## Next actions
 
-- 07b stage C: `07b.C.P1.T2` [network] Re-run decoder_moe rows and `--coverage`
+- 07d stage C: `07d.C.P1.T1` [network] Run multimodal_vlm and speculative_draft rows and `--coverage`
 - 07e stage C: `07e.C.P1.T1` [network] Run encoder and encoder_decoder rows and `--coverage`

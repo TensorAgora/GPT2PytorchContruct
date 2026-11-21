@@ -82,7 +82,8 @@ def candidates(manifest: dict, row: dict | None = None) -> tuple[list[Candidate]
         if row.get(col):
             out.append(Candidate(None, "R2", f"catalog {col}", 0.5, f"{lib}:{row[col]}"))
     if needs_remote_code(cfg, row):
-        out = [c for c in out if c.descriptor in by_arch and "architectures=" in c.evidence]
+        # D-24: a GGUF file runs as its llama.cpp architecture (R1), never the repo's Python
+        out = [c for c in out if c.rung == "R1" or c.descriptor in by_arch and "architectures=" in c.evidence]
         if not out:
             return [], "skipped:remote_code"
     if not any(c.descriptor for c in out):

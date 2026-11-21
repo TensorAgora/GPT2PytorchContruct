@@ -1251,7 +1251,7 @@
       "blocked": null
     },
     "07b": {
-      "state": "BUILT",
+      "state": "DONE",
       "stages": {
         "A": {
           "status": "done",
@@ -1266,7 +1266,10 @@
           "at": "2026-11-21T00:10:45+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "07b C tasks done; decoder_moe coverage recorded",
+          "evidence": "",
+          "at": "2026-11-21T06:23:48+00:00"
         }
       },
       "tasks": {
@@ -1299,6 +1302,12 @@
           "reason": "mixtral + deepseek-v3 goldens rebuild with 0 diffs; active_flops 204,346,490,880 and 586,829,070,336 match hand counts",
           "evidence": "",
           "at": "2026-11-21T00:10:57+00:00"
+        },
+        "07b.C.P1.T2": {
+          "status": "done",
+          "reason": "decoder_moe 934 terminal; coverage.csv ok 251 + partial 25; qwen3_moe 126/132 + deepseek_v2 16/34 = 142 = prediction 166 minus 24 listed misses (07b DESIGN Observed)",
+          "evidence": "",
+          "at": "2026-11-21T06:23:48+00:00"
         }
       },
       "transitions": [
@@ -1321,12 +1330,19 @@
           "at": "2026-11-21T00:10:45+00:00",
           "reason": "Stage B Build complete: build tasks done; deps done",
           "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-21T06:23:48+00:00",
+          "reason": "Stage C Integrate complete: 07b C tasks done; decoder_moe coverage recorded",
+          "evidence": ""
         }
       ],
       "blocked": null
     },
     "07c": {
-      "state": "DESIGNED",
+      "state": "DONE",
       "stages": {
         "A": {
           "status": "done",
@@ -1335,10 +1351,16 @@
           "at": "2026-11-20T20:08:15+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "07c B tasks done; 07b dependency closed",
+          "evidence": "",
+          "at": "2026-11-21T06:23:55+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "decoder_hybrid coverage recorded",
+          "evidence": "",
+          "at": "2026-11-21T06:23:55+00:00"
         }
       },
       "tasks": {
@@ -1365,6 +1387,12 @@
           "reason": "lfm2 + jamba descriptors with fixtures; conformance C1/C3/C4/C5/C6 PASS",
           "evidence": "",
           "at": "2026-11-20T20:08:16+00:00"
+        },
+        "07c.C.P1.T1": {
+          "status": "done",
+          "reason": "qwen3.8 golden 0 diffs (test_goldens + test_path_a_goldens pass); jamba 74/74 + lfm2 94 safetensors ok = 168 >= 178 minus 10 listed misses (07c DESIGN Observed)",
+          "evidence": "",
+          "at": "2026-11-21T06:23:55+00:00"
         }
       },
       "transitions": [
@@ -1380,12 +1408,26 @@
           "at": "2026-11-20T20:08:15+00:00",
           "reason": "Stage A Design complete: designed",
           "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-21T06:23:55+00:00",
+          "reason": "Stage B Build complete: 07c B tasks done; 07b dependency closed",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-21T06:23:55+00:00",
+          "reason": "Stage C Integrate complete: decoder_hybrid coverage recorded",
+          "evidence": ""
         }
       ],
       "blocked": null
     },
     "07d": {
-      "state": "DESIGNED",
+      "state": "BUILT",
       "stages": {
         "A": {
           "status": "done",
@@ -1394,7 +1436,10 @@
           "at": "2026-11-20T20:12:11+00:00"
         },
         "B": {
-          "status": "pending"
+          "status": "done",
+          "reason": "07d B tasks done; 07c dependency closed",
+          "evidence": "",
+          "at": "2026-11-21T06:23:55+00:00"
         },
         "C": {
           "status": "pending"
@@ -1432,6 +1477,13 @@
           "to": "DESIGNED",
           "at": "2026-11-20T20:12:11+00:00",
           "reason": "Stage A Design complete: designed",
+          "evidence": ""
+        },
+        {
+          "from": "DESIGNED",
+          "to": "BUILT",
+          "at": "2026-11-21T06:23:55+00:00",
+          "reason": "Stage B Build complete: 07d B tasks done; 07c dependency closed",
           "evidence": ""
         }
       ],

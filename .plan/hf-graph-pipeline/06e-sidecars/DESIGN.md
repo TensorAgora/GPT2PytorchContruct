@@ -21,4 +21,4 @@ When no `quant_method` is announced, the relations themselves select gptq vs awq
 
 `apply(manifest, cfg) -> Sidecars(stored, aux {sidecar: principal}, views {principal: text}, records [{tensor,
 principal, scheme}])`: `stored` is the manifest's tensors with logical principals in place of packed or missing ones.
-report.json `sidecars` = `records`.
+`records` go to sidecars.json.gz beside report.json, whose `sidecars` keeps the counts (D-23).
