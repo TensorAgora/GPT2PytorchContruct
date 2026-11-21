@@ -4,7 +4,7 @@
 
 Plan: HF weights → tensor manifest → graph JSON pipeline (version 2026-11-21.3).
 
-Tasks closed: 102 of 109. Modules: DONE 16, BUILT 2, DESIGNED 2.
+Tasks closed: 103 of 109. Modules: DONE 17, BUILT 1, DESIGNED 2.
 
 ## Per module
 
@@ -27,11 +27,10 @@ Tasks closed: 102 of 109. Modules: DONE 16, BUILT 2, DESIGNED 2.
 | [07b](07b-moe/TASKS.md) | Routed MoE annotations, expert storage forms, MoE descriptors | 2 | DONE | - | 6/6 | - |
 | [07c](07c-hybrid-state/TASKS.md) | Delta rule, Mamba, layer selectors, scan annotation, hybrid descriptors | 3 | DONE | - | 5/5 | - |
 | [07d](07d-assemblies/TASKS.md) | VLM assemblies, MTP and draft heads | 4 | BUILT | C | 3/4 | - |
-| [07e](07e-encoders/TASKS.md) | BERT family and T5/BART descriptors | 5 | BUILT | C | 3/4 | - |
-| [06f](06f-library-trace/TASKS.md) | Path B library trace and the C2 signature check | 6 | DESIGNED | B | 5/6 | 07d, 07e |
+| [07e](07e-encoders/TASKS.md) | BERT family and T5/BART descriptors | 5 | DONE | - | 4/4 | - |
+| [06f](06f-library-trace/TASKS.md) | Path B library trace and the C2 signature check | 6 | DESIGNED | B | 5/6 | 07d |
 | [07f](07f-full-run/TASKS.md) | Full catalog run, category READMEs, TEL round trip over all graphs | 7 | DESIGNED | B | 0/4 | 06f |
 
 ## Next actions
 
 - 07d stage C: `07d.C.P1.T1` [network] Run multimodal_vlm and speculative_draft rows and `--coverage`
-- 07e stage C: `07e.C.P1.T1` [network] Run encoder and encoder_decoder rows and `--coverage`

@@ -4,7 +4,7 @@
 
 State: **DESIGNED**. Tasks closed: 5/6. Depends on: 07b, 07c, 07d, 07e. Blocks: 07f.
 
-Waiting on: 07d, 07e (must be DONE before stages that need dependencies).
+Waiting on: 07d (must be DONE before stages that need dependencies).
 
 Next: close stage B with `complete-stage`
 

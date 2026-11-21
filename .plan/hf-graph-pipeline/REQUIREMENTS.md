@@ -50,7 +50,7 @@ Every requirement extracted from the master document, the module that owns it, a
 | R-41 | All four expert storage forms bind and descriptors cover the top decoder_moe keys | must | §4 (§15), §7 (Wave 2) | 07b | 4/4 | 07b |
 | R-42 | Delta-rule and Mamba blocks are selected per layer (layer_types, hybrid_override_pattern), unrolled steps carry execution {kind: scan, axis: T, step, body}, the qwen3.8-27b-fp8 golden stays structurally equal, and descriptors cover the top decoder_hybrid keys | must | §5.3 (D8), §7 (Wave 3) | 07c | 5/5 | 07c |
 | R-43 | Assemblies bind the VLM text tower and mark vision towers, projectors, MTP and draft heads bound or declared_without_graph in `components`, never silently dropped; no stored tensor falls outside a class | must | §4 (§7.3), §5.3, §7 (Wave 4) | 07d | 3/4 | 07d |
-| R-44 | BERT-family (bert, modernbert, xlm-roberta, roberta, deberta-v2, distilbert) and T5/BART (t5, mt5, bart, marian) descriptors pass C1 and C4 | must | §7 (Wave 5) | 07e | 3/4 | 07e |
+| R-44 | BERT-family (bert, modernbert, xlm-roberta, roberta, deberta-v2, distilbert) and T5/BART (t5, mt5, bart, marian) descriptors pass C1 and C4 | must | §7 (Wave 5) | 07e | 4/4 | 07e |
 | R-45 | C2: for every path-A descriptor with an upstream class, the tiny-config path-A matmul signature equals path B's, modulo dense-vs-routed experts | must | §6, §7 (Wave 6) | 06f | 1/1 | 06f |
 | R-46 | After the full run every job has one terminal status, the reports add up to the R-01 job count, and a re-run with unchanged shas is a no-op | must | §7 (Wave 7), §8.2 | 07f | 0/2 | 07f |
 | R-47 | Each output/categories/<category>/README.md summarizes that category's statuses, keys and near-misses | must | §5.4 | 07f | 0/1 | 07f |

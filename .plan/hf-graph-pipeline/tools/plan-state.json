@@ -1490,7 +1490,7 @@
       "blocked": null
     },
     "07e": {
-      "state": "BUILT",
+      "state": "DONE",
       "stages": {
         "A": {
           "status": "done",
@@ -1505,7 +1505,10 @@
           "at": "2026-11-21T00:10:45+00:00"
         },
         "C": {
-          "status": "pending"
+          "status": "done",
+          "reason": "encoder coverage recorded",
+          "evidence": "",
+          "at": "2026-11-21T08:19:00+00:00"
         }
       },
       "tasks": {
@@ -1526,6 +1529,12 @@
           "reason": "t5 (t5-small + mT5 fixture), bart_bare (bart-base): C1 + C4 PASS; marian deferred (DESIGN)",
           "evidence": "",
           "at": "2026-11-20T20:24:20+00:00"
+        },
+        "07e.C.P1.T1": {
+          "status": "done",
+          "reason": "encoder+encoder_decoder settled; every encoder descriptor C1/C4 PASS (bart now via bart-large-cnn fixture); 2,547 ok+partial = 2,737 prediction minus 190 listed misses (07e DESIGN Observed)",
+          "evidence": "",
+          "at": "2026-11-21T08:19:00+00:00"
         }
       },
       "transitions": [
@@ -1547,6 +1556,13 @@
           "to": "BUILT",
           "at": "2026-11-21T00:10:45+00:00",
           "reason": "Stage B Build complete: build tasks done; deps done",
+          "evidence": ""
+        },
+        {
+          "from": "BUILT",
+          "to": "DONE",
+          "at": "2026-11-21T08:19:00+00:00",
+          "reason": "Stage C Integrate complete: encoder coverage recorded",
           "evidence": ""
         }
       ],
