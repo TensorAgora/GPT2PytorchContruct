@@ -96,3 +96,9 @@ def test_kv_cache_scales_and_block_int8_are_aux():
                  ("model.layers.0.mlp.down_proj.weight", "I8", [256, 512]), ("model.layers.0.mlp.down_proj.weight_scale_inv", "F32", [2, 4])), {})
     assert s.aux == {f"{a}.k_proj.k_scale": f"{a}.k_proj.weight", f"{a}.v_proj.v_scale": f"{a}.kv_b_proj.weight",
                      "model.layers.0.mlp.down_proj.weight_scale_inv": "model.layers.0.mlp.down_proj.weight"}
+
+
+def test_exl3_row_scaled_embed_is_not_gptq():  # qweight [V, D] + scales [V]: unclaimed, not a crash
+    m = {"tensors": [T("e.qweight", [32, 8], "I8"), T("e.scales", [32])], "config": {"config.json": {}}}
+    b = verify(param("e.weight", [32, 8]), m, D)
+    assert not b.ok and {"e.qweight", "e.scales"} <= set(b.unclaimed)

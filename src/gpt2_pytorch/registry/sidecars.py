@@ -60,7 +60,8 @@ def apply(manifest: dict, cfg: dict | None = None) -> Sidecars:
                 s.attach(sc["key"], logical, "mxfp4")
                 s.views[logical] = f"mxfp4: {key} + {sc['key']} (E2M1, block 32)"
         # GPTQ / AWQ: P.qweight + qzeros + scales (+ g_idx) -> logical P.weight [out, in]
-        elif key.endswith(".qweight") and (sc := st.get(key.removesuffix(".qweight") + ".scales")):
+        elif key.endswith(".qweight") and (sc := st.get(key.removesuffix(".qweight") + ".scales")) and len(t["shape"]) == 2 == len(sc["shape"]):
+            # EXL3 stores an int8 embed as qweight [V, D] + per-row scales [V]: not GPTQ/AWQ, left unclaimed
             base, qw, scs = key.removesuffix(".qweight"), t["shape"], sc["shape"]
             gptq = method == "gptq" or (method != "awq" and qw[1] == scs[1])
             if gptq and qw[1] == scs[1]:
