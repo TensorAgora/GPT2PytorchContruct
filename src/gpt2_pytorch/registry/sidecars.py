@@ -79,11 +79,13 @@ def apply(manifest: dict, cfg: dict | None = None) -> Sidecars:
         # MLX: P.weight U32 packed + P.scales (+ P.biases; the mxfp modes have none). 6-bit packs 16 values per 3 words
         elif key.endswith(".scales") and (w := st.get(key.removesuffix(".scales") + ".weight")) and w["dtype"] == "U32":
             bi = st.get(key.removesuffix(".scales") + ".biases")
-            if t["shape"][0] == w["shape"][0] and (bi is None or t["shape"] == bi["shape"]) and w["shape"][-1] * 32 % bits == 0:
-                w.update(shape=w["shape"][:-1] + [w["shape"][-1] * 32 // bits], dtype=f"INT{bits}", packed=True)
+            own = q.get(key.removesuffix(".scales"))  # mixed precision: a per-tensor {bits, group_size} override
+            b = int(own.get("bits", bits)) if isinstance(own, dict) else bits
+            if t["shape"][0] == w["shape"][0] and (bi is None or t["shape"] == bi["shape"]) and w["shape"][-1] * 32 % b == 0:
+                w.update(shape=w["shape"][:-1] + [w["shape"][-1] * 32 // b], dtype=f"INT{b}", packed=True)
                 for k in [key] + ([bi["key"]] if bi else []):
                     s.attach(k, w["key"], "mlx")
-                s.views[w["key"]] = f"mlx {q.get('mode', 'affine')} {bits}-bit: {w['key']} + .scales{' / .biases' if bi else ''} (group {group})"
+                s.views[w["key"]] = f"mlx {q.get('mode', 'affine')} {b}-bit: {w['key']} + .scales{' / .biases' if bi else ''} (group {group})"
         # bitsandbytes LLM.int8: P.weight I8 + P.SCB (+ P.weight_format)
         elif key.endswith((".SCB", ".weight_format")) and (p := st.get(key.rsplit(".", 1)[0] + ".weight")) and p["dtype"] == "I8":
             s.attach(key, p["key"], "bitsandbytes_int8")

@@ -38,6 +38,18 @@ def stack_members(view: str) -> list[str]:
     return [f"{m['pre']}{j}{m['post']}" for j in range(int(m["a"]), int(m["b"]) + 1)] if m else []
 
 
+def conv_layout(want, got):
+    """A depthwise conv weight [C, 1, K] stored squeezed (GGUF: [C, K]) or kernel-major (MLX: [C, K, 1]): the same
+    numbers in another singleton layout, bound with the layout named."""
+    want, got = list(want), list(got)
+    if len(want) == 3 and want[1] == 1:
+        if got == [want[0], want[2]]:
+            return f"squeezed {got} (GGUF depthwise conv)"
+        if got == [want[0], want[2], 1]:
+            return f"{got} [C, K, 1] (MLX conv layout)"
+    return None
+
+
 def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None = None, fmt: dict | None = None) -> Binding:
     """`fmt` (resolved hyperparameter values) fills templated component prefixes such as `model.layers.{L}.`."""
     from .sidecars import apply as sidecar_rules
@@ -56,7 +68,10 @@ def verify(expected: list[dict], manifest: dict, d: dict, aliases: dict | None =
                 if len(view.split("]")[0].lstrip("[").split(",")) != len(t["shape"]):
                     b.misshaped.append([e["name"], key, view, t["shape"]])
             elif key not in sc.unchecked and list(t["shape"]) != list(e["shape"]):
-                b.misshaped.append([e["name"], key, e["shape"], t["shape"]])
+                if layout := conv_layout(e["shape"], t["shape"]):
+                    b.views[e["name"]] = layout
+                else:
+                    b.misshaped.append([e["name"], key, e["shape"], t["shape"]])
             claim[key], owner[key] = "bound", e["name"]
         elif members := stack_members(view):
             for k in members:

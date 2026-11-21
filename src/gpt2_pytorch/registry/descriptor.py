@@ -164,9 +164,17 @@ def _num(v, cfg):
     return v if isinstance(v, int) else config_value(cfg, v)
 
 
+def _absent(sel: dict, cfg: dict) -> bool:
+    """the config key(s) a `list` or `index_sets` selector reads are all missing"""
+    keys = [sel["list"]] if "list" in sel else [m for m in sel.get("index_sets", {}).values() if isinstance(m, str)]
+    return bool(keys) and all(config_value(cfg, k) is None for k in keys)
+
+
 def layer_blocks(sel: dict, cfg: dict, n_layers: int, names=()) -> list[str]:
     if "uniform" in sel:
         return [sel["uniform"]] * n_layers
+    if "else" in sel and _absent(sel, cfg):  # the config spells it another way (or not at all: GGUF)
+        return layer_blocks(sel["else"], cfg, n_layers, names)
     if "list" in sel:
         values = config_value(cfg, sel["list"])
         if not isinstance(values, list) or len(values) < n_layers:
@@ -199,7 +207,8 @@ def layer_blocks(sel: dict, cfg: dict, n_layers: int, names=()) -> list[str]:
         stored = set(names)
         out = []
         for i in range(n_layers):
-            out.append(next((b for b, pat in sel["by_presence"].items()
+            out.append(next((b for b, pats in sel["by_presence"].items()
+                             for pat in ([pats] if isinstance(pats, str) else pats)
                              if re.sub(r"\{i\}", str(i), pat) in stored), sel["default"]))
         return out
     raise DescriptorError(f"no selector in {sel}")

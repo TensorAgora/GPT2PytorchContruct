@@ -38,3 +38,19 @@ def test_qwen2_descriptor_and_hyper():
     assert d["recipe"]["flags"]["qkv_bias"] and d["schemes"]["hf"]["embed"] == "model.embed_tokens.weight"
     h = hyper_from_config(d, {"num_hidden_layers": 2, "hidden_size": 64, "num_attention_heads": 4, "intermediate_size": 128, "vocab_size": 10})
     assert h["Hkv"] == (4, "default:Hq") and h["Dh"] == (16, "default:D // Hq") and h["D"] == (64, "config:hidden_size")
+
+
+def test_selector_else_chain_reads_layer_types_then_presence():
+    from gpt2_pytorch.registry.descriptor import layer_blocks
+    sel = {"index_sets": {"gqa": "full_attn_idxs"}, "default": "conv",
+           "else": {"list": "layer_types", "map": {"conv": "conv", "full_attention": "gqa"},
+                    "else": {"by_presence": {"gqa": ["a.{i}.q", "blk.{i}.attn_q.weight"]}, "default": "conv"}}}
+    assert layer_blocks(sel, {"full_attn_idxs": [1]}, 3) == ["conv", "gqa", "conv"]
+    assert layer_blocks(sel, {"layer_types": ["full_attention", "conv", "conv"]}, 3) == ["gqa", "conv", "conv"]
+    assert layer_blocks(sel, {}, 3, names=["blk.2.attn_q.weight"]) == ["conv", "conv", "gqa"]
+
+
+def test_depthwise_conv_layouts():
+    from gpt2_pytorch.registry.bind import conv_layout
+    assert "GGUF" in conv_layout([64, 1, 3], [64, 3]) and "MLX" in conv_layout([64, 1, 3], [64, 3, 1])
+    assert conv_layout([64, 1, 3], [3, 64]) is None and conv_layout([64, 2, 3], [64, 3, 2]) is None

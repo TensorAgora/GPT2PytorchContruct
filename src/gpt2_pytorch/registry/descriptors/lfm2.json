@@ -87,7 +87,23 @@
     "index_sets": {
      "gqa": "full_attn_idxs"
     },
-    "default": "lfm2_conv"
+    "default": "lfm2_conv",
+    "else": {
+     "list": "layer_types",
+     "map": {
+      "conv": "lfm2_conv",
+      "full_attention": "gqa"
+     },
+     "else": {
+      "by_presence": {
+       "gqa": [
+        "model.layers.{i}.self_attn.q_proj.weight",
+        "blk.{i}.attn_q.weight"
+       ]
+      },
+      "default": "lfm2_conv"
+     }
+    }
    },
    "mlp": {
     "uniform": "swiglu"
