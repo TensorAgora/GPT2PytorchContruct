@@ -166,10 +166,20 @@ def run_one(job: Job, out, client=None, revision: str | None = None, fetched_at:
                "binding": {c: len(v) for c, v in b.partition.items()} | {"unclaimed": len(b.unclaimed)},
                "components": components,
                "storage_transforms": r.transforms,
-               "sidecars": b.sidecars,
+               "sidecars": sidecar_summary(folder, b.sidecars, paths),
                "totals": {"ops": g["totals"]["ops"], "contraction_flops": g["totals"]["contraction_flops"],
                           "params": sum(math.prod(e["shape"]) for e in r.expected if e["role"] == "parameter")}}
     return _finish(folder, report, paths, key)
+
+
+def sidecar_summary(folder: Path, records: list, paths: list) -> dict:
+    """Each sidecar binding (R-07) goes to sidecars.json.gz beside the report (one per tensor: 10^5 for a quantized MoE);
+    the report keeps the counts."""
+    if not records:
+        (folder / "sidecars.json.gz").unlink(missing_ok=True)
+        return {"count": 0}
+    paths.append(write_json(folder / "sidecars.json", records, gz=True))
+    return {"count": len(records), "by_scheme": dict(sorted(Counter(r["scheme"] for r in records).items())), "file": "sidecars.json.gz"}
 
 
 def _finish(folder: Path, report: dict, paths: list, key=None) -> Result:

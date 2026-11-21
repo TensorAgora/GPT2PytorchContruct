@@ -75,3 +75,13 @@ def test_path_b_timm_fixture(tmp_path):
     r = run_one(c.job(), tmp_path, c, fetched_at="t")
     rep = json.loads((r.dir / "report.json").read_text())
     assert r.status == "ok" and rep["winner"]["path"] == "B" and rep["binding"]["unclaimed"] == 0
+
+
+def test_sidecar_records_beside_report(tmp_path):
+    fx = find("Qwen/Qwen3.8-27B-FP8")
+    if fx is None:
+        pytest.skip("qwen3.8 fixture missing")
+    r = run(fx, tmp_path / "out")
+    s = json.loads((r.dir / "report.json").read_text())["sidecars"]
+    recs = load_json(r.dir / "sidecars.json")
+    assert s["count"] == len(recs) > 0 and s["by_scheme"] == {"fp8_block": len(recs)} and s["file"] == "sidecars.json.gz"
