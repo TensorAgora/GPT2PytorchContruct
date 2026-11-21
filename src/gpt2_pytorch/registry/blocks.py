@@ -154,6 +154,9 @@ def encoder_layer(b: Builder, h: dict, i: int, at: str, x: str, out: str):
         b.C(f"C_{i}", f"A_{i}", f"V_{i}", "k")
         b.permute(f"C_{i}.perm", b.rename(f"C_{i}.rename", f"C_{i}", "q", "T"), [0, 2, 1, 3])
         b.reshape(f"C_{i}.merged", f"C_{i}.perm", ["B", "T", "Dq"])
+    # BertSelfOutput owns the output projection, as BertOutput owns M: without it the module holds only its LayerNorm, and
+    # TEL's region host (the smallest module holding the region) ties between the two
+    with b.within(f"{at}.attention.output", "SelfOutput"):
         o = linear(b, f"O_{i}", f"C_{i}.merged", f"Wo_{i}", ["D", "Dq"], "o", i, "Dq")
     with b.within(f"{at}.attention.output.LayerNorm", "LayerNorm"):
         xa = layernorm(b, f"Xa_{i}", b.E("add", f"Xa_{i}.res", x, o), b.param(f"gan_{i}", ["D"], "attn_ln", i=i, what="weight"),

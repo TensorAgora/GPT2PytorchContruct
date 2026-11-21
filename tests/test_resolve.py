@@ -58,3 +58,16 @@ def test_fallthrough_records_near_miss():
 def test_gguf_mixtral_binds_through_r1():
     r = resolve_and_bind(fixture("mradermacher/Mixtral-8x7B-Instruct-v0.1-GGUF"))
     assert r.status == "ok" and r.descriptor["id"] == "mixtral" and r.candidate.rung == "R1" and r.binding.ok
+
+
+def test_bert_self_output_owns_the_projection():  # TEL hosts each region in the smallest module holding it: no ties
+    r = resolve_and_bind(fixture("google-bert/bert-base-uncased"))
+    assert r.status == "ok"
+
+    def groups(n):
+        yield n
+        for c in n["children"]:
+            yield from groups(c)
+    by = {g["id"]: g for g in groups(r.graph["groups"])}
+    so, ln = by["bert.encoder.layer.0.attention.output"], by["bert.encoder.layer.0.attention.output.LayerNorm"]
+    assert so["module_type"] == "SelfOutput" and len(so["members"]) > len(ln["members"])
